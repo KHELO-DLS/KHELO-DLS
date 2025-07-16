@@ -569,7 +569,7 @@
         const participantRef = doc(db, "matches", matchId, "participants", userId);
         const participantSnap = await getDoc(participantRef);
         if (!participantSnap.exists()) {
-            Swal.fire("Access Denied", "You need to join the match to see the match code.", "warning");
+            Swal.fire("Not Joining", "আপনি এখনো ম্যাচে জয়েন করেননি.", "warning");
             return;
         }
 
