@@ -82,7 +82,12 @@
       <!-- New Added Section -->
       <div class="mt-4">
         <p class="text-sm font-medium text-gray-400 mb-1">নিচের দেওয়া নাম্বারটিতে সেন্ড মানি করুন!</p>
-        <h3 class="text-xl font-bold text-yellow-400">01856549856</h3>
+        <div class="flex items-center gap-3 p-4 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg">
+          <h3 id="phoneNumber" class="text-xl font-bold text-white">01856549856</h3>
+          <button id="copyButton" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg focus:outline-none">
+            Copy
+          </button>
+        </div>
       </div>
 
       <div>
@@ -131,14 +136,6 @@
     <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div
         class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-ranking-star text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-         Ranking
-      </a>
-
-    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
       </div>
       Profile
@@ -252,6 +249,38 @@
           color: '#fff'
         });
       }
+    });
+
+    // Copy Button Functionality
+    const copyButton = document.getElementById('copyButton');
+    const phoneNumberText = document.getElementById('phoneNumber');
+
+    copyButton.addEventListener('click', () => {
+      navigator.clipboard.writeText(phoneNumberText.textContent).then(() => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Phone Number Copied!',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+      }).catch(err => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Failed to copy the number!',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+      });
     });
   </script>
 </body>
