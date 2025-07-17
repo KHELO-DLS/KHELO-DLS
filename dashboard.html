@@ -1,59 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Deposit Balance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <style>
-    .swal2-timer-progress-bar {
-      background: #facc15 !important;
-    }
-
-    .glow-yellow {
-      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
-    }
-
-    .loader {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 6px solid rgba(255, 255, 255, 0.15);
-      border-top-color: #facc15;
-      animation: spin 2s ease-in-out infinite;
-      box-shadow: 0 0 8px #facc15, inset 0 0 8px #facc15;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
 </head>
-<body class="bg-black text-white">
 
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
-    <div class="text-center">
-      <div class="loader mx-auto mb-4"></div>
-      <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Khelo Dls</h1>
-      <p class="text-gray-400 text-xs">Loading...</p>
-    </div>
-  </div>
+<body class="bg-black">
 
-  <!-- Header Section -->
-  <header class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between header-glow rounded-b-xl">
-    <div class="flex items-center gap-2">
-      <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-8 h-8 flex items-center justify-center font-bold rounded-full shadow" style="font-family: 'Audiowide', cursive;">KD</div>
-      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Khelo Dls</h2>
-    </div>
-    <div style="height: 30px;" class="flex items-center gap-1 bg-black px-1 py-1 rounded-full shadow-lg border border-gray-600 ml-8">
+  <!-- Header -->
+<header
+  class="bg-gradient-to-r from-black via-gray-900 to-black text-white py-2 px-3 flex items-center justify-between border-b border-solid border-gray-700 rounded-b-xl z-50 fixed top-0 left-0 right-0">
+  
+  <!-- Logo -->
+  <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent"
+    style="font-family: 'Audiowide', cursive;">Khelo Dls</h2>
+
+  <!-- Right Section -->
+  <div class="flex items-center gap-3">
+    <!-- Balance Section -->
+    <div style="height: 30px;"
+      class="balance-section flex items-center gap-1 bg-black px-1 py-1 rounded-full shadow-lg border border-gray-700">
       <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center">
         <i class="fa-solid fa-bangladeshi-taka-sign text-white text-sm"></i>
       </div>
@@ -62,193 +35,262 @@
         <i class="fa-solid fa-plus text-gray-100 text-sm"></i>
       </button>
     </div>
-  </header>
 
-  <main class="max-w-xl mx-auto px-4 py-3 mt-5 mb-10">
-    
-    <form id="depositForm" class="bg-gray-900 p-6 rounded-2xl shadow-lg border border-gray-700 space-y-4">
-      <div>
-        <p class="block text-sm font-medium text-gray-400 mb-1">Select Method</p>
-        <div id="methodContainer" class="flex space-x-4">
-          <div data-method="bKash" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500 text-white">
-            <i class="fas fa-wallet"></i><span class="ml-2">bKash</span>
-          </div>
-          <div data-method="Nagad" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500 text-white">
-            <i class="fas fa-wallet"></i><span class="ml-2">Nagad</span>
-          </div>
+    <!-- Sidebar Toggle Icon -->
+    <i id="sidebar-toggle" class="fa-solid fa-bars text-2xl cursor-pointer"></i>
+  </div>
+</header>
+
+
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="sidebar fixed top-0 left-0 w-52 h-full bg-black text-white transform transition-transform ease-in-out -translate-x-full md:translate-x-0 overflow-auto border-r border-solid border-gray-600 z-40">
+    <div class="logo mb-5 border-b border-solid border-gray-600 p-2.5">
+      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent"
+        style="font-family: 'Audiowide', cursive;">Khelo Games</h2>
+    </div>
+    <ul class="p-4 pt-0 space-y-2">
+      <li><a href="dashboard.html"
+          class="flex items-center text-white bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-solid fa-desktop mr-3"></i>Dashboard</a>
+      </li>
+      <li><a href="profile.html" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-regular fa-circle-user mr-3"></i>My Profile</a>
+      </li>
+      <li><a href="league-form.html" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-regular fa-registered mr-3"></i>League Form</a>
+      </li>
+      <li><a href="player-card.html" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-regular fa-address-card mr-3"></i>Players Card</a>
+      </li>
+      <li><a href="league.html" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-solid fa-trophy mr-3"></i>DLS League</a>
+      </li>
+      <li><a href="#" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-solid fa-gamepad mr-3"></i>Others Games</a>
+      </li>
+      <li><a href="#" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-solid fa-ranking-star mr-3"></i>Ranking</a>
+      </li>
+      <li><a href="deposit.html" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-solid fa-wallet mr-3"></i>Deposit</a>
+      </li>
+      <li><a href="deposit-history.html" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-solid fa-clock-rotate-left mr-3"></i>Deposit History</a>
+      </li>
+      <li><a href="withdraw.html" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-solid fa-window-maximize mr-3"></i>Withdrawal</a>
+      </li>
+      <li><a href="withdraw-history.html" class="flex items-center text-white hover:bg-gray-800 p-1.5 rounded-sm"><i
+            class="fa-solid fa-clock-rotate-left mr-3"></i>Withdraw History</a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="py-20 ml-0 md:ml-60 px-4 space-y-4">
+
+    <!-- Friendly Matches -->
+    <div>
+      <div class="flex items-center space-x-2 mb-2">
+        <div class="flex-grow h-px bg-gray-500"></div>
+        <p class="text-gray-200 font-semibold text-sm uppercase whitespace-nowrap">DLS Friendly Matches</p>
+        <div class="flex-grow h-px bg-gray-500"></div>
+      </div>
+
+      <a href="match.html">
+      <div class="relative w-full h-24 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-3 space-x-2 overflow-hidden"
+        style="background-image: url('dlsbanner.webp');">
+        <div class="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-xs z-0 rounded-lg"></div>
+        <img src="dlsbanner.webp" alt="DLS Banner"
+          class="w-12 h-12 rounded-full object-cover border border-white z-10" />
+        <div class="flex flex-col justify-center z-10">
+          <p class="text-yellow-300 font-semibold text-sm sm:text-base">Friendly Matches</p>
+          <p class="text-xs text-white">10 Matches Found</p>
         </div>
-        <input type="hidden" id="depositMethod" name="depositMethod" value="">
+      </div>
+      </a>
+    </div>
+
+    <!-- League Matches -->
+    <div>
+      <div class="flex items-center space-x-2 mb-2">
+        <div class="flex-grow h-px bg-gray-500"></div>
+        <p class="text-gray-200 font-semibold text-sm uppercase whitespace-nowrap">DLS League Matches</p>
+        <div class="flex-grow h-px bg-gray-500"></div>
       </div>
 
-      <!-- New Added Section -->
-      <div class="mt-4">
-        <p class="text-sm font-medium text-gray-400 mb-1">নিচের দেওয়া নাম্বারটি কপি করে সেন্ড মানি করুন!</p>
-        <div class="flex items-center justify-center gap-3 p-4 bg-gradient-to-r from-orange-500 to-orange-500 rounded-lg">
-          <h3 id="phoneNumber" class="text-xl font-bold text-white">01856549856</h3>
-          <button id="copyButton" class="bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1 rounded-lg focus:outline-none">
-            Copy
-          </button>
+      <a href="league.html"> 
+        <div class="relative w-full h-24 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-3 space-x-2 overflow-hidden"
+        style="background-image: url('dlsleague.jpeg');">
+        <div class="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-xs z-0 rounded-lg"></div>
+        <img src="dlsbanner.webp" alt="League Icon"
+          class="w-12 h-12 rounded-full object-cover border border-white z-10" />
+        <div class="flex flex-col justify-center z-10">
+          <p class="text-yellow-300 font-semibold text-sm sm:text-base">League Matches</p>
+          <p class="text-xs text-white">48 Matches Found</p>
+        </div>
+       </div>
+      </a>
+    </div>
+
+    <!-- Game Matches -->
+    <div>
+      <div class="flex items-center space-x-2 mb-2">
+        <div class="flex-grow h-px bg-gray-500"></div>
+        <p class="text-gray-200 font-semibold text-sm uppercase whitespace-nowrap">Others Game Matches</p>
+        <div class="flex-grow h-px bg-gray-500"></div>
+      </div>
+
+      <div class="relative w-full h-24 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-3 space-x-2 overflow-hidden"
+        style="background-image: url('betbannet.jpeg');">
+        <div class="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-xs z-0 rounded-lg"></div>
+        <img src="dlsbanner.webp" alt="Game Icon"
+          class="w-12 h-12 rounded-full object-cover border border-white z-10" />
+        <div class="flex flex-col justify-center z-10">
+          <p class="text-yellow-300 font-semibold text-sm sm:text-base">Game Matches</p>
+          <p class="text-xs text-white">5 Matches Found</p>
         </div>
       </div>
+    </div>
 
-      <div>
-        <label for="depositAmount" class="block text-sm font-medium text-gray-400 mb-1">Amount</label>
-        <input type="number" id="depositAmount" class="w-full border border-gray-600 bg-black text-white rounded-lg px-3 py-2" placeholder="Enter amount..." min="0" required>
+    <!-- Telegram & Messenger Section -->
+    <div>
+      <div class="flex items-center space-x-1 mt-8 mb-2">
+        <div class="flex-grow h-px bg-gray-500"></div>
+        <p class="text-gray-200 font-semibold text-sm uppercase whitespace-nowrap">Social Channels</p>
+        <div class="flex-grow h-px bg-gray-500"></div>
       </div>
 
-      <div>
-        <label for="paymentAddress" class="block text-sm font-medium text-gray-400 mb-1">Sender Address</label>
-        <input type="text" id="paymentAddress" class="w-full border border-gray-600 bg-black text-white rounded-lg px-3 py-2" placeholder="Enter your sender address..." required>
-      </div>
+      <div class="flex gap-2">
+        <!-- Telegram Box -->
+        <a href="#" target="_blank"
+          class="flex-1 relative h-28 bg-cover bg-center border border-gray-700 rounded-lg flex flex-col items-center justify-center shadow-md overflow-hidden group"
+          style="background-image: url('telegram-bg.jpg');">
+          <div
+            class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xl z-0 rounded-lg transition-opacity duration-300 group-hover:bg-opacity-40"></div>
+          <i
+            class="fa-brands fa-telegram text-4xl text-blue-400 z-10 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
+          <p
+            class="text-yellow-300 font-semibold text-base z-10 text-center leading-tight select-none pointer-events-none">
+            Join Telegram</p>
+          <p class="text-xs text-white z-10 text-center select-none pointer-events-none">Get latest updates & support</p>
+        </a>
 
-      <div>
-        <label for="transactionId" class="block text-sm font-medium text-gray-400 mb-1">Transaction ID</label>
-        <input type="text" id="transactionId" class="w-full border border-gray-600 bg-black text-white rounded-lg px-3 py-2" placeholder="Enter transaction ID..." required>
+        <!-- Messenger Box -->
+        <a href="https://m.me/j/AbYn9awI4qHvdDvW/" target="_blank"
+          class="flex-1 relative h-28 bg-cover bg-center border border-gray-700 rounded-lg flex flex-col items-center justify-center shadow-md overflow-hidden group"
+          style="background-image: url('messenger-bg.jpg');">
+          <div
+            class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xl z-0 rounded-lg transition-opacity duration-300 group-hover:bg-opacity-40"></div>
+          <i
+            class="fa-brands fa-facebook-messenger text-4xl text-blue-500 z-10 mb-2 transition-transform duration-300 group-hover:scale-110"></i>
+          <p
+            class="text-yellow-300 font-semibold text-base z-10 text-center leading-tight select-none pointer-events-none">
+            Join Messenger</p>
+          <p class="text-xs text-white z-10 text-center select-none pointer-events-none">Chat with our support team</p>
+        </a>
       </div>
+    </div>
 
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">Submit Deposit Request</button>
-    </form>
   </main>
 
   <!-- Bottom Nav -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-40">
+  <nav
+    class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-50">
     <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Home
     </a>
     <a href="match.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-gamepad text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Matches
     </a>
     <a href="league.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-trophy text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       League
     </a>
     <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-ranking-star text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+         Ranking
+      </a>
+
+    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
       </div>
       Profile
     </a>
   </nav>
+    <!-- Firebase Script -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  <script type="module">
-    const firebaseConfig = {
-      apiKey: "AIzaSyBfqJ1lwvAkGbOt-OdO9QKYZ-lDWewlj6MhtdFg",
-      authDomain: "khelo-dls.firebaseapp.com",
-      projectId: "khelo-dls",
-      storageBucket: "khelo-dls.appspot.com",
-      messagingSenderId: "372390204322",
-      appId: "1:372390204322:web:f5b287c8d372e5b4a5cc74"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
+    authDomain: "dls12364.firebaseapp.com",
+    projectId: "dls12364",
+    storageBucket: "dls12364.firebasestorage.app",
+    messagingSenderId: "431397971734",
+    appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+    measurementId: "G-B75EB4GGRV",
+  };
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    const depositAmountInput = document.getElementById("depositAmount");
-    const depositMethodInput = document.getElementById("depositMethod");
-    const mainBalance = document.getElementById("mainBalance");
-    const copyButton = document.getElementById("copyButton");
-    const phoneNumber = document.getElementById("phoneNumber");
+  let currentUser = null;
+  let userBalance = 0;
 
-    // Function to fetch balance from Firebase
-    const fetchBalance = async () => {
-      const userRef = db.collection("users").doc("user123"); // Replace with dynamic user ID
-      const doc = await userRef.get();
-      if (doc.exists) {
-        mainBalance.textContent = doc.data().balance;
-      } else {
-        console.log("User not found!");
-      }
-    };
+  function formatBalance(amount) {
+    return (+amount.toFixed(2)).toString();
+  }
 
-    // Initialize the balance on page load
-    fetchBalance();
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "index.html";
+    currentUser = user;
 
-    // Handle copy button click
-    copyButton.addEventListener("click", () => {
-      navigator.clipboard.writeText(phoneNumber.textContent).then(() => {
-        Swal.fire({
-          title: "Number Copied!",
-          text: "The number has been copied to your clipboard.",
-          icon: "success",
-          timer: 2000,
-          showConfirmButton: false,
-          willClose: () => {
-            Swal.fire({
-              title: "Redirecting...",
-              text: "Please send the payment.",
-              icon: "info",
-              showConfirmButton: false,
-              timer: 2000
-            });
-          }
-        });
-      });
-    });
+    try {
+      const userRef = doc(db, "users", user.uid);
 
-    // Handle method selection
-    const methodOptions = document.querySelectorAll('.method-option');
-    methodOptions.forEach(option => {
-      option.addEventListener('click', () => {
-        methodOptions.forEach(opt => opt.classList.remove('bg-blue-500'));
-        option.classList.add('bg-blue-500');
-        depositMethodInput.value = option.dataset.method;
-      });
-    });
-
-    // Handle form submission
-    const depositForm = document.getElementById("depositForm");
-    depositForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const amount = depositAmountInput.value;
-      const method = depositMethodInput.value;
-      const address = document.getElementById("paymentAddress").value;
-      const transactionId = document.getElementById("transactionId").value;
-
-      if (amount && method && address && transactionId) {
-        try {
-          await db.collection("deposits").add({
-            amount: amount,
-            method: method,
-            address: address,
-            transactionId: transactionId,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-          });
-
-          Swal.fire({
-            title: "Deposit Submitted",
-            text: "Your deposit request has been submitted successfully.",
-            icon: "success",
-            confirmButtonText: "OK"
-          });
-
-          // Optionally reset the form
-          depositForm.reset();
-        } catch (error) {
-          console.error("Error submitting deposit request: ", error);
-          Swal.fire({
-            title: "Error",
-            text: "There was an issue submitting your deposit. Please try again later.",
-            icon: "error",
-            confirmButtonText: "OK"
-          });
+      // Real-time listener for balance
+      onSnapshot(userRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          userBalance = data.balance || 0;
+          document.getElementById("mainBalance").innerText = formatBalance(userBalance);
         }
-      } else {
-        Swal.fire({
-          title: "Missing Fields",
-          text: "Please make sure all fields are filled in.",
-          icon: "warning",
-          confirmButtonText: "OK"
-        });
-      }
-    });
-  </script>
+      });
+
+    } catch (error) {
+      console.error("Error fetching user data: ", error);
+    }
+  });
+
+  const sidebar = document.getElementById("sidebar");
+  const sidebarToggle = document.getElementById("sidebar-toggle");
+
+  sidebarToggle.addEventListener("click", function () {
+    sidebar.classList.toggle("-translate-x-full");
+    sidebarToggle.classList.toggle("fa-bars");
+    sidebarToggle.classList.toggle("fa-xmark");
+  });
+</script>
 </body>
 </html>
