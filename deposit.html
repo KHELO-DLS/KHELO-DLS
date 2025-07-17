@@ -141,8 +141,7 @@
       Profile
     </a>
   </nav>
-
-  <script type="module">
+     <script type="module">
     const firebaseConfig = {
       apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
       authDomain: "dls12364.firebaseapp.com",
@@ -155,7 +154,7 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, Timestamp, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -167,12 +166,33 @@
     }
 
     let currentUser = null;
-    onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = "login.html";
-      else {
-        currentUser = user;
-        hideLoader();
+    let userBalance = 0;
+
+    function formatBalance(amount) {
+      return (+amount.toFixed(2)).toString();
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "index.html";
+      currentUser = user;
+
+      try {
+        const userRef = doc(db, "users", user.uid);
+
+        // Real-time listener for balance
+        onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            userBalance = data.balance || 0;
+            document.getElementById("mainBalance").innerText = formatBalance(userBalance);
+          }
+        });
+
+      } catch (error) {
+        console.error("Error fetching user data: ", error);
       }
+
+      hideLoader();
     });
 
     const options = document.querySelectorAll('.method-option');
@@ -282,6 +302,7 @@
         });
       });
     });
-  </script>
+</script>
+
 </body>
 </html>
