@@ -136,13 +136,18 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import {
-      getFirestore, doc, getDoc, updateDoc, collection, addDoc, Timestamp
+      getFirestore, doc, getDoc, updateDoc, collection, addDoc, Timestamp, onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     let currentUserData = null;
+    let userBalance = 0;
+
+    function formatBalance(amount) {
+      return (+amount.toFixed(2)).toString();
+    }
 
     function hideLoader() {
       const loader = document.getElementById('loadingOverlay');
@@ -150,28 +155,26 @@
     }
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+      if (!user) return window.location.href = "index.html";
+      currentUserData = user;
+
       try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          currentUserData = { uid: user.uid, ...userDoc.data() };
-        }
-        hideLoader();
-      } catch (err) {
-        hideLoader();
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'error',
-          title: 'Error loading user',
-          text: err.message,
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          background: '#1a202c',
-          color: '#fff'
+        const userRef = doc(db, "users", user.uid);
+
+        // Real-time listener for balance
+        onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            userBalance = data.balance || 0;
+            document.getElementById("mainBalance").innerText = formatBalance(userBalance);
+          }
         });
+
+      } catch (error) {
+        console.error("Error fetching user data: ", error);
       }
+
+      hideLoader();
     });
 
     const methodOptions = document.querySelectorAll('.method-option');
@@ -212,7 +215,7 @@
       if (!address) return showToast('warning', 'Please enter number or wallet address.');
       if (!currentUserData) return showToast('error', 'User data not loaded yet.');
 
-      const currentBalance = currentUserData.balance || 0;
+      const currentBalance = userBalance;
       if (amount > currentBalance) return showToast('error', 'Insufficient balance.');
 
       try {
@@ -229,7 +232,7 @@
 
         const newBalance = currentBalance - amount;
         await updateDoc(doc(db, "users", currentUserData.uid), { balance: newBalance });
-        currentUserData.balance = newBalance;
+        userBalance = newBalance;
 
         amountInput.value = "";
         hiddenMethodInput.value = "";
