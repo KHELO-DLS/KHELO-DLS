@@ -219,6 +219,18 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      // Show processing notification
+      Swal.fire({
+        title: 'Processing...',
+        text: 'Please wait while we process your registration.',
+        icon: 'info',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       // Check if all required fields are filled
       const team = form['team'].value.trim();
       const dlsRating = form['dls-rating'].value.trim();
