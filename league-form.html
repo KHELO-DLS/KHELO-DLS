@@ -1,105 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joining Form</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    .swal2-timer-progress-bar {
-      background: #facc15 !important;
-    }
-  </style>
 </head>
-<body class="bg-gray-900 flex items-center justify-center min-h-screen px-5 py-10">
-  <div class="bg-gradient-to-tl from-gray-900 via-gray-900 p-5 rounded-sm shadow-lg w-full max-w-sm border border-gray-600 shadow-2xl">
 
-    <div class="flex flex-col items-center justify-center mb-4">
-      <h1 style="font-family: 'Audiowide', cursive;" class="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent">Khelo Dls</h1>
+<body class="bg-black text-white">
+
+  <!-- Header Section -->
+  <header class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between header-glow rounded-b-xl">
+    <div class="flex items-center gap-2">
+      <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-8 h-8 flex items-center justify-center font-bold rounded-full shadow" style="font-family: 'Audiowide', cursive;">KD</div>
+      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Khelo Dls</h2>
     </div>
-
-    <h2 class="text-md font-semibold text-white mb-6">Please Create Your New Account</h2>
-
-    <form onsubmit="signup(event)">
-      <!-- Username -->
-      <div class="mb-4">
-        <label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
-        <div class="relative">
-          <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          <input type="text" id="username" required placeholder="Enter your username"
-            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm"/>
-        </div>
+    <div style="height: 30px;" class="flex items-center gap-1 bg-black px-1 py-1 rounded-full shadow-lg border border-gray-600 ml-8">
+      <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center">
+        <i class="fa-solid fa-bangladeshi-taka-sign text-white text-sm"></i>
       </div>
-
-      <!-- Phone -->
-      <div class="mb-4">
-        <label for="phone" class="block text-sm font-medium text-gray-300 mb-1">Phone</label>
-        <div class="relative">
-          <i class="fas fa-phone absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          <input type="number" id="phone" required placeholder="Enter your phone number"
-            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm"/>
-        </div>
-      </div>
-
-      <!-- Email -->
-      <div class="mb-4">
-        <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-        <div class="relative">
-          <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          <input type="email" id="email" required placeholder="Enter your email"
-            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm"/>
-        </div>
-      </div>
-
-      <!-- Password -->
-      <div class="mb-4">
-        <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-        <div class="relative">
-          <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          <input type="password" id="password" required placeholder="Create a password"
-            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm"/>
-        </div>
-      </div>
-
-      <!-- Referral -->
-      <div class="mb-6 hidden">
-        <label for="referCodeInput" class="block text-sm font-medium text-gray-300 mb-1">Sponsor Code</label>
-        <div class="relative">
-          <i class="fas fa-gift absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          <input type="text" id="referCodeInput" placeholder="Enter sponsor code"
-            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm"/>
-        </div>
-      </div>
-
-      <!-- Terms -->
-      <div class="flex items-center mb-6">
-        <input type="checkbox" id="terms" required class="text-blue-600 focus:ring-blue-500 border-gray-600 rounded-sm"/>
-        <label for="terms" class="text-sm text-gray-300 ml-2">I agree to the <a href="#" class="text-blue-300">Terms and Conditions</a></label>
-      </div>
-
-      <button type="submit"
-        class="w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 font-extrabold py-2 rounded-sm">
-        Create Account
+      <p id="mainBalance" class="text-sm font-bold text-yellow-300">0</p>
+      <button class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center shadow-md">
+        <i class="fa-solid fa-plus text-gray-100 text-sm"></i>
       </button>
-    </form>
-
-    <div class="mt-2 text-center">
-      <p class="text-base text-gray-300">Already have an account? 
-        <a href="index.html" class="text-blue-300 hover:underline text-lg font-medium">Login</a>
-      </p>
     </div>
-  </div>
+  </header>
 
-  <!-- Firebase Script -->
+  <!-- Main Content -->
+  <main class="hidden w-full max-w-md mt-8 px-4 mx-auto">
+    <div class="bg-gray-900 p-3 rounded-lg shadow-xl border border-gray-700">
+      <h1 class="text-center text-2xl font-semibold text-yellow-400 mb-2">Joining Form</h1>
+
+      <!-- Current Limit Display -->
+      <p id="currentLimitDisplay" class="text-center text-yellow-300 mb-2 font-medium">Loading...</p>
+      <!-- Joining Fee Display -->
+      <p id="joiningFee" class="text-center text-yellow-300 mb-4 font-medium">Loading...</p>
+
+      <form class="space-y-6" id="registration-form">
+        <input type="text" id="team" name="team" required placeholder="Enter your DLS team name" class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black text-sm">
+        <input type="number" step="any" id="dls-rating" name="dls-rating" required placeholder="Enter your DLS rating" class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black text-sm">
+        <input type="number" id="age" name="age" required placeholder="Enter your age" class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black text-sm">
+        <input type="number" id="years-played" name="years-played" required placeholder="How many years have you played DLS" class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black text-sm">
+        <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-md transition duration-300">Join Now</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-40">
+    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Home
+    </a>
+    <a href="match.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-gamepad text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Matches
+    </a>
+    <a href="league.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-trophy text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      League
+    </a>
+    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-ranking-star text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Ranking
+    </a>
+    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div>
+      Profile
+    </a>
+  </nav>
+
+  <!-- Firebase Scripts -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDocs, collection, query, where, updateDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, getDocs, runTransaction, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
@@ -112,128 +102,261 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    const showError = (msg) => {
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'error',
-        title: msg,
-        showConfirmButton: false,
-        timer: 2500,
-        timerProgressBar: true,
-        background: '#1a202c',
-        color: '#fff'
-      });
-    };
+    let currentUser = null;
+    let currentLimit = null;
+    let joiningFee = null;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const refCode = urlParams.get("ref");
-    if (refCode) {
-      document.getElementById("referCodeInput").value = refCode;
+    const currentLimitDisplay = document.getElementById('currentLimitDisplay');
+    const joiningFeeDisplay = document.getElementById('joiningFee');
+    const mainBalance = document.getElementById("mainBalance");
+
+    async function loadPlayerLimit() {
+      const limitDocRef = doc(db, "settings", "limits");
+      try {
+        const docSnap = await getDoc(limitDocRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          currentLimit = data?.maxPlayers ?? null;
+          currentLimitDisplay.textContent = currentLimit !== null ? `Joining Slot: ${currentLimit}` : "Current Join Limit: Not Set";
+        } else {
+          currentLimit = null;
+          currentLimitDisplay.textContent = "Joining Slot: Not Set";
+        }
+      } catch (error) {
+        console.error("Error fetching player limit:", error);
+        currentLimitDisplay.textContent = "Problem loading limit";
+      }
     }
 
-    window.signup = async function (event) {
-      event.preventDefault();
+    async function loadJoiningFee() {
+      const feeDocRef = doc(db, "settings", "joiningFee");
+      try {
+        const docSnap = await getDoc(feeDocRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          joiningFee = data?.fee ?? 0;
+          joiningFeeDisplay.textContent = `Joining Fee: ৳${joiningFee}`;
+        } else {
+          joiningFee = 0;
+          joiningFeeDisplay.textContent = "Joining Fee: Not Set";
+        }
+      } catch (error) {
+        console.error("Error fetching joining fee:", error);
+        joiningFeeDisplay.textContent = "Problem loading fee";
+      }
+    }
 
-      const username = document.getElementById("username").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const inputReferCode = document.getElementById("referCodeInput").value.trim();
+    async function countRegisteredPlayers() {
+      try {
+        const playersCol = collection(db, "playersform");
+        const snapshot = await getDocs(playersCol);
+        return snapshot.size;
+      } catch (error) {
+        console.error("Error counting players:", error);
+        return 0;
+      }
+    }
 
-      if (!username || !phone || !email || !password) {
-        showError("Please fill in all required fields.");
+    async function checkUserRegistration(uid) {
+      const playersCol = collection(db, "playersform");
+      const q = query(playersCol, where("uid", "==", uid));
+      const snapshot = await getDocs(q);
+      return snapshot.size > 0;
+    }
+
+    async function checkTeamNameExistence(teamName) {
+      const playersCol = collection(db, "playersform");
+      const q = query(playersCol, where("team", "==", teamName));
+      const snapshot = await getDocs(q);
+      return snapshot.size > 0;
+    }
+
+    async function getUserInfo(uid) {
+      const userDocRef = doc(db, "users", uid);
+      const docSnap = await getDoc(userDocRef);
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        return {
+          username: userData.username,
+          photoUrl: userData.photoUrl,
+          balance: userData.balance || 0
+        };
+      }
+      return { username: "", photoUrl: "", balance: 0 };
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        currentUser = user;
+        await loadPlayerLimit();
+        await loadJoiningFee();
+
+        // Fetch user balance
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        const balance = userSnap.data()?.balance || 0;
+        mainBalance.innerText = `${balance.toFixed(0)}`; // Display without decimals
+      }
+    });
+
+    const form = document.getElementById('registration-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Check if all required fields are filled
+      const team = form['team'].value.trim();
+      const dlsRating = form['dls-rating'].value.trim();
+      const age = form['age'].value.trim();
+      const yearsPlayed = form['years-played'].value.trim();
+
+      if (!team || !dlsRating || !age || !yearsPlayed) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Incomplete Form',
+          text: 'Please fill in all required fields.',
+          confirmButtonColor: '#F59E0B'
+        });
         return;
       }
 
-      if (phone.length < 7) {
-        showError("Please enter a valid phone number.");
+      if (currentLimit === null || currentLimit <= 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Registration limit is 0 or not set, you cannot register at this time.',
+          confirmButtonColor: '#EF4444'
+        });
         return;
       }
 
-      if (password.length < 6) {
-        showError("Password must be at least 6 characters long.");
+      const registeredCount = await countRegisteredPlayers();
+
+      if (registeredCount >= currentLimit) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Limit Reached',
+          text: `Sorry, the maximum player registration limit (${currentLimit}) has been reached.`,
+          confirmButtonColor: '#F59E0B'
+        });
+        return;
+      }
+
+      const isAlreadyRegistered = await checkUserRegistration(currentUser.uid);
+      if (isAlreadyRegistered) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Already Registered',
+          text: 'You have already registered.',
+          confirmButtonColor: '#EF4444'
+        });
+        return;
+      }
+
+      // Check if team name already exists
+      const isTeamNameTaken = await checkTeamNameExistence(team);
+      if (isTeamNameTaken) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Team Name Taken',
+          text: 'This team name is already registered. Please choose a different name.',
+          confirmButtonColor: '#EF4444'
+        });
+        return;
+      }
+
+      // Get user info
+      const { username, photoUrl, balance } = await getUserInfo(currentUser.uid);
+
+      // Check if user has enough balance
+      if (balance < joiningFee) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Insufficient Balance',
+          text: `You do not have enough balance to join. Your current balance is ৳${balance.toFixed(0)}`,
+          confirmButtonColor: '#EF4444'
+        });
         return;
       }
 
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = userCredential.user.uid;
+        // Run transaction to add player and decrement limit atomically
+        await runTransaction(db, async (transaction) => {
+          const limitDocRef = doc(db, "settings", "limits");
+          const limitDoc = await transaction.get(limitDocRef);
 
-        // Fetch signup bonus from Firestore
-        let signupBonus = 0;
-        try {
-          const settingsDoc = await getDoc(doc(db, "settings", "signupBonus"));
-          if (settingsDoc.exists()) {
-            signupBonus = settingsDoc.data().bonus || 0;
+          if (!limitDoc.exists()) {
+            throw "Limit document does not exist!";
           }
-        } catch (e) {
-          console.error("Failed to fetch signup bonus:", e);
-        }
 
-        // Create new user document in Firestore
-        await setDoc(doc(db, "users", uid), {
-          uid,
-          username,
-          phone,
-          email,
-          balance: signupBonus,  // Set the balance with the signup bonus
-          role: "user",
-          referCode: uid,
-          referredBy: inputReferCode || null,
-          verified: "not verified",  // Default value for verification
-          createdAt: serverTimestamp()
+          const limitData = limitDoc.data();
+          const maxPlayers = limitData.maxPlayers ?? 0;
+
+          if (maxPlayers <= 0) {
+            throw "Player limit exceeded!";
+          }
+
+          // Add new player doc
+          const playersCol = collection(db, "playersform");
+          const newPlayerRef = doc(playersCol); // create new doc ref
+          transaction.set(newPlayerRef, {
+            team,
+            dlsRating,
+            age,
+            yearsPlayed,
+            uid: currentUser?.uid || null,
+            username,
+            photoUrl,
+            createdAt: new Date()
+          });
+
+          // Decrement maxPlayers by 1
+          transaction.update(limitDocRef, {
+            maxPlayers: maxPlayers - 1
+          });
+
+          // Deduct joining fee from user balance
+          transaction.update(doc(db, "users", currentUser.uid), {
+            balance: balance - joiningFee
+          });
+
+          // Update local currentLimit to reflect new value
+          currentLimit = maxPlayers - 1;
+          currentLimitDisplay.textContent = `Current Player Limit: ${currentLimit}`;
         });
 
-        // If a referral code is provided, reward the referrer
-        if (inputReferCode && inputReferCode !== uid) {
-          let referBonus = 0;
-          try {
-            const settingsDoc = await getDoc(doc(db, "settings", "referBonus"));
-            if (settingsDoc.exists()) {
-              referBonus = settingsDoc.data().bonus || 0;
-            }
-          } catch (e) {
-            console.error("Failed to fetch referral bonus:", e);
-          }
-
-          if (referBonus > 0) {
-            const q = query(collection(db, "users"), where("uid", "==", inputReferCode));
-            const querySnapshot = await getDocs(q);
-
-            if (!querySnapshot.empty) {
-              const referrerDoc = querySnapshot.docs[0];
-              const referrerRef = doc(db, "users", referrerDoc.id);
-              const currentBalance = referrerDoc.data().balance || 0;
-              await updateDoc(referrerRef, { balance: currentBalance + referBonus });
-            }
-          }
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Your registration has been completed!',
+          confirmButtonColor: '#F59E0B'
+        });
+        form.reset();
+      } catch (error) {
+        let msg = "";
+        if (typeof error === "string") {
+          msg = error;
+        } else if (error instanceof Error) {
+          msg = error.message;
+        } else {
+          msg = "There was an issue with registration. Please try again.";
         }
 
         Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'success',
-          title: 'Sign-up Successful!',
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          background: '#1a202c',
-          color: '#fff'
+          icon: 'error',
+          title: 'Error',
+          text: msg,
+          confirmButtonColor: '#EF4444'
         });
-
-        setTimeout(() => {
-          window.location.href = "verified.html";  // Redirect to the verified page
-        }, 2000);
-
-      } catch (error) {
-        showError("Signup failed: " + error.message);
+        console.error("Transaction error:", error);
       }
-    };
+    });
   </script>
+
 </body>
+
 </html>
