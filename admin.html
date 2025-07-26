@@ -25,42 +25,7 @@
       <a href="playerslist.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
         <i class="fas fa-clipboard-list"></i><span>Players List</span>
       </a>
-      <a href="fixerslist.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Fixers</span>
-      </a>
-      <a href="sami.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Sami Fxers</span>
-      </a>
-      <a href="point.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Points Table</span>
-      </a>
-      <a href="addmatch.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Add Match</span>
-      </a>
-      <a href="addbet.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Add Bet</span>
-      </a>
-      <a href="livematch.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Live Match</span>
-      </a>
-        <a href="betmanage.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Bet Manager</span>
-      </a>
-      <a href="finisheddmatch.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Finished Match</span>
-      </a>
-      <a href="deposit-requests.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Deposit Request</span>
-      </a>
-      <a href="withdraw-requests.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Withdrawal Request</span>
-      </a>
-      <a href="referral-setting.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Referral Settings</span>
-      </a>
-      <a href="setting.html" class="flex items-center space-x-3 hover:bg-blue-700 p-2 rounded transition">
-        <i class="fas fa-clipboard-list"></i><span>Settings</span>
-      </a>
+      <!-- Other Links -->
       <button id="logoutBtn" class="flex items-center space-x-3 hover:bg-red-600 p-2 rounded mt-10 transition">
         <i class="fas fa-sign-out-alt"></i><span>Logout</span>
       </button>
@@ -85,6 +50,8 @@
       <!-- Total Users Section -->
       <div class="bg-white shadow rounded p-4">
         <div class="text-xl font-semibold text-blue-700 mb-2" id="totalUsersCount">Total Users: ...</div>
+        <!-- Button to set all balances to 0 -->
+        <button id="resetBalancesBtn" class="bg-red-500 text-white p-2 rounded">Reset All Balances to 0</button>
       </div>
 
       <!-- Users Table Section -->
@@ -126,14 +93,14 @@
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
-  apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
-  authDomain: "dls12364.firebaseapp.com",
-  projectId: "dls12364",
-  storageBucket: "dls12364.firebasestorage.app",
-  messagingSenderId: "431397971734",
-  appId: "1:431397971734:web:0cb1a8b53ee09157425237",
-  measurementId: "G-B75EB4GGRV"
-};
+      apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
+      authDomain: "dls12364.firebaseapp.com",
+      projectId: "dls12364",
+      storageBucket: "dls12364.firebasestorage.app",
+      messagingSenderId: "431397971734",
+      appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+      measurementId: "G-B75EB4GGRV"
+    };
 
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
@@ -143,6 +110,7 @@
     const usersTableBody = document.getElementById("usersTableBody");
     const logoutBtn = document.getElementById("logoutBtn");
     const totalUsersCountElem = document.getElementById("totalUsersCount");
+    const resetBalancesBtn = document.getElementById("resetBalancesBtn");
 
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
@@ -232,6 +200,23 @@
         console.error("Error loading users:", error);
       }
     }
+
+    // Reset all user balances to 0
+    resetBalancesBtn.addEventListener("click", async () => {
+      try {
+        const usersCol = collection(db, "users");
+        const usersSnapshot = await getDocs(usersCol);
+        usersSnapshot.forEach(async (docSnap) => {
+          await updateDoc(doc(db, "users", docSnap.id), {
+            balance: 0
+          });
+        });
+        alert("All user balances have been reset to 0.");
+      } catch (error) {
+        alert("Error resetting balances: " + error.message);
+        console.error("Error resetting balances:", error);
+      }
+    });
 
     // Sidebar toggle
     const sidebar = document.getElementById("sidebar");
