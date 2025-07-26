@@ -164,13 +164,6 @@
       }
     });
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        await loadTeamPhotos();  // Load user team information and photos
-        loadFixers(user);  // Load the fixers with user information
-      }
-    });
-
     function loadFixers(user) {
       const fixersRef = collection(db, "fixers");
       onSnapshot(query(fixersRef), (snapshot) => {
@@ -214,8 +207,8 @@
             const team2Img = teamPhotos[match.team2.trim().toLowerCase()] || "";
 
             const key = `${match.team1}__${match.team2}__${match.date}`;
-            const t1GoalVal = (match.team1Goal ?? "").toString();
-            const t2GoalVal = (match.team2Goal ?? "").toString();
+            const t1GoalVal = (match.team1Goal ?? 0).toString();  // Default 0 if no goal
+            const t2GoalVal = (match.team2Goal ?? 0).toString();  // Default 0 if no goal
 
             html += `
               <section class="mx-auto py-10 flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 230px;">
@@ -295,8 +288,8 @@
               return;
             }
 
-            const goal1Val = (match.team1Goal ?? "").toString();
-            const goal2Val = (match.team2Goal ?? "").toString();
+            const goal1Val = (match.team1Goal ?? 0).toString();  // Default 0 if no goal
+            const goal2Val = (match.team2Goal ?? 0).toString();  // Default 0 if no goal
 
             document.getElementById("goal-modal-content").innerHTML = `
               <div class="flex flex-col gap-4">
