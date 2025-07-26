@@ -50,8 +50,10 @@
       <!-- Total Users Section -->
       <div class="bg-white shadow rounded p-4">
         <div class="text-xl font-semibold text-blue-700 mb-2" id="totalUsersCount">Total Users: ...</div>
-        <!-- Button to set all balances to 0 -->
-        <button id="resetBalancesBtn" class="bg-red-500 text-white p-2 rounded">Reset All Balances to 0</button>
+        <!-- Button to reset all balances to 0 -->
+        <button id="resetBalancesBtn" class="bg-red-500 text-white p-2 rounded mr-4">Reset All Balances to 0</button>
+        <!-- Button to add 10tk to all balances -->
+        <button id="add10TkBtn" class="bg-green-500 text-white p-2 rounded">Add 10tk to All Balances</button>
       </div>
 
       <!-- Users Table Section -->
@@ -111,6 +113,7 @@
     const logoutBtn = document.getElementById("logoutBtn");
     const totalUsersCountElem = document.getElementById("totalUsersCount");
     const resetBalancesBtn = document.getElementById("resetBalancesBtn");
+    const add10TkBtn = document.getElementById("add10TkBtn");
 
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
@@ -215,6 +218,25 @@
       } catch (error) {
         alert("Error resetting balances: " + error.message);
         console.error("Error resetting balances:", error);
+      }
+    });
+
+    // Add 10tk to all user balances
+    add10TkBtn.addEventListener("click", async () => {
+      try {
+        const usersCol = collection(db, "users");
+        const usersSnapshot = await getDocs(usersCol);
+        usersSnapshot.forEach(async (docSnap) => {
+          const userData = docSnap.data();
+          const newBalance = userData.balance + 10;
+          await updateDoc(doc(db, "users", docSnap.id), {
+            balance: newBalance
+          });
+        });
+        alert("10tk has been added to all user balances.");
+      } catch (error) {
+        alert("Error adding ৳10 to balances: " + error.message);
+        console.error("Error adding ৳10 to balances:", error);
       }
     });
 
