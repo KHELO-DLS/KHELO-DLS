@@ -214,8 +214,8 @@
             const team2Img = teamPhotos[match.team2.trim().toLowerCase()] || "";
 
             const key = `${match.team1}__${match.team2}__${match.date}`;
-            const t1GoalVal = (match.team1Goal ?? "").toString();
-            const t2GoalVal = (match.team2Goal ?? "").toString();
+            const t1GoalVal = (match.team1Goal !== null && match.team1Goal !== undefined) ? match.team1Goal : "";
+            const t2GoalVal = (match.team2Goal !== null && match.team2Goal !== undefined) ? match.team2Goal : "";
 
             html += `
               <section class="mx-auto py-10 flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 230px;">
