@@ -50,10 +50,17 @@
       <!-- Total Users Section -->
       <div class="bg-white shadow rounded p-4">
         <div class="text-xl font-semibold text-blue-700 mb-2" id="totalUsersCount">Total Users: ...</div>
-        <!-- Button to minus -->
-        <button id="resetBalancesBtn" class="bg-red-500 text-white p-2 rounded mr-4">Reset All Balances to 0</button>
-        <!-- Button to add -->
-        <button id="addBalanceBtn" class="bg-green-500 text-white p-2 rounded">Add 10tk to All Balances</button>
+        <!-- Buttons: Plus and Minus with Font Awesome icons -->
+        <div class="flex space-x-4">
+          <!-- Minus button (Reset all balances to 0) -->
+          <button id="minusBtn" class="bg-red-500 text-white p-2 rounded flex items-center">
+            <i class="fas fa-minus mr-2"></i> Minus
+          </button>
+          <!-- Plus button (Add 10tk to all balances) -->
+          <button id="plusBtn" class="bg-green-500 text-white p-2 rounded flex items-center">
+            <i class="fas fa-plus mr-2"></i> Plus
+          </button>
+        </div>
       </div>
 
       <!-- Users Table Section -->
@@ -112,8 +119,8 @@
     const usersTableBody = document.getElementById("usersTableBody");
     const logoutBtn = document.getElementById("logoutBtn");
     const totalUsersCountElem = document.getElementById("totalUsersCount");
-    const resetBalancesBtn = document.getElementById("resetBalancesBtn");
-    const add10TkBtn = document.getElementById("add10TkBtn");
+    const minusBtn = document.getElementById("minusBtn");
+    const plusBtn = document.getElementById("plusBtn");
 
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
@@ -204,8 +211,8 @@
       }
     }
 
-    // Reset all user balances to 0
-    resetBalancesBtn.addEventListener("click", async () => {
+    // Reset all user balances to 0 (Minus button)
+    minusBtn.addEventListener("click", async () => {
       try {
         const usersCol = collection(db, "users");
         const usersSnapshot = await getDocs(usersCol);
@@ -221,8 +228,8 @@
       }
     });
 
-    // Add 10tk to all user balances
-    addBalanceBtn.addEventListener("click", async () => {
+    // Add 10tk to all user balances (Plus button)
+    plusBtn.addEventListener("click", async () => {
       try {
         const usersCol = collection(db, "users");
         const usersSnapshot = await getDocs(usersCol);
@@ -235,8 +242,8 @@
         });
         alert("10tk has been added to all user balances.");
       } catch (error) {
-        alert("Error adding ৳10 to balances: " + error.message);
-        console.error("Error adding ৳10 to balances:", error);
+        alert("Error adding  to balances: " + error.message);
+        console.error("Error  to balances:", error);
       }
     });
 
