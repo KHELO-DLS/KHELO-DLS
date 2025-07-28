@@ -253,14 +253,16 @@
                   <div class="flex justify-center items-center">
                     Submit your matches results
                   </div>
-                  <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-16 h-6 rounded-xl cursor-pointer">
+                  <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-16 h-6 rounded-xl">
                     <img src="upload.png" alt="Image" class="w-16 h-10" />
                   </div>
                 </div>
 
                 <div style="background: #af1f42; top: 60px;" class="flex justify-between w-3/4 py-2 px-4 absolute left-1/8 rounded-t-xl uppercase text-sm font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-70">
-                  <div>${formatDateAndTime(match.date).split('Time:')[0]}</div>
-                  <div>Time 24 Hours</div>
+                  <div>${matchDateAndTime.split('Time:')[0]}</div>
+                  <div>
+                    Time 24 Hours
+                  </div>
                 </div>
 
                 <div style="background: #a81d3f; top: 10px;" class="rounded-lg shadow-lg w-full max-w-lg relative h-14 border-t border-l border-r border-gray-400 opacity-80">
