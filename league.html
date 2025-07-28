@@ -229,7 +229,7 @@
         const sortedMatchdays = Object.keys(matchdays).map(Number).sort((a,b) => a - b);
 
         sortedMatchdays.forEach(md => {
-          html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-center text-lg font-semibold uppercase text-yellow-300 mb-2">${groupName} || Matchday-${md}</div>`;
+          html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-center text-lg font-semibold uppercase text-yellow-300 mb-2">${groupName} ll Matchday-${md}</div>`;
 
           // Sort matches by team1 name
           const matches = matchdays[md].sort((a, b) => a.team1.localeCompare(b.team1));
@@ -253,16 +253,14 @@
                   <div class="flex justify-center items-center">
                     Submit your matches results
                   </div>
-                  <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-16 h-6 rounded-xl">
+                  <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-16 h-6 rounded-xl cursor-pointer">
                     <img src="upload.png" alt="Image" class="w-16 h-10" />
                   </div>
                 </div>
 
                 <div style="background: #af1f42; top: 60px;" class="flex justify-between w-3/4 py-2 px-4 absolute left-1/8 rounded-t-xl uppercase text-sm font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-70">
-                  <div>${matchDateAndTime.split('Time:')[0]}</div>
-                  <div>
-                    Time 24 Hours
-                  </div>
+                  <div>${formatDateAndTime(match.date).split('Time:')[0]}</div>
+                  <div>Time 24 Hours</div>
                 </div>
 
                 <div style="background: #a81d3f; top: 10px;" class="rounded-lg shadow-lg w-full max-w-lg relative h-14 border-t border-l border-r border-gray-400 opacity-80">
@@ -377,6 +375,5 @@
     });
   }
 </script>
-
 </body>
 </html>
