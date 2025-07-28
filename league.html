@@ -186,42 +186,34 @@
       fixersDocs[key] = docSnap.ref;
     });
 
-    // Group fixers by groupName
-    const groups = {};
-
+    // Group fixers by groupName and then by date
+    const groupMap = {};
     fixers.forEach(match => {
-      if (!groups[match.groupName]) groups[match.groupName] = {};
-      if (!groups[match.groupName][match.date]) groups[match.groupName][match.date] = [];
-      groups[match.groupName][match.date].push(match);
+      if (!groupMap[match.groupName]) groupMap[match.groupName] = {};
+      if (!groupMap[match.groupName][match.date]) groupMap[match.groupName][match.date] = [];
+      groupMap[match.groupName][match.date].push(match);
     });
 
-    // Prepare HTML
     let html = "";
 
-    // Sort group names alphabetically (Group-A, Group-B, etc.)
-    Object.keys(groups).sort().forEach(groupName => {
-      const datesMap = groups[groupName];
+    // Sort groups alphabetically (Group-A, Group-B, ...)
+    Object.keys(groupMap).sort().forEach(group => {
+      const dateMap = groupMap[group];
       // Sort dates ascending
-      const sortedDates = Object.keys(datesMap).sort();
+      const sortedDates = Object.keys(dateMap).sort();
 
-      sortedDates.forEach((date, index) => {
-        const matchdayNumber = index + 1;
-        html += `
-          <div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-center text-lg font-semibold uppercase text-yellow-300 mb-2">
-            ${groupName} ll Matchday-${matchdayNumber} || ${date}
-          </div>
-        `;
+      sortedDates.forEach((date, idx) => {
+        // Matchday label by index (starting 1)
+        html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-center text-lg font-semibold uppercase text-yellow-300 mb-2">${group} ll Matchday-${idx + 1} || ${date}</div>`;
 
-        // Sort matches by team1 name or any preferred sorting
-        const matches = datesMap[date].sort((a, b) => a.team1.localeCompare(b.team1));
-
-        matches.forEach(match => {
+        // Sort matches inside this date by team1 name for consistent order
+        dateMap[date].sort((a, b) => a.team1.localeCompare(b.team1)).forEach(match => {
           const key = `${match.team1}__${match.team2}__${match.date}`;
           const team1Img = teamPhotos[match.team1.trim().toLowerCase()] || "";
           const team2Img = teamPhotos[match.team2.trim().toLowerCase()] || "";
 
-          const t1GoalVal = (match.team1Goal ?? "").toString();
-          const t2GoalVal = (match.team2Goal ?? "").toString();
+          const t1GoalVal = (match.team1Goal ?? "").toString() || "-";
+          const t2GoalVal = (match.team2Goal ?? "").toString() || "-";
 
           html += `
             <section class="mx-auto py-10 flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 230px;">
@@ -242,9 +234,7 @@
 
               <div style="background: #af1f42; top: 60px;" class="flex justify-between w-3/4 py-2 px-4 absolute left-1/8 rounded-t-xl uppercase text-sm font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-70">
                 <div>${date}</div>
-                <div>
-                  Time 24 Hours
-                </div>
+                <div>Time 24 Hours</div>
               </div>
 
               <div style="background: #a81d3f; top: 10px;" class="rounded-lg shadow-lg w-full max-w-lg relative h-14 border-t border-l border-r border-gray-400 opacity-80">
@@ -259,13 +249,13 @@
 
                 <div class="flex justify-center items-center space-x-6 bg-white py-3 px-2 rounded-b-lg h-10 border-b border-gray-400 opacity-80">
                   <div class="text-center">
-                    <p class="text-4xl font-medium text-black">${t1GoalVal || "-"}</p>
+                    <p class="text-4xl font-medium text-black">${t1GoalVal}</p>
                   </div>
                   <div class="text-center" style="position: relative; top: -16px; color: #7f152e;">
                     <i class="fas fa-futbol text-6xl bg-white rounded-full border border-gray-400"></i>
                   </div>
                   <div class="text-center">
-                    <p class="text-4xl font-medium text-black">${t2GoalVal || "-"}</p>
+                    <p class="text-4xl font-medium text-black">${t2GoalVal}</p>
                   </div>
                 </div>
 
@@ -284,20 +274,27 @@
 
     fixersContainer.innerHTML = html;
 
-    // Add event listeners to open goal modals
+    // Attach modal open events AFTER html set
     document.querySelectorAll(".open-goal-modal-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
         const key = e.currentTarget.getAttribute("data-key");
         const match = fixers.find(f => `${f.team1}__${f.team2}__${f.date}` === key);
 
+        if (!match) {
+          Swal.fire({ icon: "error", title: "Match not found!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
+          return;
+        }
+
+        // Check if user team matches either team
         const userTeam = userTeams[user.uid];
         if (userTeam !== match.team1.trim().toLowerCase() && userTeam !== match.team2.trim().toLowerCase()) {
           Swal.fire({ icon: "warning", title: "You are not part of this match!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
           return;
         }
 
+        // Check if goals already submitted
         if (match.team1Goal !== null || match.team2Goal !== null) {
-          Swal.fire({ icon: "warning", title: "Already Matches Result Updated!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
+          Swal.fire({ icon: "warning", title: "Match result already updated!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
           return;
         }
 
