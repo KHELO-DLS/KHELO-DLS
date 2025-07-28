@@ -107,124 +107,137 @@
     </a>
   </nav>
      <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot, query, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
-      authDomain: "dls12364.firebaseapp.com",
-      projectId: "dls12364",
-      storageBucket: "dls12364.firebasestorage.app",
-      messagingSenderId: "431397971734",
-      appId: "1:431397971734:web:0cb1a8b53ee09157425237",
-      measurementId: "G-B75EB4GGRV"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
+    authDomain: "dls12364.firebaseapp.com",
+    projectId: "dls12364",
+    storageBucket: "dls12364.firebasestorage.app",
+    messagingSenderId: "431397971734",
+    appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+    measurementId: "G-B75EB4GGRV"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-    let teamPhotos = {};
-    let fixersDocs = {};
-    let userTeams = {}; // To store user team information (UID -> team name)
+  let teamPhotos = {};
+  let fixersDocs = {};
+  let userTeams = {}; // uid -> team
 
-    async function loadTeamPhotos() {
-      const snap = await getDocs(collection(db, "playersform"));
-      snap.forEach(doc => {
-        const data = doc.data();
-        if (data.team && data.photoUrl) {
-          teamPhotos[data.team.trim().toLowerCase()] = data.photoUrl;
-          userTeams[data.uid] = data.team.trim().toLowerCase(); // Store the team of each user
+  async function loadTeamPhotos() {
+    const snap = await getDocs(collection(db, "playersform"));
+    snap.forEach(doc => {
+      const data = doc.data();
+      if (data.team && data.photoUrl) {
+        teamPhotos[data.team.trim().toLowerCase()] = data.photoUrl;
+        userTeams[data.uid] = data.team.trim().toLowerCase();
+      }
+    });
+  }
+
+  function addDays(dateStr, days) {
+    const d = new Date(dateStr);
+    d.setDate(d.getDate() + days);
+    return d.toISOString().split("T")[0];
+  }
+
+  function formatDateAndTime(dateStr) {
+    const date = new Date(dateStr);
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${day}-${month}-${year} Time: ${hours}:${minutes} Hours`;
+  }
+
+  function formatBalance(amount) {
+    return (+amount.toFixed(2)).toString();
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      await loadTeamPhotos();
+      loadFixers(user);
+
+      const userRef = doc(db, "users", user.uid);
+      onSnapshot(userRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const userBalance = docSnap.data().balance || 0;
+          document.getElementById("mainBalance").textContent = formatBalance(userBalance);
         }
       });
+    } else {
+      window.location.href = "login.html";
     }
+  });
 
-    function addDays(dateStr, days) {
-      const d = new Date(dateStr);
-      d.setDate(d.getDate() + days);
-      return d.toISOString().split("T")[0];
-    }
+  function loadFixers(user) {
+    const fixersRef = collection(db, "fixers");
+    onSnapshot(query(fixersRef), (snapshot) => {
+      const fixersContainer = document.getElementById("fixers-list");
 
-    function formatDateAndTime(dateStr) {
-      const date = new Date(dateStr);
-      const day = date.getDate();
-      const month = date.toLocaleString('default', { month: 'long' });
-      const year = date.getFullYear();
-      const hours = date.getHours();
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      return `${day}-${month}-${year} Time: ${hours}:${minutes} Hours`;
-    }
-
-    function formatBalance(amount) {
-      return (+amount.toFixed(2)).toString();
-    }
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        await loadTeamPhotos();
-        loadFixers();
-
-        const userRef = doc(db, "users", user.uid);
-        onSnapshot(userRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const userBalance = docSnap.data().balance || 0;
-            document.getElementById("mainBalance").textContent = formatBalance(userBalance);
-          }
-        });
+      if (snapshot.empty) {
+        fixersContainer.innerHTML = `<p class="text-center text-gray-400">No fixers available.</p>`;
+        return;
       }
-    });
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        await loadTeamPhotos();  // Load user team information and photos
-        loadFixers(user);  // Load the fixers with user information
-      }
-    });
+      const fixers = [];
+      fixersDocs = {};
 
-    function loadFixers(user) {
-      const fixersRef = collection(db, "fixers");
-      onSnapshot(query(fixersRef), (snapshot) => {
-        const fixersContainer = document.getElementById("fixers-list");
+      snapshot.forEach(docSnap => {
+        fixers.push(docSnap.data());
+        const d = docSnap.data();
+        const key = `${d.team1}__${d.team2}__${d.date}`;
+        fixersDocs[key] = docSnap.ref;
+      });
 
-        if (snapshot.empty) {
-          fixersContainer.innerHTML = `<p class="text-center text-gray-400">No fixers available.</p>`;
-          return;
-        }
+      // Group fixers by groupName and then by matchday (0-based)
+      // Matchday is computed by difference in days from the earliest date in the group
+      const groups = {};
 
-        const fixers = [];
-        fixersDocs = {};
+      // Find earliest date per group
+      const groupEarliestDates = {};
+      fixers.forEach(fix => {
+        if (!groupEarliestDates[fix.groupName]) groupEarliestDates[fix.groupName] = fix.date;
+        else if (new Date(fix.date) < new Date(groupEarliestDates[fix.groupName])) groupEarliestDates[fix.groupName] = fix.date;
+      });
 
-        snapshot.forEach(docSnap => {
-          fixers.push(docSnap.data());
-          const d = docSnap.data();
-          const key = `${d.team1}__${d.team2}__${d.date}`;
-          fixersDocs[key] = docSnap.ref;
-        });
+      fixers.forEach(fix => {
+        if (!groups[fix.groupName]) groups[fix.groupName] = {};
+        const earliestDate = groupEarliestDates[fix.groupName];
+        const dayDiff = Math.floor((new Date(fix.date) - new Date(earliestDate)) / (1000 * 3600 * 24));
+        const matchday = dayDiff + 1; // Matchday-1 based
 
-        const fixersByDate = {};
-        fixers.forEach(fix => {
-          const key = fix.date;
-          if (!fixersByDate[key]) fixersByDate[key] = [];
-          fixersByDate[key].push(fix);
-        });
+        if (!groups[fix.groupName][matchday]) groups[fix.groupName][matchday] = [];
+        groups[fix.groupName][matchday].push(fix);
+      });
 
-        const sortedDates = Object.keys(fixersByDate).sort();
-        const baseDate = sortedDates[0];
-        let html = "";
+      // Sort group names alphabetically
+      const sortedGroupNames = Object.keys(groups).sort();
 
-        sortedDates.forEach((date, groupIndex) => {
-          const groupName = String.fromCharCode(65 + groupIndex);
-          html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-center text-lg font-semibold uppercase text-yellow-300 mb-2">Group ${groupName}</div>`;
+      let html = "";
 
-          const matches = fixersByDate[date].sort((a, b) => a.team1.localeCompare(b.team1));
+      sortedGroupNames.forEach(groupName => {
+        const matchdays = groups[groupName];
+        // Sort matchdays numerically
+        const sortedMatchdays = Object.keys(matchdays).map(Number).sort((a,b) => a - b);
 
-          matches.forEach((match, idx) => {
-            const matchDateAndTime = formatDateAndTime(addDays(baseDate, idx));  // Updated date & time format
+        sortedMatchdays.forEach(md => {
+          html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-center text-lg font-semibold uppercase text-yellow-300 mb-2">${groupName} ll Matchday-${md}</div>`;
+
+          // Sort matches by team1 name
+          const matches = matchdays[md].sort((a, b) => a.team1.localeCompare(b.team1));
+
+          matches.forEach(match => {
+            const key = `${match.team1}__${match.team2}__${match.date}`;
             const team1Img = teamPhotos[match.team1.trim().toLowerCase()] || "";
             const team2Img = teamPhotos[match.team2.trim().toLowerCase()] || "";
-
-            const key = `${match.team1}__${match.team2}__${match.date}`;
             const t1GoalVal = (match.team1Goal ?? "").toString();
             const t2GoalVal = (match.team2Goal ?? "").toString();
 
@@ -240,16 +253,14 @@
                   <div class="flex justify-center items-center">
                     Submit your matches results
                   </div>
-                  <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-16 h-6 rounded-xl">
+                  <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-16 h-6 rounded-xl cursor-pointer">
                     <img src="upload.png" alt="Image" class="w-16 h-10" />
                   </div>
                 </div>
 
                 <div style="background: #af1f42; top: 60px;" class="flex justify-between w-3/4 py-2 px-4 absolute left-1/8 rounded-t-xl uppercase text-sm font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-70">
-                  <div>${matchDateAndTime.split('Time:')[0]}</div>
-                  <div>
-                    Time 24 Hours
-                  </div>
+                  <div>${formatDateAndTime(match.date).split('Time:')[0]}</div>
+                  <div>Time 24 Hours</div>
                 </div>
 
                 <div style="background: #a81d3f; top: 10px;" class="rounded-lg shadow-lg w-full max-w-lg relative h-14 border-t border-l border-r border-gray-400 opacity-80">
@@ -285,82 +296,85 @@
             `;
           });
         });
+      });
 
-        fixersContainer.innerHTML = html;
+      fixersContainer.innerHTML = html;
 
-        document.querySelectorAll(".open-goal-modal-btn").forEach(btn => {
-          btn.addEventListener("click", (e) => {
-            const key = e.currentTarget.getAttribute("data-key");
-            const match = fixers.find(f => `${f.team1}__${f.team2}__${f.date}` === key);
+      // Add click event for goal modal open buttons
+      document.querySelectorAll(".open-goal-modal-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const key = e.currentTarget.getAttribute("data-key");
+          const match = fixers.find(f => `${f.team1}__${f.team2}__${f.date}` === key);
 
-            // Check if the user is part of either team in the match using playersform data
-            const userTeam = userTeams[user.uid]; // Get the user's team from playersform collection
-            if (userTeam !== match.team1.trim().toLowerCase() && userTeam !== match.team2.trim().toLowerCase()) {
-              Swal.fire({ icon: "warning", title: "You are not part of this match!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
-              return;
-            }
+          // Check if user is part of the match
+          const userTeam = userTeams[user.uid];
+          if (userTeam !== match.team1.trim().toLowerCase() && userTeam !== match.team2.trim().toLowerCase()) {
+            Swal.fire({ icon: "warning", title: "You are not part of this match!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
+            return;
+          }
 
-            // Check if one of the teams has already submitted a goal
-            if ((match.team1Goal !== null || match.team2Goal !== null)) {
-              Swal.fire({ icon: "warning", title: "Already Matches Result Updated!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
-              return;
-            }
+          // Check if goals already submitted
+          if (match.team1Goal !== null || match.team2Goal !== null) {
+            Swal.fire({ icon: "warning", title: "Already Matches Result Updated!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
+            return;
+          }
 
-            const goal1Val = (match.team1Goal ?? "").toString();
-            const goal2Val = (match.team2Goal ?? "").toString();
+          const goal1Val = (match.team1Goal ?? "").toString();
+          const goal2Val = (match.team2Goal ?? "").toString();
 
-            document.getElementById("goal-modal-content").innerHTML = `
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center justify-between gap-8 px-2">
-                  <div class="flex flex-col items-center gap-2">
-                    <span class="text-sm font-semibold">${match.team1}</span>
-                    <input type="number" value="${goal1Val}" id="goal1-modal-${key}" placeholder="Enter goal" class="border border-gray-600 rounded-sm outline-none text-white bg-black text-sm px-2 py-1 text-center w-28" />
-                  </div>
-                  <div class="flex flex-col items-center gap-2">
-                    <span class="text-sm font-semibold">${match.team2}</span>
-                    <input type="number" value="${goal2Val}" id="goal2-modal-${key}" placeholder="Enter goal" class="border border-gray-600 rounded-sm outline-none text-white bg-black text-sm px-2 py-1 text-center w-28" />
-                  </div>
+          document.getElementById("goal-modal-content").innerHTML = `
+            <div class="flex flex-col gap-4">
+              <div class="flex items-center justify-between gap-8 px-2">
+                <div class="flex flex-col items-center gap-2">
+                  <span class="text-sm font-semibold">${match.team1}</span>
+                  <input type="number" value="${goal1Val}" id="goal1-modal-${key}" placeholder="Enter goal" class="border border-gray-600 rounded-sm outline-none text-white bg-black text-sm px-2 py-1 text-center w-28" />
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                  <span class="text-sm font-semibold">${match.team2}</span>
+                  <input type="number" value="${goal2Val}" id="goal2-modal-${key}" placeholder="Enter goal" class="border border-gray-600 rounded-sm outline-none text-white bg-black text-sm px-2 py-1 text-center w-28" />
                 </div>
               </div>
-            `;
+            </div>
+          `;
 
-            document.getElementById("goal-modal").classList.remove("hidden");
+          document.getElementById("goal-modal").classList.remove("hidden");
 
-            document.getElementById("close-modal").addEventListener("click", () => {
-              document.getElementById("goal-modal").classList.add("hidden");
+          document.getElementById("close-modal").addEventListener("click", () => {
+            document.getElementById("goal-modal").classList.add("hidden");
+          });
+
+          document.getElementById("save-goals").addEventListener("click", async () => {
+            let goal1 = document.getElementById(`goal1-modal-${key}`).value;
+            let goal2 = document.getElementById(`goal2-modal-${key}`).value;
+
+            goal1 = goal1 === "" ? null : Number(goal1);
+            goal2 = goal2 === "" ? null : Number(goal2);
+
+            if ((goal1 !== null && (isNaN(goal1) || goal1 < 0)) || (goal2 !== null && (isNaN(goal2) || goal2 < 0))) {
+              Swal.fire({ icon: "error", title: "Invalid goal value!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
+              return;
+            }
+
+            const docRef = fixersDocs[key];
+            if (!docRef) {
+              Swal.fire({ icon: "error", title: "Document not found!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
+              return;
+            }
+
+            await updateDoc(docRef, {
+              team1Goal: goal1,
+              team2Goal: goal2,
             });
 
-            document.getElementById("save-goals").addEventListener("click", async () => {
-              let goal1 = document.getElementById(`goal1-modal-${key}`).value;
-              let goal2 = document.getElementById(`goal2-modal-${key}`).value;
+            Swal.fire({ icon: "success", title: "Goal updated!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
 
-              goal1 = goal1 === "" ? null : Number(goal1);
-              goal2 = goal2 === "" ? null : Number(goal2);
-
-              if ((goal1 !== null && (isNaN(goal1) || goal1 < 0)) || (goal2 !== null && (isNaN(goal2) || goal2 < 0))) {
-                Swal.fire({ icon: "error", title: "Invalid goal value!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
-                return;
-              }
-
-              const docRef = fixersDocs[key];
-              if (!docRef) {
-                Swal.fire({ icon: "error", title: "Document not found!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
-                return;
-              }
-
-              await updateDoc(docRef, {
-                team1Goal: goal1,
-                team2Goal: goal2,
-              });
-
-              Swal.fire({ icon: "success", title: "Goal updated!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
-
-              document.getElementById("goal-modal").classList.add("hidden");
-            });
+            document.getElementById("goal-modal").classList.add("hidden");
           });
         });
       });
-    }
-     </script>
+    });
+  }
+</script>
+
 </body>
 </html>
