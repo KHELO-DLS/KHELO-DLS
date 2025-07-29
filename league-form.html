@@ -110,8 +110,8 @@
   const joiningFeeDisplay = document.getElementById("joiningFee");
 
   async function loadSlotInfo() {
-    const limitDocRef = doc(db, "settings", "slot");
-    const docSnap = await getDoc(limitDocRef);
+    const slotDocRef = doc(db, "settings", "slot");
+    const docSnap = await getDoc(slotDocRef);
     if (docSnap.exists()) {
       const data = docSnap.data();
       slot = data?.slot ?? 0;
@@ -212,9 +212,9 @@
 
     try {
       await runTransaction(db, async (transaction) => {
-        const limitRef = doc(db, "settings", "limits");
-        const limitSnap = await transaction.get(limitRef);
-        const data = limitSnap.data();
+        const slotRef = doc(db, "settings", "slot");
+        const slotSnap = await transaction.get(slotRef);
+        const data = slotSnap.data();
 
         if (data.slotUsed >= data.slot) throw new Error("Slot full.");
 
@@ -225,7 +225,7 @@
         });
 
         // ✅ Update slotUsed and decrease slot
-        transaction.update(limitRef, {
+        transaction.update(slotRef, {
           slotUsed: data.slotUsed + 1,
           slot: data.slot - 1
         });
