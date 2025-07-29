@@ -143,6 +143,30 @@
     return (+amount.toFixed(2)).toString();
   }
 
+  function getRemainingTime(targetDate) {
+    const now = new Date().getTime();
+    const distance = new Date(targetDate).getTime() - now;
+    if (distance <= 0) return null;
+
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    return `${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  function createCountdownTimer(targetDate, code, container) {
+    const interval = setInterval(() => {
+      const remaining = getRemainingTime(targetDate);
+      if (remaining) {
+        container.innerHTML = `<span class="text-yellow-200">${remaining}</span>`;
+      } else {
+        clearInterval(interval);
+        container.innerHTML = `<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300">${code}</span>`;
+        container.setAttribute("data-code-available", code);
+      }
+    }, 1000);
+  }
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       await loadTeamPhotos();
@@ -217,9 +241,7 @@
             const t1GoalVal = (match.team1Goal ?? "").toString();
             const t2GoalVal = (match.team2Goal ?? "").toString();
 
-            const userTeam = userTeams[user.uid];
-            const isUserInMatch = userTeam === match.team1.trim().toLowerCase() || userTeam === match.team2.trim().toLowerCase();
-            const visibleCode = isUserInMatch ? match.code : "কোড নাই";
+            const countdownId = `match-countdown-${key}`;
 
             html += `
               <section class="mx-auto flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 250px;">
@@ -242,8 +264,10 @@
               </div>
 
               <div style="background: #af1f42; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80">
-                <div>match code:<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300 match-code">${visibleCode}</span></div>
-                <div class="flex justify-center items-center w-6 h-4 rounded-sm cursor-pointer copy-btn" data-code="${visibleCode}" style="background: #e6ce30;">
+                <div>match code:
+                  <span id="${countdownId}" class="ml-2 text-yellow-200">Loading...</span>
+                </div>
+                <div class="flex justify-center items-center w-6 h-4 rounded-sm cursor-pointer copy-btn" data-code-id="${countdownId}" style="background: #e6ce30;">
                   <i class="fa-solid fa-copy text-red-900 text-xs"></i>
                 </div>
               </div>
@@ -270,15 +294,43 @@
                     ${team2Img ? `<img style="border: 4px solid #f34871;" src="${team2Img}" class="w-14 h-14 rounded-full" alt="${match.team2}" />` : ""}
                   </div>
                 </div>
-              </div>
-            </section>`;
+              </section>`;
           });
         });
       });
 
       fixersContainer.innerHTML = html;
 
-      // Match submission handler
+      fixers.forEach(match => {
+        const key = `${match.team1}__${match.team2}__${match.date}`;
+        const countdownEl = document.getElementById(`match-countdown-${key}`);
+        const userTeam = userTeams[user.uid];
+        const isUserInMatch = userTeam === match.team1.trim().toLowerCase() || userTeam === match.team2.trim().toLowerCase();
+
+        if (countdownEl) {
+          if (isUserInMatch) {
+            createCountdownTimer(match.date, match.code, countdownEl);
+          } else {
+            countdownEl.innerHTML = "কোড নাই";
+          }
+        }
+      });
+
+      document.querySelectorAll(".copy-btn").forEach(copyBtn => {
+        copyBtn.addEventListener("click", () => {
+          const countdownId = copyBtn.getAttribute("data-code-id");
+          const codeEl = document.getElementById(countdownId);
+          const code = codeEl?.getAttribute("data-code-available");
+          if (code) {
+            navigator.clipboard.writeText(code).then(() => {
+              Swal.fire({ icon: "success", title: "Copied!", timer: 1500, toast: true, position: "top-end", showConfirmButton: false });
+            });
+          } else {
+            Swal.fire({ icon: "warning", title: "Code not available yet!", timer: 1500, toast: true, position: "top-end", showConfirmButton: false });
+          }
+        });
+      });
+
       document.querySelectorAll(".open-goal-modal-btn").forEach(btn => {
         btn.addEventListener("click", async (e) => {
           const key = e.currentTarget.getAttribute("data-key");
@@ -343,22 +395,9 @@
           });
         });
       });
-
-      // Copy icon click handler
-      document.querySelectorAll(".copy-btn").forEach(copyBtn => {
-        copyBtn.addEventListener("click", () => {
-          const code = copyBtn.getAttribute("data-code");
-          if (code && code !== "কোড নাই") {
-            navigator.clipboard.writeText(code).then(() => {
-              Swal.fire({ icon: "success", title: "Copied!", timer: 1500, toast: true, position: "top-end", showConfirmButton: false });
-            });
-          } else {
-            Swal.fire({ icon: "warning", title: "No code to copy!", timer: 1500, toast: true, position: "top-end", showConfirmButton: false });
-          }
-        });
-      });
     });
   }
 </script>
+
 </body>
 </html>
