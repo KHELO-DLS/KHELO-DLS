@@ -84,177 +84,183 @@
       </div>Profile
     </a>
   </nav>
+     <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, doc, getDoc, getDocs,
+    runTransaction, query, where, updateDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, doc, getDoc, getDocs,
-      runTransaction, query, where, updateDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const app = initializeApp({
+    apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
+    authDomain: "dls12364.firebaseapp.com",
+    projectId: "dls12364",
+    storageBucket: "dls12364.firebasestorage.app",
+    messagingSenderId: "431397971734",
+    appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+  });
 
-    const app = initializeApp({
-      apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
-      authDomain: "dls12364.firebaseapp.com",
-      projectId: "dls12364",
-      storageBucket: "dls12364.firebasestorage.app",
-      messagingSenderId: "431397971734",
-      appId: "1:431397971734:web:0cb1a8b53ee09157425237",
-    });
+  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+  let currentUser = null, slot = null, slotUsed = 0, joiningFee = null;
+  const mainBalance = document.getElementById("mainBalance");
+  const joiningSlot = document.getElementById("joiningSlot");
+  const joiningFeeDisplay = document.getElementById("joiningFee");
 
-    let currentUser = null, slot = null, slotUsed = 0, joiningFee = null;
-    const mainBalance = document.getElementById("mainBalance");
-    const joiningSlot = document.getElementById("joiningSlot");
-    const joiningFeeDisplay = document.getElementById("joiningFee");
-
-    async function loadSlotInfo() {
-      const slotDocRef = doc(db, "settings", "slot");
-      const docSnap = await getDoc(slotDocRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        slot = data?.slot ?? 0;
-        slotUsed = data?.slotUsed ?? 0;
-        joiningSlot.textContent = `Slot: ${slotUsed}/${slot}`;
-      }
-    }
-
-    async function loadJoiningFee() {
-      const feeDocRef = doc(db, "settings", "joiningFee");
-      const docSnap = await getDoc(feeDocRef);
-      joiningFee = docSnap.exists() ? (docSnap.data()?.fee || 0) : 0;
-      joiningFeeDisplay.textContent = `Joining Fee: ৳${joiningFee}`;
-    }
-
-    async function getUserInfo(uid) {
-      const docSnap = await getDoc(doc(db, "users", uid));
+  async function loadSlotInfo() {
+    const slotDocRef = doc(db, "settings", "slot");
+    const docSnap = await getDoc(slotDocRef);
+    if (docSnap.exists()) {
       const data = docSnap.data();
-      return {
-        username: data?.username ?? "",
-        photoUrl: data?.photoUrl ?? "",
-        balance: data?.balance ?? 0
-      };
+      slot = data?.slot ?? 0;
+      slotUsed = data?.slotUsed ?? 0;
+      joiningSlot.textContent = `Slot: ${slotUsed}/${slot}`;
     }
+  }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
-      currentUser = user;
-      await loadSlotInfo();
-      await loadJoiningFee();
-      const userData = await getUserInfo(user.uid);
-      mainBalance.innerText = userData.balance.toFixed(0);
+  async function loadJoiningFee() {
+    const feeDocRef = doc(db, "settings", "joiningFee");
+    const docSnap = await getDoc(feeDocRef);
+    joiningFee = docSnap.exists() ? (docSnap.data()?.fee || 0) : 0;
+    joiningFeeDisplay.textContent = `Joining Fee: ৳${joiningFee}`;
+  }
+
+  async function getUserInfo(uid) {
+    const docSnap = await getDoc(doc(db, "users", uid));
+    const data = docSnap.data();
+    return {
+      username: data?.username ?? "",
+      photoUrl: data?.photoUrl ?? "",
+      balance: data?.balance ?? 0
+    };
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "login.html";
+    currentUser = user;
+    await loadSlotInfo();
+    await loadJoiningFee();
+    const userData = await getUserInfo(user.uid);
+    mainBalance.innerText = userData.balance.toFixed(0);
+  });
+
+  const form = document.getElementById("registration-form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    Swal.fire({
+      title: 'Processing...',
+      text: 'Please wait...',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
     });
 
-    const form = document.getElementById("registration-form");
+    const team = form['team'].value.trim();
+    const dlsRating = form['dls-rating'].value.trim();
+    const age = form['age'].value.trim();
+    const yearsPlayed = form['years-played'].value.trim();
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      Swal.fire({
-        title: 'Processing...',
-        text: 'Please wait...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => Swal.showLoading()
+    if (!team || !dlsRating || !age || !yearsPlayed) {
+      Swal.close();
+      return Swal.fire({
+        icon: 'warning',
+        text: 'All fields are required.',
+        confirmButtonColor: '#F59E0B'
+      });
+    }
+
+    if (slotUsed >= slot) {
+      Swal.close();
+      return Swal.fire({
+        icon: 'error',
+        title: 'Slot Full',
+        text: 'All slots are already taken.',
+        confirmButtonColor: '#EF4444'
+      });
+    }
+
+    const snapshot = await getDocs(query(collection(db, "playersform"), where("uid", "==", currentUser.uid)));
+    if (!snapshot.empty) {
+      Swal.close();
+      return Swal.fire({
+        icon: 'error',
+        title: 'Already Registered',
+        text: 'You have already registered.',
+        confirmButtonColor: '#EF4444'
+      });
+    }
+
+    const teamSnapshot = await getDocs(query(collection(db, "playersform"), where("team", "==", team)));
+    if (!teamSnapshot.empty) {
+      Swal.close();
+      return Swal.fire({
+        icon: 'error',
+        title: 'Team Exists',
+        text: 'Team name already used.',
+        confirmButtonColor: '#EF4444'
+      });
+    }
+
+    const { username, photoUrl, balance } = await getUserInfo(currentUser.uid);
+    if (balance < joiningFee) {
+      Swal.close();
+      return Swal.fire({
+        icon: 'error',
+        title: 'Insufficient Balance',
+        text: `Current balance: ৳${balance.toFixed(0)}`,
+        confirmButtonColor: '#EF4444'
+      });
+    }
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const slotRef = doc(db, "settings", "slot");
+        const slotSnap = await transaction.get(slotRef);
+        const data = slotSnap.data();
+
+        if (data.slotUsed >= data.slot) throw new Error("Slot full.");
+
+        transaction.set(doc(collection(db, "playersform")), {
+          team, dlsRating, age, yearsPlayed,
+          uid: currentUser.uid, username, photoUrl,
+          createdAt: new Date()
+        });
+
+        transaction.update(slotRef, {
+          slotUsed: data.slotUsed + 1,
+          slot: data.slot - 1
+        });
+
+        transaction.update(doc(db, "users", currentUser.uid), {
+          balance: balance - joiningFee
+        });
+
+        slotUsed = data.slotUsed + 1;
+        slot = data.slot - 1;
+        joiningSlot.textContent = `Slot: ${slotUsed}/${slot}`;
       });
 
-      const team = form['team'].value.trim();
-      const dlsRating = form['dls-rating'].value.trim();
-      const age = form['age'].value.trim();
-      const yearsPlayed = form['years-played'].value.trim();
-
-      if (!team || !dlsRating || !age || !yearsPlayed) {
-        return Swal.fire({
-          icon: 'warning',
-          text: 'All fields are required.',
-          confirmButtonColor: '#F59E0B'
-        });
-      }
-
-      if (slotUsed >= slot) {
-        return Swal.fire({
-          icon: 'error',
-          title: 'Slot Full',
-          text: 'All slots are already taken.',
-          confirmButtonColor: '#EF4444'
-        });
-      }
-
-      const snapshot = await getDocs(query(collection(db, "playersform"), where("uid", "==", currentUser.uid)));
-      if (!snapshot.empty) {
-        return Swal.fire({
-          icon: 'error',
-          title: 'Already Registered',
-          text: 'You have already registered.',
-          confirmButtonColor: '#EF4444'
-        });
-      }
-
-      const teamSnapshot = await getDocs(query(collection(db, "playersform"), where("team", "==", team)));
-      if (!teamSnapshot.empty) {
-        return Swal.fire({
-          icon: 'error',
-          title: 'Team Exists',
-          text: 'Team name already used.',
-          confirmButtonColor: '#EF4444'
-        });
-      }
-
-      const { username, photoUrl, balance } = await getUserInfo(currentUser.uid);
-      if (balance < joiningFee) {
-        return Swal.fire({
-          icon: 'error',
-          title: 'Insufficient Balance',
-          text: `Current balance: ৳${balance.toFixed(0)}`,
-          confirmButtonColor: '#EF4444'
-        });
-      }
-
-      try {
-        await runTransaction(db, async (transaction) => {
-          const slotRef = doc(db, "settings", "slot");
-          const slotSnap = await transaction.get(slotRef);
-          const data = slotSnap.data();
-
-          if (data.slotUsed >= data.slot) throw new Error("Slot full.");
-
-          transaction.set(doc(collection(db, "playersform")), {
-            team, dlsRating, age, yearsPlayed,
-            uid: currentUser.uid, username, photoUrl,
-            createdAt: new Date()
-          });
-
-          transaction.update(slotRef, {
-            slotUsed: data.slotUsed + 1,
-            slot: data.slot - 1
-          });
-
-          transaction.update(doc(db, "users", currentUser.uid), {
-            balance: balance - joiningFee
-          });
-
-          slotUsed = data.slotUsed + 1;
-          slot = data.slot - 1;
-          joiningSlot.textContent = `Slot: ${slotUsed}/${slot}`;
-        });
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'You have successfully joined!',
-          confirmButtonColor: '#F59E0B'
-        });
-        form.reset();
-      } catch (err) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: err.message || 'Failed to join.',
-          confirmButtonColor: '#EF4444'
-        });
-      }
-    });
-  </script>
+      Swal.close();
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'You have successfully joined!',
+        confirmButtonColor: '#F59E0B'
+      });
+      form.reset();
+    } catch (err) {
+      Swal.close();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.message || 'Failed to join.',
+        confirmButtonColor: '#EF4444'
+      });
+    }
+  });
+</script>
 </body>
 </html>
