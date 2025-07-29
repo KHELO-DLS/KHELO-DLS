@@ -157,12 +157,17 @@
   function createCountdownTimer(targetDate, code, container) {
     const interval = setInterval(() => {
       const remaining = getRemainingTime(targetDate);
+      // copy button assumed next sibling element
+      const copyBtn = container?.nextElementSibling;
+
       if (remaining) {
         container.innerHTML = `<span class="text-yellow-200">${remaining}</span>`;
+        if (copyBtn) copyBtn.style.display = "none"; // hide copy icon while countdown active
       } else {
         clearInterval(interval);
         container.innerHTML = `<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300">${code}</span>`;
         container.setAttribute("data-code-available", code);
+        if (copyBtn) copyBtn.style.display = "inline-flex"; // show copy icon when code visible
       }
     }, 1000);
   }
@@ -312,6 +317,8 @@
             createCountdownTimer(match.date, match.code, countdownEl);
           } else {
             countdownEl.innerHTML = "কোড নাই";
+            // Hide copy icon when no code
+            if (countdownEl.nextElementSibling) countdownEl.nextElementSibling.style.display = "none";
           }
         }
       });
@@ -397,6 +404,6 @@
       });
     });
   }
-  </script>
+</script>
  </body>
 </html>
