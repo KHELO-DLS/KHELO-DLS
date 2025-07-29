@@ -42,7 +42,7 @@
         <h1 class="text-center text-2xl font-semibold text-yellow-400 mb-2">Joining Form</h1>
 
         <!-- Slot & Fee Display -->
-        <p id="currentLimitDisplay" class="text-center text-yellow-300 mb-2 font-medium">Loading...</p>
+        <p id="joiningSlot" class="text-center text-yellow-300 mb-2 font-medium">Loading...</p>
         <p id="joiningFee" class="text-center text-yellow-300 mb-4 font-medium">Loading...</p>
 
         <form class="space-y-6" id="registration-form">
@@ -106,7 +106,7 @@
 
   let currentUser = null, slot = null, slotUsed = 0, joiningFee = null;
   const mainBalance = document.getElementById("mainBalance");
-  const currentLimitDisplay = document.getElementById("currentLimitDisplay");
+  const joiningSlotDisplay = document.getElementById("joiningSlot");
   const joiningFeeDisplay = document.getElementById("joiningFee");
 
   async function loadSlotInfo() {
@@ -237,7 +237,7 @@
         // Update local variables
         slotUsed = data.slotUsed + 1;
         slot = data.slot - 1;
-        currentLimitDisplay.textContent = `Slot: ${slotUsed}/${slot}`;
+        joiningSlot.textContent = `Slot: ${slotUsed}/${slot}`;
       });
 
       Swal.fire({
