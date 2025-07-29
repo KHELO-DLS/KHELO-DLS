@@ -134,9 +134,11 @@
     const day = date.getDate();
     const month = date.toLocaleString('default', { month: 'long' });
     const year = date.getFullYear();
+
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${day}-${month}-${year} Time: ${hours}:${minutes} Hours`;
+
+    return `${day} ${month} ${year} Time: ${hours}:${minutes}`;
   }
 
   function formatBalance(amount) {
@@ -261,11 +263,11 @@
                 </div>
 
                 <div style="background: #af1f42; top: 36px;" class="flex justify-between w-3/4 py-1 px-4 absolute left-1/8 rounded-b-xl uppercase text-xs font-extrabold border-b border-l border-r border-gray-400 z-10 opacity-70">
-                  <div>${formatDateAndTime(match.date).split('Time:')[0]}</div>
+                  <div>${formatDateAndTime(match.date)}</div>
                   <div>Time 24 Hours</div>
                 </div>
 
-                <div style="background: #af1f42; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80" id="countdown-parent-${key}">
+                <div style="background: #af1d3f; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80" id="countdown-parent-${key}">
                   <div>match code:
                     <span id="${countdownId}" class="ml-2 text-yellow-200">Loading...</span>
                   </div>
