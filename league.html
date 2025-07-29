@@ -129,12 +129,6 @@
     });
   }
 
-  function addDays(dateStr, days) {
-    const d = new Date(dateStr);
-    d.setDate(d.getDate() + days);
-    return d.toISOString().split("T")[0];
-  }
-
   function formatDateAndTime(dateStr) {
     const date = new Date(dateStr);
     const day = date.getDate();
@@ -186,12 +180,9 @@
         fixersDocs[key] = docSnap.ref;
       });
 
-      // Group fixers by groupName and then by matchday (0-based)
-      // Matchday is computed by difference in days from the earliest date in the group
       const groups = {};
-
-      // Find earliest date per group
       const groupEarliestDates = {};
+
       fixers.forEach(fix => {
         if (!groupEarliestDates[fix.groupName]) groupEarliestDates[fix.groupName] = fix.date;
         else if (new Date(fix.date) < new Date(groupEarliestDates[fix.groupName])) groupEarliestDates[fix.groupName] = fix.date;
@@ -201,26 +192,23 @@
         if (!groups[fix.groupName]) groups[fix.groupName] = {};
         const earliestDate = groupEarliestDates[fix.groupName];
         const dayDiff = Math.floor((new Date(fix.date) - new Date(earliestDate)) / (1000 * 3600 * 24));
-        const matchday = dayDiff + 1; // Matchday-1 based
+        const matchday = dayDiff + 1;
 
         if (!groups[fix.groupName][matchday]) groups[fix.groupName][matchday] = [];
         groups[fix.groupName][matchday].push(fix);
       });
 
-      // Sort group names alphabetically
       const sortedGroupNames = Object.keys(groups).sort();
 
       let html = "";
 
       sortedGroupNames.forEach(groupName => {
         const matchdays = groups[groupName];
-        // Sort matchdays numerically
         const sortedMatchdays = Object.keys(matchdays).map(Number).sort((a,b) => a - b);
 
         sortedMatchdays.forEach(md => {
           html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-center text-lg font-semibold uppercase text-yellow-300 mb-2">${groupName} || Match-day-${md}</div>`;
 
-          // Sort matches by team1 name
           const matches = matchdays[md].sort((a, b) => a.team1.localeCompare(b.team1));
 
           matches.forEach(match => {
@@ -230,69 +218,60 @@
             const t1GoalVal = (match.team1Goal ?? "").toString();
             const t2GoalVal = (match.team2Goal ?? "").toString();
 
+            const userTeam = userTeams[user.uid];
+            const canSeeCode = userTeam === match.team1.trim().toLowerCase() || userTeam === match.team2.trim().toLowerCase();
+
             html += `
-              <section class="mx-auto  flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 250px;">
-      <div class="absolute inset-0 bg-black opacity-60"></div>
+              <section class="mx-auto flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 250px;">
+                <div class="absolute inset-0 bg-black opacity-60"></div>
 
-      <div style="background: #af1f42;" class="absolute top-0 left-1/8 w-full py-1 px-4 rounded-t-lg uppercase text-lg font-extrabold  z-10 opacity-70 bg-gray-800 text-center border-b border-gray-400">
-        DLSIAT TOURNAMENT SESSION-1
-      </div>
-      
-      <div style="background: #af1f42; top: 216px;" class="flex justify-between absolute top-0 left-1/8 w-full py-1 px-2 rounded-b-lg uppercase text-xs font-extrabold  z-10 opacity-70 text-center">
-        <div class="flex justify-center items-center">
-          Submit your matches results
-        </div>
-        <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-18 h-6 rounded-xl">
-          <img src="upload.png" alt="Image" class="w-18 h-10" />
-        </div>
-      </div>
+                <div class="absolute top-0 left-1/8 w-full py-1 px-4 rounded-t-lg uppercase text-lg font-extrabold z-10 opacity-70 bg-gray-800 text-center border-b border-gray-400">
+                  DLSIAT TOURNAMENT SESSION-1
+                </div>
 
-      <div style="background: #af1f42; top: 36px;" class="flex justify-between w-3/4 py-1 px-4 absolute left-1/8 rounded-b-xl uppercase text-xs font-extrabold border-b border-l border-r border-gray-400 z-10 opacity-70">
-        <div>${formatDateAndTime(match.date).split('Time:')[0]}</div>
-        <div>
-          Time 24 Hours
-        </div>
-      </div>
-      
-      <div style="background: #af1f42; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80">
-        <div>match code:<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300">${match.code}</span></div>
-        <div style="background: #e6ce30;" class="flex justify-center items-center w-6 h-4 rounded-sm">
-          <i class="fa-solid fa-copy text-red-900 text-xs"></i>
-        </div>
-      </div>
+                <div style="background: #af1f42; top: 216px;" class="flex justify-between absolute top-0 left-1/8 w-full py-1 px-2 rounded-b-lg uppercase text-xs font-extrabold z-10 opacity-70 text-center">
+                  <div class="flex justify-center items-center">
+                    Submit your matches results
+                  </div>
+                  <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-18 h-6 rounded-xl">
+                    <img src="upload.png" alt="Image" class="w-18 h-10" />
+                  </div>
+                </div>
 
-      <div style="background: #a81d3f; top: 15px;" class="rounded-lg shadow-lg w-full max-w-lg relative h-14 border-t border-l border-r border-gray-400 opacity-80">
-        <div class="flex justify-between p-2 uppercase mb-1">
-          <div class="text-left w-full">
-            <h2 class="text-xs font-semibold">${match.team1}</h2>
-          </div>
-          <div class="text-right w-full">
-            <h2 class="text-xs font-semibold">${match.team2}</h2>
-          </div>
-        </div>
+                <div style="background: #af1f42; top: 36px;" class="flex justify-between w-3/4 py-1 px-4 absolute left-1/8 rounded-b-xl uppercase text-xs font-extrabold border-b border-l border-r border-gray-400 z-10 opacity-70">
+                  <div>${formatDateAndTime(match.date).split('Time:')[0]}</div>
+                  <div>Time 24 Hours</div>
+                </div>
 
-        <div class="flex justify-center items-center space-x-6 bg-white py-3 px-2 rounded-b-lg h-10 border-b border-gray-400 opacity-80">
-          <div class="text-center">
-            <p class="text-4xl font-medium text-black">${t1GoalVal || "-"}</p>
-          </div>
-          <div class="text-center" style="position: relative; top: -16px; color: #7f152e;">
-            <i class="fas fa-futbol text-6xl bg-white rounded-full border border-gray-400"></i>
-          </div>
-          <div class="text-center">
-            <p class="text-4xl font-medium text-black">${t2GoalVal || "-"}</p>
-          </div>
-        </div>
+                ${canSeeCode ? `
+                  <div style="background: #af1f42; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80">
+                    <div>match code:<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300">${match.code}</span></div>
+                    <div style="background: #e6ce30;" class="flex justify-center items-center w-6 h-4 rounded-sm">
+                      <i class="fa-solid fa-copy text-red-900 text-xs"></i>
+                    </div>
+                  </div>
+                ` : ""}
 
-        <div style="position: relative; top: -50px; right: 10px;" class="flex justify-between">
-          <div class="text-center">
-            ${team1Img ? `<img style="border: 4px solid #f34871;" src="${team1Img}" class="w-14 h-14 rounded-full" alt="${match.team1}" />` : ""}
-          </div>
-          <div style="position: absolute; right: -19px;" class="text-center">
-            ${team2Img ? `<img style="border: 4px solid #f34871;" src="${team2Img}" class="w-14 h-14 rounded-full" alt="${match.team2}" />` : ""}
-          </div>
-        </div>
-      </div>
-    </section>
+                <div style="background: #a81d3f; top: 15px;" class="rounded-lg shadow-lg w-full max-w-lg relative h-14 border-t border-l border-r border-gray-400 opacity-80">
+                  <div class="flex justify-between p-2 uppercase mb-1">
+                    <div class="text-left w-full"><h2 class="text-xs font-semibold">${match.team1}</h2></div>
+                    <div class="text-right w-full"><h2 class="text-xs font-semibold">${match.team2}</h2></div>
+                  </div>
+
+                  <div class="flex justify-center items-center space-x-6 bg-white py-3 px-2 rounded-b-lg h-10 border-b border-gray-400 opacity-80">
+                    <div class="text-center"><p class="text-4xl font-medium text-black">${t1GoalVal || "-"}</p></div>
+                    <div class="text-center" style="position: relative; top: -16px; color: #7f152e;">
+                      <i class="fas fa-futbol text-6xl bg-white rounded-full border border-gray-400"></i>
+                    </div>
+                    <div class="text-center"><p class="text-4xl font-medium text-black">${t2GoalVal || "-"}</p></div>
+                  </div>
+
+                  <div style="position: relative; top: -50px; right: 10px;" class="flex justify-between">
+                    <div class="text-center">${team1Img ? `<img style="border: 4px solid #f34871;" src="${team1Img}" class="w-14 h-14 rounded-full" alt="${match.team1}" />` : ""}</div>
+                    <div style="position: absolute; right: -19px;" class="text-center">${team2Img ? `<img style="border: 4px solid #f34871;" src="${team2Img}" class="w-14 h-14 rounded-full" alt="${match.team2}" />` : ""}</div>
+                  </div>
+                </div>
+              </section>
             `;
           });
         });
@@ -300,20 +279,16 @@
 
       fixersContainer.innerHTML = html;
 
-      // Add click event for goal modal open buttons
       document.querySelectorAll(".open-goal-modal-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
           const key = e.currentTarget.getAttribute("data-key");
           const match = fixers.find(f => `${f.team1}__${f.team2}__${f.date}` === key);
-
-          // Check if user is part of the match
           const userTeam = userTeams[user.uid];
           if (userTeam !== match.team1.trim().toLowerCase() && userTeam !== match.team2.trim().toLowerCase()) {
             Swal.fire({ icon: "warning", title: "You are not part of this match!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
             return;
           }
 
-          // Check if goals already submitted
           if (match.team1Goal !== null || match.team2Goal !== null) {
             Swal.fire({ icon: "warning", title: "Already Matches Result Updated!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
             return;
@@ -338,7 +313,6 @@
           `;
 
           document.getElementById("goal-modal").classList.remove("hidden");
-
           document.getElementById("close-modal").addEventListener("click", () => {
             document.getElementById("goal-modal").classList.add("hidden");
           });
@@ -346,28 +320,22 @@
           document.getElementById("save-goals").addEventListener("click", async () => {
             let goal1 = document.getElementById(`goal1-modal-${key}`).value;
             let goal2 = document.getElementById(`goal2-modal-${key}`).value;
-
             goal1 = goal1 === "" ? null : Number(goal1);
             goal2 = goal2 === "" ? null : Number(goal2);
-
             if ((goal1 !== null && (isNaN(goal1) || goal1 < 0)) || (goal2 !== null && (isNaN(goal2) || goal2 < 0))) {
               Swal.fire({ icon: "error", title: "Invalid goal value!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
               return;
             }
-
             const docRef = fixersDocs[key];
             if (!docRef) {
               Swal.fire({ icon: "error", title: "Document not found!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
               return;
             }
-
             await updateDoc(docRef, {
               team1Goal: goal1,
               team2Goal: goal2,
             });
-
             Swal.fire({ icon: "success", title: "Goal updated!", timer: 2000, toast: true, position: "top-end", showConfirmButton: false });
-
             document.getElementById("goal-modal").classList.add("hidden");
           });
         });
@@ -375,5 +343,6 @@
     });
   }
 </script>
+
 </body>
 </html>
