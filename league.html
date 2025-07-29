@@ -157,10 +157,21 @@
   function createCountdownTimer(targetDate, code, container) {
     const interval = setInterval(() => {
       const remaining = getRemainingTime(targetDate);
+
+      // Find related code-text and code-info elements relative to container
+      // container is the countdown span, its grandparent div likely holds code-text and code-info
+      const parentSection = container.closest("section") || container.parentElement;
+      const codeTextDiv = parentSection.querySelector("#code-text");
+      const codeInfoDiv = parentSection.querySelector("#code-info");
+
       if (remaining) {
+        if (codeTextDiv) codeTextDiv.innerHTML = `<span class="text-yellow-200">কোড নাই</span>`;
+        if (codeInfoDiv) codeInfoDiv.style.display = "none";
         container.innerHTML = `<span class="text-yellow-200">${remaining}</span>`;
       } else {
         clearInterval(interval);
+        if (codeTextDiv) codeTextDiv.innerHTML = `<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300">${code}</span>`;
+        if (codeInfoDiv) codeInfoDiv.style.display = "flex"; // Show code-info div again
         container.innerHTML = `<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300">${code}</span>`;
         container.setAttribute("data-code-available", code);
       }
@@ -243,58 +254,64 @@
 
             const countdownId = `match-countdown-${key}`;
 
+            // Make sure ids are unique and consistent
             html += `
               <section class="mx-auto flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 250px;">
-              <div class="absolute inset-0 bg-black opacity-60"></div>
+                <div class="absolute inset-0 bg-black opacity-60"></div>
 
-              <div style="background: #af1f42;" class="absolute top-0 left-1/8 w-full py-1 px-4 rounded-t-lg uppercase text-lg font-extrabold z-10 opacity-70 bg-gray-800 text-center border-b border-gray-400">
-                DLSIAT TOURNAMENT SESSION-1
-              </div>
-
-              <div style="background: #af1f42; top: 216px;" class="flex justify-between absolute top-0 left-1/8 w-full py-1 px-2 rounded-b-lg uppercase text-xs font-extrabold z-10 opacity-70 text-center">
-                <div class="flex justify-center items-center">Submit your matches results</div>
-                <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-18 h-6 rounded-xl">
-                  <img src="upload.png" alt="Image" class="w-18 h-10" />
-                </div>
-              </div>
-
-              <div style="background: #af1f42; top: 36px;" class="flex justify-between w-3/4 py-1 px-4 absolute left-1/8 rounded-b-xl uppercase text-xs font-extrabold border-b border-l border-r border-gray-400 z-10 opacity-70">
-                <div>${formatDateAndTime(match.date).split('Time:')[0]}</div>
-                <div>Time 24 Hours</div>
-              </div>
-
-              <div style="background: #af1f42; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80">
-                <div>match code:
-                  <span id="${countdownId}" class="ml-2 text-yellow-200">Loading...</span>
-                </div>
-                <div class="flex justify-center items-center w-6 h-4 rounded-sm cursor-pointer copy-btn" data-code-id="${countdownId}" style="background: #e6ce30;">
-                  <i class="fa-solid fa-copy text-red-900 text-xs"></i>
-                </div>
-              </div>
-
-              <div style="background: #a81d3f; top: 15px;" class="rounded-lg shadow-lg w-full max-w-lg relative h-14 border-t border-l border-r border-gray-400 opacity-80">
-                <div class="flex justify-between p-2 uppercase mb-1">
-                  <div class="text-left w-full"><h2 class="text-xs font-semibold">${match.team1}</h2></div>
-                  <div class="text-right w-full"><h2 class="text-xs font-semibold">${match.team2}</h2></div>
+                <div style="background: #af1f42;" class="absolute top-0 left-1/8 w-full py-1 px-4 rounded-t-lg uppercase text-lg font-extrabold z-10 opacity-70 bg-gray-800 text-center border-b border-gray-400">
+                  DLSIAT TOURNAMENT SESSION-1
                 </div>
 
-                <div class="flex justify-center items-center space-x-6 bg-white py-3 px-2 rounded-b-lg h-10 border-b border-gray-400 opacity-80">
-                  <div class="text-center"><p class="text-4xl font-medium text-black">${t1GoalVal || "-"}</p></div>
-                  <div class="text-center" style="position: relative; top: -16px; color: #7f152e;">
-                    <i class="fas fa-futbol text-6xl bg-white rounded-full border border-gray-400"></i>
-                  </div>
-                  <div class="text-center"><p class="text-4xl font-medium text-black">${t2GoalVal || "-"}</p></div>
-                </div>
-
-                <div style="position: relative; top: -50px; right: 10px;" class="flex justify-between">
-                  <div class="text-center">
-                    ${team1Img ? `<img style="border: 4px solid #f34871;" src="${team1Img}" class="w-14 h-14 rounded-full" alt="${match.team1}" />` : ""}
-                  </div>
-                  <div style="position: absolute; right: -19px;" class="text-center">
-                    ${team2Img ? `<img style="border: 4px solid #f34871;" src="${team2Img}" class="w-14 h-14 rounded-full" alt="${match.team2}" />` : ""}
+                <div style="background: #af1f42; top: 216px;" class="flex justify-between absolute top-0 left-1/8 w-full py-1 px-2 rounded-b-lg uppercase text-xs font-extrabold z-10 opacity-70 text-center">
+                  <div class="flex justify-center items-center">Submit your matches results</div>
+                  <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-18 h-6 rounded-xl">
+                    <img src="upload.png" alt="Image" class="w-18 h-10" />
                   </div>
                 </div>
-              </section>`;
+
+                <div style="background: #af1f42; top: 36px;" class="flex justify-between w-3/4 py-1 px-4 absolute left-1/8 rounded-b-xl uppercase text-xs font-extrabold border-b border-l border-r border-gray-400 z-10 opacity-70">
+                  <div>${formatDateAndTime(match.date).split('Time:')[0]}</div>
+                  <div>Time 24 Hours</div>
+                </div>
+
+                <div style="background: #af1f42; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80">
+                  <div id="code-text"></div>
+                  <div id="code-info" style="display:none;">
+                    <div>match code:
+                      <span id="${countdownId}" class="ml-2 text-yellow-200">Loading...</span>
+                    </div>
+                    <div class="flex justify-center items-center w-6 h-4 rounded-sm cursor-pointer copy-btn" data-code-id="${countdownId}" style="background: #e6ce30;">
+                      <i class="fa-solid fa-copy text-red-900 text-xs"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="background: #a81d3f; top: 15px;" class="rounded-lg shadow-lg w-full max-w-lg relative h-14 border-t border-l border-r border-gray-400 opacity-80">
+                  <div class="flex justify-between p-2 uppercase mb-1">
+                    <div class="text-left w-full"><h2 class="text-xs font-semibold">${match.team1}</h2></div>
+                    <div class="text-right w-full"><h2 class="text-xs font-semibold">${match.team2}</h2></div>
+                  </div>
+
+                  <div class="flex justify-center items-center space-x-6 bg-white py-3 px-2 rounded-b-lg h-10 border-b border-gray-400 opacity-80">
+                    <div class="text-center"><p class="text-4xl font-medium text-black">${t1GoalVal || "-"}</p></div>
+                    <div class="text-center" style="position: relative; top: -16px; color: #7f152e;">
+                      <i class="fas fa-futbol text-6xl bg-white rounded-full border border-gray-400"></i>
+                    </div>
+                    <div class="text-center"><p class="text-4xl font-medium text-black">${t2GoalVal || "-"}</p></div>
+                  </div>
+
+                  <div style="position: relative; top: -50px; right: 10px;" class="flex justify-between">
+                    <div class="text-center">
+                      ${team1Img ? `<img style="border: 4px solid #f34871;" src="${team1Img}" class="w-14 h-14 rounded-full" alt="${match.team1}" />` : ""}
+                    </div>
+                    <div style="position: absolute; right: -19px;" class="text-center">
+                      ${team2Img ? `<img style="border: 4px solid #f34871;" src="${team2Img}" class="w-14 h-14 rounded-full" alt="${match.team2}" />` : ""}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            `;
           });
         });
       });
@@ -311,7 +328,13 @@
           if (isUserInMatch) {
             createCountdownTimer(match.date, match.code, countdownEl);
           } else {
-            countdownEl.innerHTML = "কোড নাই";
+            // If user not in match, show "কোড নাই" in code-text and hide code-info
+            const parentSection = countdownEl.closest("section") || countdownEl.parentElement;
+            const codeTextDiv = parentSection.querySelector("#code-text");
+            const codeInfoDiv = parentSection.querySelector("#code-info");
+            if (codeTextDiv) codeTextDiv.innerHTML = `<span class="text-yellow-200">কোড নাই</span>`;
+            if (codeInfoDiv) codeInfoDiv.style.display = "none";
+            countdownEl.innerHTML = "";
           }
         }
       });
@@ -397,6 +420,6 @@
       });
     });
   }
-  </script>
+</script>
  </body>
 </html>
