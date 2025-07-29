@@ -31,7 +31,7 @@
               <input type="checkbox" id="selectAllTeams" class="accent-green-600" />
               Select All Teams
             </label>
-            <input type="date" id="fixerDate" class="border border-gray-300 rounded p-2 text-sm h-9" />
+            <input type="datetime-local" id="fixerDate" class="border border-gray-300 rounded p-2 text-sm h-9" />
             <select id="groupCount" class="border border-gray-300 rounded p-2 text-sm h-9">
               <option value="0" disabled selected>Select Group</option>
               <option value="1">1 Group</option>
@@ -107,13 +107,19 @@
       document.getElementById("teamSelector").innerHTML = teamList.map(t => `<option value="${t}">${t}</option>`).join("");
     }
 
-    function addDays(dateStr, days) {
-      const d = new Date(dateStr);
-      d.setDate(d.getDate() + days);
-      return d.toISOString().split("T")[0];
+    function addDays(dateTimeStr, days) {
+      const date = new Date(dateTimeStr);
+      date.setDate(date.getDate() + days);
+      return date.toISOString();
     }
 
-    // New function to generate a 6-digit alphanumeric code (letters+numbers)
+    function convertToBDTimeISOString(inputDateTime) {
+      const date = new Date(inputDateTime);
+      // Convert to BD time (UTC+6)
+      date.setMinutes(date.getMinutes() + (6 * 60));
+      return date.toISOString();
+    }
+
     function generateCode() {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       let code = "";
@@ -138,9 +144,10 @@
 
         const groupMap = {};
         fixers.forEach(match => {
+          const dateOnly = match.date.split("T")[0];
           if (!groupMap[match.groupName]) groupMap[match.groupName] = {};
-          if (!groupMap[match.groupName][match.date]) groupMap[match.groupName][match.date] = [];
-          groupMap[match.groupName][match.date].push(match);
+          if (!groupMap[match.groupName][dateOnly]) groupMap[match.groupName][dateOnly] = [];
+          groupMap[match.groupName][dateOnly].push(match);
         });
 
         let html = "";
@@ -171,10 +178,10 @@
 
     document.getElementById("addFixerBtn").addEventListener("click", async () => {
       const selectedTeams = Array.from(document.getElementById("teamSelector").selectedOptions).map(opt => opt.value);
-      const baseDate = document.getElementById("fixerDate").value;
+      const baseDateRaw = document.getElementById("fixerDate").value;
       const groupCount = parseInt(document.getElementById("groupCount").value);
 
-      if (selectedTeams.length < 2 || !baseDate || isNaN(groupCount)) {
+      if (selectedTeams.length < 2 || !baseDateRaw || isNaN(groupCount)) {
         Swal.fire({ icon: 'warning', title: 'Please fill out all fields.', position: 'top-end', toast: true, timer: 3000, showConfirmButton: false });
         return;
       }
@@ -184,7 +191,8 @@
         return;
       }
 
-      const commonMatchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
+      const baseDateBD = convertToBDTimeISOString(baseDateRaw);
+      const matchDates = [0, 1, 2].map(offset => addDays(baseDateBD, offset));
       let added = 0;
 
       for (let g = 0; g < groupCount; g++) {
@@ -200,8 +208,8 @@
         ];
 
         for (const [[i, j], matchday] of matchups) {
-          const date = commonMatchDates[matchday];
-          const code = generateCode();  // Generate code for each match
+          const date = matchDates[matchday];
+          const code = generateCode();
           await addDoc(collection(db, "fixers"), {
             team1: groupTeams[i],
             team2: groupTeams[j],
@@ -212,7 +220,7 @@
             groupName,
             winner: "None",
             pointsUpdated: false,
-            code  // Add code here
+            code
           });
           added++;
         }
