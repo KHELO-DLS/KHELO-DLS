@@ -219,7 +219,7 @@
 
             const userTeam = userTeams[user.uid];
             const isUserInMatch = userTeam === match.team1.trim().toLowerCase() || userTeam === match.team2.trim().toLowerCase();
-            const visibleCode = isUserInMatch ? match.code : "Not Yet";
+            const visibleCode = isUserInMatch ? match.code : "কোড নাই";
 
             html += `
               <section class="mx-auto flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 250px;">
