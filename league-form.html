@@ -1,26 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Joining Form</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body class="bg-black text-white">
 
-  <!-- Header Section -->
-  <header class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between header-glow rounded-b-xl">
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between rounded-b-xl">
     <div class="flex items-center gap-2">
       <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-8 h-8 flex items-center justify-center font-bold rounded-full shadow" style="font-family: 'Audiowide', cursive;">KD</div>
-      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Khelo Dls</h2>
+      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Khelo DLS</h2>
     </div>
-    <div style="height: 30px;" class="flex items-center gap-1 bg-black px-1 py-1 rounded-full shadow-lg border border-gray-600 ml-8">
+    <div class="flex items-center gap-1 bg-black px-1 py-1 rounded-full shadow-lg border border-gray-600 ml-8">
       <div class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center">
         <i class="fa-solid fa-bangladeshi-taka-sign text-white text-sm"></i>
       </div>
@@ -33,66 +30,58 @@
 
   <!-- Main Content -->
   <main class="w-full max-w-md mt-3 px-4 mx-auto mb-20">
-      <!-- Content -->
-      <div class="p-2">
-        <!-- Rules -->
-        <div class="mb-5 flex items-center gap-3 bg-yellow-900 bg-opacity-20 rounded-lg p-1 border border-yellow-500 shadow-inner glow-yellow">
-          <i class="fa-solid fa-exclamation-triangle text-yellow-400 text-2xl"></i>
-          <p class="text-yellow-300 font-semibold text-sm" style="font-family: 'Audiowide', cursive;">
-            টুর্নামেন্ট ফরম পূরণ করার আগে অবশ্যই সব কিছু বুঝে শুনে তারপর ফরম পূরণ করবেন এবং নতুন একাউন্ট করার সময় যে ১০ টাকা বোনাস পেয়েছেন ওই ১০ টাকা টুর্নামেন্টে জয়েন ব্যালেন্স থেকে কেটে নিবে। 
-           🎯 যদি কোন কিছু বুঝতে সমস্যা হয় তাহলে এডমিনকে  জানাবেন।
-          </p>
-        </div>
-    
-    <div class="bg-gray-900 p-3 rounded-lg shadow-xl border border-gray-700">
-      <h1 class="text-center text-2xl font-semibold text-yellow-400 mb-2">Joining Form</h1>
+    <div class="p-2">
+      <div class="mb-5 flex items-center gap-3 bg-yellow-900 bg-opacity-20 rounded-lg p-1 border border-yellow-500 shadow-inner">
+        <i class="fa-solid fa-exclamation-triangle text-yellow-400 text-2xl"></i>
+        <p class="text-yellow-300 font-semibold text-sm" style="font-family: 'Audiowide', cursive;">
+          টুর্নামেন্ট ফরম পূরণের আগে অবশ্যই সব কিছু বুঝে শুনে ফরম পূরণ করবেন। নতুন একাউন্টের ১০ টাকা বোনাস থেকে ফি কেটে নেওয়া হবে। সমস্যা হলে এডমিনকে জানান।
+        </p>
+      </div>
 
-      <!-- Current Limit Display -->
-      <p id="currentLimitDisplay" class="text-center text-yellow-300 mb-2 font-medium">Loading...</p>
-      <!-- Joining Fee Display -->
-      <p id="joiningFee" class="text-center text-yellow-300 mb-4 font-medium">Loading...</p>
+      <div class="bg-gray-900 p-3 rounded-lg shadow-xl border border-gray-700">
+        <h1 class="text-center text-2xl font-semibold text-yellow-400 mb-2">Joining Form</h1>
 
-      <form class="space-y-6" id="registration-form">
-        <input type="text" id="team" name="team" required placeholder="Enter your DLS team name" class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black text-sm">
-        <input type="number" step="any" id="dls-rating" name="dls-rating" required placeholder="Enter your DLS rating" class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black text-sm">
-        <input type="number" id="age" name="age" required placeholder="Enter your age" class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black text-sm">
-        <input type="number" id="years-played" name="years-played" required placeholder="How many years have you played DLS" class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black text-sm">
-        <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-md transition duration-300">Join Now</button>
-      </form>
+        <!-- Slot & Fee Display -->
+        <p id="currentLimitDisplay" class="text-center text-yellow-300 mb-2 font-medium">Loading...</p>
+        <p id="joiningFee" class="text-center text-yellow-300 mb-4 font-medium">Loading...</p>
+
+        <form class="space-y-6" id="registration-form">
+          <input type="text" id="team" name="team" required placeholder="Enter your DLS team name" class="w-full px-4 py-2 border border-gray-600 rounded-md bg-black text-white text-sm">
+          <input type="number" step="any" id="dls-rating" name="dls-rating" required placeholder="Enter your DLS rating" class="w-full px-4 py-2 border border-gray-600 rounded-md bg-black text-white text-sm">
+          <input type="number" id="age" name="age" required placeholder="Enter your age" class="w-full px-4 py-2 border border-gray-600 rounded-md bg-black text-white text-sm">
+          <input type="number" id="years-played" name="years-played" required placeholder="How many years have you played DLS" class="w-full px-4 py-2 border border-gray-600 rounded-md bg-black text-white text-sm">
+          <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 px-4 rounded-md transition duration-300">Join Now</button>
+        </form>
+      </div>
     </div>
   </main>
 
   <!-- Bottom Nav -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-40">
-    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-40">
+    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Home
+      </div>Home
     </a>
-    <a href="match.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+    <a href="match.html" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-gamepad text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Matches
+      </div>Matches
     </a>
-    <a href="league.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+    <a href="league.html" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-trophy text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      League
+      </div>League
     </a>
-    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-ranking-star text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Ranking
+      </div>Ranking
     </a>
-    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
-      </div>
-      Profile
+      </div>Profile
     </a>
   </nav>
 
@@ -102,284 +91,117 @@
     import { getFirestore, collection, addDoc, doc, getDoc, getDocs, runTransaction, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    const firebaseConfig = {
+    const app = initializeApp({
       apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
       authDomain: "dls12364.firebaseapp.com",
       projectId: "dls12364",
       storageBucket: "dls12364.firebasestorage.app",
       messagingSenderId: "431397971734",
       appId: "1:431397971734:web:0cb1a8b53ee09157425237",
-      measurementId: "G-B75EB4GGRV"
-    };
+    });
 
-    const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    let currentUser = null;
-    let currentLimit = null;
-    let joiningFee = null;
-
-    const currentLimitDisplay = document.getElementById('currentLimitDisplay');
-    const joiningFeeDisplay = document.getElementById('joiningFee');
+    let currentUser = null, currentLimit = null, joiningFee = null, slot = null, slotUsed = 0;
     const mainBalance = document.getElementById("mainBalance");
+    const currentLimitDisplay = document.getElementById("currentLimitDisplay");
+    const joiningFeeDisplay = document.getElementById("joiningFee");
 
-    async function loadPlayerLimit() {
+    async function loadSlotInfo() {
       const limitDocRef = doc(db, "settings", "limits");
-      try {
-        const docSnap = await getDoc(limitDocRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          currentLimit = data?.maxPlayers ?? null;
-          currentLimitDisplay.textContent = currentLimit !== null ? `Joining Slot: ${currentLimit}` : "Current Join Limit: Not Set";
-        } else {
-          currentLimit = null;
-          currentLimitDisplay.textContent = "Joining Slot: Not Set";
-        }
-      } catch (error) {
-        console.error("Error fetching player limit:", error);
-        currentLimitDisplay.textContent = "Problem loading limit";
+      const docSnap = await getDoc(limitDocRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        slot = data?.slot ?? 0;
+        slotUsed = data?.slotUsed ?? 0;
+        currentLimit = data?.maxPlayers ?? 0;
+        currentLimitDisplay.textContent = `Slot: ${slotUsed}/${slot}`;
       }
     }
 
     async function loadJoiningFee() {
       const feeDocRef = doc(db, "settings", "joiningFee");
-      try {
-        const docSnap = await getDoc(feeDocRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          joiningFee = data?.fee ?? 0;
-          joiningFeeDisplay.textContent = `Joining Fee: ৳${joiningFee}`;
-        } else {
-          joiningFee = 0;
-          joiningFeeDisplay.textContent = "Joining Fee: Not Set";
-        }
-      } catch (error) {
-        console.error("Error fetching joining fee:", error);
-        joiningFeeDisplay.textContent = "Problem loading fee";
-      }
-    }
-
-    async function countRegisteredPlayers() {
-      try {
-        const playersCol = collection(db, "playersform");
-        const snapshot = await getDocs(playersCol);
-        return snapshot.size;
-      } catch (error) {
-        console.error("Error counting players:", error);
-        return 0;
-      }
-    }
-
-    async function checkUserRegistration(uid) {
-      const playersCol = collection(db, "playersform");
-      const q = query(playersCol, where("uid", "==", uid));
-      const snapshot = await getDocs(q);
-      return snapshot.size > 0;
-    }
-
-    async function checkTeamNameExistence(teamName) {
-      const playersCol = collection(db, "playersform");
-      const q = query(playersCol, where("team", "==", teamName));
-      const snapshot = await getDocs(q);
-      return snapshot.size > 0;
+      const docSnap = await getDoc(feeDocRef);
+      joiningFee = docSnap.exists() ? (docSnap.data()?.fee || 0) : 0;
+      joiningFeeDisplay.textContent = `Joining Fee: ৳${joiningFee}`;
     }
 
     async function getUserInfo(uid) {
-      const userDocRef = doc(db, "users", uid);
-      const docSnap = await getDoc(userDocRef);
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        return {
-          username: userData.username,
-          photoUrl: userData.photoUrl,
-          balance: userData.balance || 0
-        };
-      }
-      return { username: "", photoUrl: "", balance: 0 };
+      const docSnap = await getDoc(doc(db, "users", uid));
+      const data = docSnap.data();
+      return {
+        username: data?.username ?? "",
+        photoUrl: data?.photoUrl ?? "",
+        balance: data?.balance ?? 0
+      };
     }
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        currentUser = user;
-        await loadPlayerLimit();
-        await loadJoiningFee();
-
-        // Fetch user balance
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-        const balance = userSnap.data()?.balance || 0;
-        mainBalance.innerText = `${balance.toFixed(0)}`; // Display without decimals
-      }
+      if (!user) return window.location.href = "login.html";
+      currentUser = user;
+      await loadSlotInfo();
+      await loadJoiningFee();
+      const userData = await getUserInfo(user.uid);
+      mainBalance.innerText = userData.balance.toFixed(0);
     });
 
-    const form = document.getElementById('registration-form');
-    form.addEventListener('submit', async (e) => {
+    document.getElementById("registration-form").addEventListener("submit", async (e) => {
       e.preventDefault();
+      Swal.fire({ title: 'Processing...', text: 'Please wait...', allowOutsideClick: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
 
-      // Show processing notification
-      Swal.fire({
-        title: 'Processing...',
-        text: 'Please wait while we process your registration.',
-        icon: 'info',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
-
-      // Check if all required fields are filled
       const team = form['team'].value.trim();
       const dlsRating = form['dls-rating'].value.trim();
       const age = form['age'].value.trim();
       const yearsPlayed = form['years-played'].value.trim();
 
-      if (!team || !dlsRating || !age || !yearsPlayed) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Incomplete Form',
-          text: 'Please fill in all required fields.',
-          confirmButtonColor: '#F59E0B'
-        });
-        return;
-      }
+      if (!team || !dlsRating || !age || !yearsPlayed) return Swal.fire({ icon: 'warning', text: 'All fields are required.', confirmButtonColor: '#F59E0B' });
 
-      if (currentLimit === null || currentLimit <= 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Registration limit is 0 or not set, you cannot register at this time.',
-          confirmButtonColor: '#EF4444'
-        });
-        return;
-      }
+      if (slotUsed >= slot) return Swal.fire({ icon: 'error', title: 'Slot Full', text: 'All slots are already taken.', confirmButtonColor: '#EF4444' });
 
-      const registeredCount = await countRegisteredPlayers();
+      const snapshot = await getDocs(query(collection(db, "playersform"), where("uid", "==", currentUser.uid)));
+      if (!snapshot.empty) return Swal.fire({ icon: 'error', title: 'Already Registered', text: 'You have already registered.', confirmButtonColor: '#EF4444' });
 
-      if (registeredCount >= currentLimit) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Limit Reached',
-          text: `Sorry, the maximum player registration limit (${currentLimit}) has been reached.`,
-          confirmButtonColor: '#F59E0B'
-        });
-        return;
-      }
+      const teamSnapshot = await getDocs(query(collection(db, "playersform"), where("team", "==", team)));
+      if (!teamSnapshot.empty) return Swal.fire({ icon: 'error', title: 'Team Exists', text: 'Team name already used.', confirmButtonColor: '#EF4444' });
 
-      const isAlreadyRegistered = await checkUserRegistration(currentUser.uid);
-      if (isAlreadyRegistered) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Already Registered',
-          text: 'You have already registered.',
-          confirmButtonColor: '#EF4444'
-        });
-        return;
-      }
-
-      // Check if team name already exists
-      const isTeamNameTaken = await checkTeamNameExistence(team);
-      if (isTeamNameTaken) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Team Name Taken',
-          text: 'This team name is already registered. Please choose a different name.',
-          confirmButtonColor: '#EF4444'
-        });
-        return;
-      }
-
-      // Get user info
       const { username, photoUrl, balance } = await getUserInfo(currentUser.uid);
-
-      // Check if user has enough balance
-      if (balance < joiningFee) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Insufficient Balance',
-          text: `You do not have enough balance to join. Your current balance is ৳${balance.toFixed(0)}`,
-          confirmButtonColor: '#EF4444'
-        });
-        return;
-      }
+      if (balance < joiningFee) return Swal.fire({ icon: 'error', title: 'Insufficient Balance', text: `Current balance: ৳${balance.toFixed(0)}`, confirmButtonColor: '#EF4444' });
 
       try {
-        // Run transaction to add player and decrement limit atomically
         await runTransaction(db, async (transaction) => {
-          const limitDocRef = doc(db, "settings", "limits");
-          const limitDoc = await transaction.get(limitDocRef);
+          const limitRef = doc(db, "settings", "limits");
+          const limitSnap = await transaction.get(limitRef);
+          const data = limitSnap.data();
+          if (data.slotUsed >= data.slot) throw new Error("Slot full.");
 
-          if (!limitDoc.exists()) {
-            throw "Limit document does not exist!";
-          }
-
-          const limitData = limitDoc.data();
-          const maxPlayers = limitData.maxPlayers ?? 0;
-
-          if (maxPlayers <= 0) {
-            throw "Player limit exceeded!";
-          }
-
-          // Add new player doc
-          const playersCol = collection(db, "playersform");
-          const newPlayerRef = doc(playersCol); // create new doc ref
-          transaction.set(newPlayerRef, {
-            team,
-            dlsRating,
-            age,
-            yearsPlayed,
-            uid: currentUser?.uid || null,
-            username,
-            photoUrl,
+          transaction.set(doc(collection(db, "playersform")), {
+            team, dlsRating, age, yearsPlayed,
+            uid: currentUser.uid, username, photoUrl,
             createdAt: new Date()
           });
 
-          // Decrement maxPlayers by 1
-          transaction.update(limitDocRef, {
-            maxPlayers: maxPlayers - 1
+          transaction.update(limitRef, {
+            maxPlayers: data.maxPlayers - 1,
+            slotUsed: data.slotUsed + 1
           });
 
-          // Deduct joining fee from user balance
           transaction.update(doc(db, "users", currentUser.uid), {
             balance: balance - joiningFee
           });
 
-          // Update local currentLimit to reflect new value
-          currentLimit = maxPlayers - 1;
-          currentLimitDisplay.textContent = `Current Player Limit: ${currentLimit}`;
+          currentLimit = data.maxPlayers - 1;
+          slotUsed = data.slotUsed + 1;
+          currentLimitDisplay.textContent = `Slot: ${slotUsed}/${slot}`;
         });
 
-        Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'Your registration has been completed!',
-          confirmButtonColor: '#F59E0B'
-        });
+        Swal.fire({ icon: 'success', title: 'Success', text: 'You have successfully joined!', confirmButtonColor: '#F59E0B' });
         form.reset();
-      } catch (error) {
-        let msg = "";
-        if (typeof error === "string") {
-          msg = error;
-        } else if (error instanceof Error) {
-          msg = error.message;
-        } else {
-          msg = "There was an issue with registration. Please try again.";
-        }
-
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: msg,
-          confirmButtonColor: '#EF4444'
-        });
-        console.error("Transaction error:", error);
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Error', text: err.message || 'Failed to join.', confirmButtonColor: '#EF4444' });
       }
     });
   </script>
 
 </body>
-
 </html>
