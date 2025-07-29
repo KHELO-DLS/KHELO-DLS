@@ -31,7 +31,7 @@
               <input type="checkbox" id="selectAllTeams" class="accent-green-600" />
               Select All Teams
             </label>
-            <input type="date" id="fixerDate" class="border border-gray-300 rounded p-2 text-sm h-9" />
+            <input type="datetime-local" id="fixerDate" class="border border-gray-300 rounded p-2 text-sm h-9" />
             <select id="groupCount" class="border border-gray-300 rounded p-2 text-sm h-9">
               <option value="0" disabled selected>Select Group</option>
               <option value="1">1 Group</option>
@@ -107,13 +107,23 @@
       document.getElementById("teamSelector").innerHTML = teamList.map(t => `<option value="${t}">${t}</option>`).join("");
     }
 
-    function addDays(dateStr, days) {
-      const d = new Date(dateStr);
-      d.setDate(d.getDate() + days);
-      return d.toISOString().split("T")[0];
+    // ⏰ Add days to date string and return Bangladesh time in "YYYY-MM-DDTHH:MM"
+    function addDays(localDateTimeStr, days) {
+      const date = new Date(localDateTimeStr);
+      date.setMinutes(date.getMinutes() + (6 * 60)); // convert to BD time
+      date.setDate(date.getDate() + days);
+      return formatLocalDate(date);
     }
 
-    // New function to generate a 6-digit alphanumeric code (letters+numbers)
+    function formatLocalDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hour = String(date.getHours()).padStart(2, '0');
+      const minute = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hour}:${minute}`;
+    }
+
     function generateCode() {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       let code = "";
@@ -184,7 +194,7 @@
         return;
       }
 
-      const commonMatchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
+      const matchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
       let added = 0;
 
       for (let g = 0; g < groupCount; g++) {
@@ -200,8 +210,8 @@
         ];
 
         for (const [[i, j], matchday] of matchups) {
-          const date = commonMatchDates[matchday];
-          const code = generateCode();  // Generate code for each match
+          const date = matchDates[matchday];
+          const code = generateCode();
           await addDoc(collection(db, "fixers"), {
             team1: groupTeams[i],
             team2: groupTeams[j],
@@ -212,7 +222,7 @@
             groupName,
             winner: "None",
             pointsUpdated: false,
-            code  // Add code here
+            code
           });
           added++;
         }
