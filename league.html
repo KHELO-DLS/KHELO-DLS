@@ -225,11 +225,11 @@
               <section class="mx-auto flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 250px;">
               <div class="absolute inset-0 bg-black opacity-60"></div>
 
-              <div style="background: #af1f42;" class="absolute top-0 left-1/8 w-full py-1 px-4 rounded-t-lg uppercase text-lg font-extrabold  z-10 opacity-70 bg-gray-800 text-center border-b border-gray-400">
+              <div style="background: #af1f42;" class="absolute top-0 left-1/8 w-full py-1 px-4 rounded-t-lg uppercase text-lg font-extrabold z-10 opacity-70 bg-gray-800 text-center border-b border-gray-400">
                 DLSIAT TOURNAMENT SESSION-1
               </div>
 
-              <div style="background: #af1f42; top: 216px;" class="flex justify-between absolute top-0 left-1/8 w-full py-1 px-2 rounded-b-lg uppercase text-xs font-extrabold  z-10 opacity-70 text-center">
+              <div style="background: #af1f42; top: 216px;" class="flex justify-between absolute top-0 left-1/8 w-full py-1 px-2 rounded-b-lg uppercase text-xs font-extrabold z-10 opacity-70 text-center">
                 <div class="flex justify-center items-center">Submit your matches results</div>
                 <div data-key="${key}" class="open-goal-modal-btn bg-gray-100 flex justify-center items-center w-18 h-6 rounded-xl">
                   <img src="upload.png" alt="Image" class="w-18 h-10" />
@@ -242,8 +242,8 @@
               </div>
 
               <div style="background: #af1f42; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80">
-                <div>match code:<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300">${visibleCode}</span></div>
-                <div style="background: #e6ce30;" class="flex justify-center items-center w-6 h-4 rounded-sm">
+                <div>match code:<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300 match-code">${visibleCode}</span></div>
+                <div class="flex justify-center items-center w-6 h-4 rounded-sm cursor-pointer copy-btn" data-code="${visibleCode}" style="background: #e6ce30;">
                   <i class="fa-solid fa-copy text-red-900 text-xs"></i>
                 </div>
               </div>
@@ -278,8 +278,9 @@
 
       fixersContainer.innerHTML = html;
 
+      // Match submission handler
       document.querySelectorAll(".open-goal-modal-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
+        btn.addEventListener("click", async (e) => {
           const key = e.currentTarget.getAttribute("data-key");
           const match = fixers.find(f => `${f.team1}__${f.team2}__${f.date}` === key);
           const userTeam = userTeams[user.uid];
@@ -342,9 +343,22 @@
           });
         });
       });
+
+      // Copy icon click handler
+      document.querySelectorAll(".copy-btn").forEach(copyBtn => {
+        copyBtn.addEventListener("click", () => {
+          const code = copyBtn.getAttribute("data-code");
+          if (code && code !== "কোড নাই") {
+            navigator.clipboard.writeText(code).then(() => {
+              Swal.fire({ icon: "success", title: "Copied!", timer: 1500, toast: true, position: "top-end", showConfirmButton: false });
+            });
+          } else {
+            Swal.fire({ icon: "warning", title: "No code to copy!", timer: 1500, toast: true, position: "top-end", showConfirmButton: false });
+          }
+        });
+      });
     });
   }
 </script>
-
 </body>
 </html>
