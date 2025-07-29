@@ -148,8 +148,6 @@
 
     document.getElementById("registration-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const form = document.getElementById("registration-form"); // ✅ fix added here
-
       Swal.fire({ title: 'Processing...', text: 'Please wait...', allowOutsideClick: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
 
       const team = form['team'].value.trim();
