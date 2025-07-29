@@ -31,6 +31,7 @@
               <input type="checkbox" id="selectAllTeams" class="accent-green-600" />
               Select All Teams
             </label>
+            <!-- Updated datetime-local input -->
             <input type="datetime-local" id="fixerDate" class="border border-gray-300 rounded p-2 text-sm h-9" />
             <select id="groupCount" class="border border-gray-300 rounded p-2 text-sm h-9">
               <option value="0" disabled selected>Select Group</option>
@@ -107,21 +108,19 @@
       document.getElementById("teamSelector").innerHTML = teamList.map(t => `<option value="${t}">${t}</option>`).join("");
     }
 
-    // ⏰ Add days to date string and return Bangladesh time in "YYYY-MM-DDTHH:MM"
-    function addDays(localDateTimeStr, days) {
-      const date = new Date(localDateTimeStr);
-      date.setMinutes(date.getMinutes() + (6 * 60)); // convert to BD time
-      date.setDate(date.getDate() + days);
-      return formatLocalDate(date);
+    function addDays(dateStr, days) {
+      const d = new Date(dateStr);
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split("T")[0];
     }
 
-    function formatLocalDate(date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const hour = String(date.getHours()).padStart(2, '0');
-      const minute = String(date.getMinutes()).padStart(2, '0');
-      return `${year}-${month}-${day}T${hour}:${minute}`;
+    // Bangladesh Time Conversion
+    function toBDTimeISOString(localDateTimeStr) {
+      const localDate = new Date(localDateTimeStr);
+      const bdOffset = 6 * 60; // BD is UTC+6
+      const utc = localDate.getTime() + (localDate.getTimezoneOffset() * 60000);
+      const bdTime = new Date(utc + bdOffset * 60000);
+      return bdTime.toISOString().split("T")[0]; // Only date part
     }
 
     function generateCode() {
@@ -141,10 +140,7 @@
           return;
         }
 
-        const fixers = [];
-        for (const docSnap of snapshot.docs) {
-          fixers.push(docSnap.data());
-        }
+        const fixers = snapshot.docs.map(doc => doc.data());
 
         const groupMap = {};
         fixers.forEach(match => {
@@ -158,7 +154,8 @@
           const dateMap = groupMap[group];
           const sortedDates = Object.keys(dateMap).sort();
           sortedDates.forEach((date, i) => {
-            html += `<div class="bg-gray-100 px-3 py-2 rounded font-semibold text-gray-700 mb-2">${group} ll Matchday-${i + 1} || ${date}</div>`;
+            const [yyyy, mm, dd] = date.split("-");
+            html += `<div class="bg-gray-100 px-3 py-2 rounded font-semibold text-gray-700 mb-2">${group} ll Matchday-${i + 1} || ${dd} ${new Date(date).toLocaleString('en-GB', { month: 'long' })} ${yyyy}</div>`;
             dateMap[date].forEach(match => {
               html += `
                 <div class="border p-2 rounded shadow-sm text-xs space-y-1 bg-white mb-1">
@@ -181,10 +178,10 @@
 
     document.getElementById("addFixerBtn").addEventListener("click", async () => {
       const selectedTeams = Array.from(document.getElementById("teamSelector").selectedOptions).map(opt => opt.value);
-      const baseDate = document.getElementById("fixerDate").value;
+      const baseDateInput = document.getElementById("fixerDate").value;
       const groupCount = parseInt(document.getElementById("groupCount").value);
 
-      if (selectedTeams.length < 2 || !baseDate || isNaN(groupCount)) {
+      if (selectedTeams.length < 2 || !baseDateInput || isNaN(groupCount)) {
         Swal.fire({ icon: 'warning', title: 'Please fill out all fields.', position: 'top-end', toast: true, timer: 3000, showConfirmButton: false });
         return;
       }
@@ -194,7 +191,8 @@
         return;
       }
 
-      const matchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
+      const baseDate = toBDTimeISOString(baseDateInput);
+      const commonMatchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
       let added = 0;
 
       for (let g = 0; g < groupCount; g++) {
@@ -210,7 +208,7 @@
         ];
 
         for (const [[i, j], matchday] of matchups) {
-          const date = matchDates[matchday];
+          const date = commonMatchDates[matchday];
           const code = generateCode();
           await addDoc(collection(db, "fixers"), {
             team1: groupTeams[i],
