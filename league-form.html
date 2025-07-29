@@ -110,7 +110,7 @@
   const joiningFeeDisplay = document.getElementById("joiningFee");
 
   async function loadSlotInfo() {
-    const limitDocRef = doc(db, "settings", "limits");
+    const limitDocRef = doc(db, "settings", "slot");
     const docSnap = await getDoc(limitDocRef);
     if (docSnap.exists()) {
       const data = docSnap.data();
