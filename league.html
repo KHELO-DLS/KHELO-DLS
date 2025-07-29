@@ -159,6 +159,8 @@
       const remaining = getRemainingTime(targetDate);
       if (remaining) {
         container.innerHTML = `<span class="text-yellow-200">${remaining}</span>`;
+        // countdown চলছে, কোড এখনো প্রদর্শিত হবে না
+        container.removeAttribute("data-code-available");
       } else {
         clearInterval(interval);
         container.innerHTML = `<span style="background: #a81d3f; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);" class="ml-2 text-green-300">${code}</span>`;
@@ -263,7 +265,7 @@
                 <div>Time 24 Hours</div>
               </div>
 
-              <div style="background: #af1f42; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80">
+              <div style="background: #af1f42; top: 83px;" class="flex justify-center items-center gap-4 w-26 py-1.5 px-4 absolute rounded-t-2xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-80" id="countdown-parent-${key}">
                 <div>match code:
                   <span id="${countdownId}" class="ml-2 text-yellow-200">Loading...</span>
                 </div>
@@ -301,34 +303,27 @@
 
       fixersContainer.innerHTML = html;
 
-      // countdown timer and UI logic
       fixers.forEach(match => {
         const key = `${match.team1}__${match.team2}__${match.date}`;
         const countdownEl = document.getElementById(`match-countdown-${key}`);
+        const parentEl = document.getElementById(`countdown-parent-${key}`);
         const userTeam = userTeams[user.uid];
         const isUserInMatch = userTeam === match.team1.trim().toLowerCase() || userTeam === match.team2.trim().toLowerCase();
 
-        if (countdownEl) {
-          // countdownEl এর parent container যেখানে match code: + copy icon আছে
-          const countdownContainer = countdownEl.parentElement;
-
+        if (countdownEl && parentEl) {
           if (isUserInMatch) {
             createCountdownTimer(match.date, match.code, countdownEl);
-            // match code: টেক্সট এবং copy icon দেখানো হবে
-            if (countdownContainer) {
-              countdownContainer.style.display = "flex";
-            }
+            // countdown চলছে মানে কোড আসবে, তাই parent দেখাবো
+            parentEl.style.display = "flex"; // UI অনুযায়ী adjust করুন, block/inline-flex ইত্যাদি
           } else {
             countdownEl.innerHTML = "কোড নাই";
-            // match code: টেক্সট এবং copy icon লুকানো হবে
-            if (countdownContainer) {
-              countdownContainer.style.display = "none";
-            }
+            // কোড নাই হলে পুরো "match code:" + copy icon লুকিয়ে দিবো
+            parentEl.style.display = "none";
           }
         }
       });
 
-      // copy btn listener
+      // Copy button event listeners
       document.querySelectorAll(".copy-btn").forEach(copyBtn => {
         copyBtn.addEventListener("click", () => {
           const countdownId = copyBtn.getAttribute("data-code-id");
@@ -344,7 +339,7 @@
         });
       });
 
-      // open goal modal listener
+      // Open goal modal buttons
       document.querySelectorAll(".open-goal-modal-btn").forEach(btn => {
         btn.addEventListener("click", async (e) => {
           const key = e.currentTarget.getAttribute("data-key");
@@ -411,6 +406,6 @@
       });
     });
   }
-</script>
+  </script>
  </body>
 </html>
