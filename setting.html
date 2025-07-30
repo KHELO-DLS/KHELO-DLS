@@ -1,59 +1,41 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Setting</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
   <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
     <!-- Signup Bonus Section -->
     <h2 class="text-xl font-semibold text-blue-700 mb-4 text-center">Signup Bonus</h2>
-    <div class="mb-6">
-      <label for="signupBonusInput" class="block mb-2 font-medium text-gray-700">Set Signup Bonus</label>
-      <input type="number" id="signupBonusInput" min="0" placeholder="Enter Signup Bonus"
+    <div class="flex items-center gap-4 mb-4">
+      <input type="number" id="signupBonusInput" min="0" placeholder="Set Signup Bonus"
         class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
+    
     <button id="updateBonusBtn"
       class="bg-green-600 hover:bg-green-700 text-white w-full py-2 rounded transition font-semibold">
       Update Signup Bonus
     </button>
+
     <p id="currentBonusDisplay" class="text-center text-sm text-gray-600 mt-4">Current Bonus: Loading...</p>
 
     <!-- Joining Fee Section -->
-    <h2 class="text-xl font-semibold text-blue-700 mt-10 mb-4 text-center">Joining Fee</h2>
-    <div class="mb-6">
-      <label for="joiningFeeInput" class="block mb-2 font-medium text-gray-700">Set Joining Fee</label>
-      <input type="number" id="joiningFeeInput" min="0" placeholder="Enter Joining Fee"
+    <h2 class="text-xl font-semibold text-blue-700 mt-6 mb-4 text-center">Joining Fee</h2>
+    <div class="flex items-center gap-4 mb-4">
+      <input type="number" id="joiningFeeInput" min="0" placeholder="Set Joining Fee"
         class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
+    
     <button id="updateFeeBtn"
       class="bg-red-600 hover:bg-red-700 text-white w-full py-2 rounded transition font-semibold">
       Update Joining Fee
     </button>
-    <p id="currentFeeDisplay" class="text-center text-sm text-gray-600 mt-4">Current Fee: Loading...</p>
 
-    <!-- Joining Slot Section -->
-    <h2 class="text-xl font-semibold text-blue-700 mt-10 mb-4 text-center">Joining Slot</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-      <div>
-        <label for="slotInput" class="block mb-2 font-medium text-gray-700">Total Slot</label>
-        <input type="number" id="slotInput" min="0" placeholder="Enter Total Slots"
-          class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      </div>
-      <div>
-        <label for="slotUsedInput" class="block mb-2 font-medium text-gray-700">Used Slot</label>
-        <input type="number" id="slotUsedInput" min="0" placeholder="Enter Used Slots"
-          class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      </div>
-    </div>
-    <button id="updateSlotBtn"
-      class="bg-yellow-500 hover:bg-yellow-600 text-white w-full py-2 rounded transition font-semibold">
-      Update Slot Info
-    </button>
-    <p id="currentSlotDisplay" class="text-center text-sm text-gray-600 mt-4">Current Slot: Loading...</p>
+    <p id="currentFeeDisplay" class="text-center text-sm text-gray-600 mt-4">Current Fee: Loading...</p>
   </div>
 
   <script type="module">
@@ -67,7 +49,8 @@
       projectId: "dls12364",
       storageBucket: "dls12364.firebasestorage.app",
       messagingSenderId: "431397971734",
-      appId: "1:431397971734:web:0cb1a8b53ee09157425237"
+      appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+      measurementId: "G-B75EB4GGRV"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -76,7 +59,6 @@
 
     const bonusDocRef = doc(db, "settings", "signupBonus");
     const feeDocRef = doc(db, "settings", "joiningFee");
-    const slotDocRef = doc(db, "settings", "slot");
 
     const signupBonusInput = document.getElementById("signupBonusInput");
     const updateBonusBtn = document.getElementById("updateBonusBtn");
@@ -86,94 +68,85 @@
     const updateFeeBtn = document.getElementById("updateFeeBtn");
     const currentFeeDisplay = document.getElementById("currentFeeDisplay");
 
-    const slotInput = document.getElementById("slotInput");
-    const slotUsedInput = document.getElementById("slotUsedInput");
-    const updateSlotBtn = document.getElementById("updateSlotBtn");
-    const currentSlotDisplay = document.getElementById("currentSlotDisplay");
-
-    // Load current values
-    async function loadSignupBonus() {
-      try {
-        const docSnap = await getDoc(bonusDocRef);
-        const data = docSnap.exists() ? docSnap.data() : null;
-        const currentBonus = data?.bonus ?? "Not Set";
-        currentBonusDisplay.textContent = `Current Bonus: ${currentBonus}`;
-        signupBonusInput.value = currentBonus;
-      } catch (err) {
-        console.error("Error loading bonus:", err);
-        currentBonusDisplay.textContent = "Error loading bonus";
-      }
+    // Load current signup bonus
+    function loadSignupBonus() {
+      getDoc(bonusDocRef)
+        .then((docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const currentBonus = data?.bonus ?? "Not Set";
+            currentBonusDisplay.textContent = `Current Bonus: ${currentBonus}`;
+            signupBonusInput.value = currentBonus;
+          } else {
+            currentBonusDisplay.textContent = "Current Bonus: Not Set";
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch signup bonus:", err);
+          currentBonusDisplay.textContent = "Error loading bonus";
+        });
     }
 
-    async function loadJoiningFee() {
-      try {
-        const docSnap = await getDoc(feeDocRef);
-        const data = docSnap.exists() ? docSnap.data() : null;
-        const currentFee = data?.fee ?? "Not Set";
-        currentFeeDisplay.textContent = `Current Fee: ${currentFee}`;
-        joiningFeeInput.value = currentFee;
-      } catch (err) {
-        console.error("Error loading fee:", err);
-        currentFeeDisplay.textContent = "Error loading fee";
-      }
+    // Load current joining fee
+    function loadJoiningFee() {
+      getDoc(feeDocRef)
+        .then((docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            const currentFee = data?.fee ?? "Not Set";
+            currentFeeDisplay.textContent = `Current Fee: ${currentFee}`;
+            joiningFeeInput.value = currentFee;
+          } else {
+            currentFeeDisplay.textContent = "Current Fee: Not Set";
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch joining fee:", err);
+          currentFeeDisplay.textContent = "Error loading fee";
+        });
     }
 
-    async function loadSlotInfo() {
-      try {
-        const docSnap = await getDoc(slotDocRef);
-        const data = docSnap.exists() ? docSnap.data() : null;
-        const currentSlot = data?.slot ?? "N/A";
-        const currentUsed = data?.slotUsed ?? "N/A";
-        currentSlotDisplay.textContent = `Current Slot: ${currentUsed}/${currentSlot}`;
-        slotInput.value = currentSlot;
-        slotUsedInput.value = currentUsed;
-      } catch (err) {
-        console.error("Error loading slot info:", err);
-        currentSlotDisplay.textContent = "Error loading slot";
-      }
-    }
-
-    // Update buttons
+    // Update signup bonus
     updateBonusBtn.addEventListener("click", async () => {
       const newBonus = parseFloat(signupBonusInput.value);
-      if (isNaN(newBonus) || newBonus < 0) return alert("Enter valid bonus.");
+      if (isNaN(newBonus) || newBonus < 0) {
+        alert("Please enter a valid bonus amount.");
+        return;
+      }
+
       try {
-        await updateDoc(bonusDocRef, { bonus: newBonus });
+        await updateDoc(bonusDocRef, {
+          bonus: newBonus,
+        });
         currentBonusDisplay.textContent = `Current Bonus: ${newBonus}`;
-        alert("Signup bonus updated.");
+        alert("Signup bonus updated successfully.");
       } catch (err) {
+        console.error("Failed to update signup bonus:", err);
         alert("Failed to update bonus.");
       }
     });
 
+    // Update joining fee
     updateFeeBtn.addEventListener("click", async () => {
       const newFee = parseFloat(joiningFeeInput.value);
-      if (isNaN(newFee) || newFee < 0) return alert("Enter valid joining fee.");
+      if (isNaN(newFee) || newFee < 0) {
+        alert("Please enter a valid joining fee.");
+        return;
+      }
+
       try {
-        await updateDoc(feeDocRef, { fee: newFee });
+        await updateDoc(feeDocRef, {
+          fee: newFee,
+        });
         currentFeeDisplay.textContent = `Current Fee: ${newFee}`;
-        alert("Joining fee updated.");
+        alert("Joining fee updated successfully.");
       } catch (err) {
-        alert("Failed to update joining fee.");
+        console.error("Failed to update joining fee:", err);
+        alert("Failed to update fee.");
       }
     });
 
-    updateSlotBtn.addEventListener("click", async () => {
-      const newSlot = parseInt(slotInput.value);
-      const newUsed = parseInt(slotUsedInput.value);
-      if (isNaN(newSlot) || isNaN(newUsed) || newSlot < 0 || newUsed < 0 || newUsed > newSlot) {
-        return alert("Enter valid slot values.");
-      }
-      try {
-        await updateDoc(slotDocRef, { slot: newSlot, slotUsed: newUsed });
-        currentSlotDisplay.textContent = `Current Slot: ${newUsed}/${newSlot}`;
-        alert("Slot info updated.");
-      } catch (err) {
-        alert("Failed to update slot.");
-      }
-    });
-
-    // Load data after auth check
+    // Auth check and load data
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         alert("You must be logged in.");
@@ -181,7 +154,6 @@
       } else {
         loadSignupBonus();
         loadJoiningFee();
-        loadSlotInfo();
       }
     });
   </script>
