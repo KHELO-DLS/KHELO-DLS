@@ -8,34 +8,34 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
-  <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full space-y-6">
+  <div class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full space-y-4 text-sm"> <!-- text-sm makes everything small -->
     <!-- Signup Bonus Section -->
-    <h2 class="text-xl font-semibold text-blue-700 text-center">Signup Bonus</h2>
+    <h2 class="text-lg font-semibold text-blue-700 text-center">Signup Bonus</h2>
     <input type="number" id="signupBonusInput" min="0" placeholder="Set Signup Bonus"
-      class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      class="border border-gray-300 rounded px-3 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
     <button id="updateBonusBtn"
-      class="bg-green-600 hover:bg-green-700 text-white w-full py-2 rounded transition font-semibold">
+      class="bg-green-600 hover:bg-green-700 text-white w-full py-1 rounded transition font-semibold text-sm">
       Update Signup Bonus
     </button>
-    <p id="currentBonusDisplay" class="text-center text-sm text-gray-600 mt-2">Current Bonus: Loading...</p>
+    <p id="currentBonusDisplay" class="text-center text-xs text-gray-600 mt-1">Current Bonus: Loading...</p>
 
     <!-- Joining Fee Section -->
-    <h2 class="text-xl font-semibold text-blue-700 text-center mt-6">Joining Fee</h2>
+    <h2 class="text-lg font-semibold text-blue-700 text-center mt-4">Joining Fee</h2>
     <input type="number" id="joiningFeeInput" min="0" placeholder="Set Joining Fee"
-      class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      class="border border-gray-300 rounded px-3 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
     <button id="updateFeeBtn"
-      class="bg-red-600 hover:bg-red-700 text-white w-full py-2 rounded transition font-semibold">
+      class="bg-red-600 hover:bg-red-700 text-white w-full py-1 rounded transition font-semibold text-sm">
       Update Joining Fee
     </button>
-    <p id="currentFeeDisplay" class="text-center text-sm text-gray-600 mt-2">Current Fee: Loading...</p>
+    <p id="currentFeeDisplay" class="text-center text-xs text-gray-600 mt-1">Current Fee: Loading...</p>
 
     <!-- Slot Section -->
-    <h2 class="text-xl font-semibold text-blue-700 text-center mt-6">Joining Slot</h2>
+    <h2 class="text-lg font-semibold text-blue-700 text-center mt-4">Joining Slot</h2>
     <input type="number" id="joiningSlotInput" min="0" placeholder="Set Total Slots"
-      class="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
-    <p id="slotUsedDisplay" class="text-center text-sm text-gray-600 mt-1">Used Slots: Loading...</p>
+      class="border border-gray-300 rounded px-3 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+    <p id="slotUsedDisplay" class="text-center text-xs text-gray-600 mt-1">Used Slots: Loading...</p>
     <button id="updateSlotBtn"
-      class="bg-yellow-600 hover:bg-yellow-700 text-white w-full py-2 rounded transition font-semibold">
+      class="bg-yellow-600 hover:bg-yellow-700 text-white w-full py-1 rounded transition font-semibold text-sm">
       Update Slots
     </button>
   </div>
@@ -59,12 +59,10 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // Document refs
     const bonusDocRef = doc(db, "settings", "signupBonus");
     const feeDocRef = doc(db, "settings", "joiningFee");
     const slotDocRef = doc(db, "settings", "slot");
 
-    // Elements
     const signupBonusInput = document.getElementById("signupBonusInput");
     const updateBonusBtn = document.getElementById("updateBonusBtn");
     const currentBonusDisplay = document.getElementById("currentBonusDisplay");
@@ -77,7 +75,6 @@
     const slotUsedDisplay = document.getElementById("slotUsedDisplay");
     const updateSlotBtn = document.getElementById("updateSlotBtn");
 
-    // Load Signup Bonus
     async function loadSignupBonus() {
       try {
         const docSnap = await getDoc(bonusDocRef);
@@ -95,7 +92,6 @@
       }
     }
 
-    // Load Joining Fee
     async function loadJoiningFee() {
       try {
         const docSnap = await getDoc(feeDocRef);
@@ -113,7 +109,6 @@
       }
     }
 
-    // Load Slot info
     async function loadSlotInfo() {
       try {
         const docSnap = await getDoc(slotDocRef);
@@ -133,7 +128,6 @@
       }
     }
 
-    // Update Signup Bonus
     updateBonusBtn.addEventListener("click", async () => {
       const newBonus = parseFloat(signupBonusInput.value);
       if (isNaN(newBonus) || newBonus < 0) {
@@ -150,7 +144,6 @@
       }
     });
 
-    // Update Joining Fee
     updateFeeBtn.addEventListener("click", async () => {
       const newFee = parseFloat(joiningFeeInput.value);
       if (isNaN(newFee) || newFee < 0) {
@@ -167,7 +160,6 @@
       }
     });
 
-    // Update Slots
     updateSlotBtn.addEventListener("click", async () => {
       const newSlot = parseInt(joiningSlotInput.value);
       if (isNaN(newSlot) || newSlot < 0) {
@@ -175,7 +167,6 @@
         return;
       }
       try {
-        // Get current slotUsed to avoid accidental overwrite
         const docSnap = await getDoc(slotDocRef);
         let slotUsed = 0;
         if (docSnap.exists()) {
@@ -193,7 +184,6 @@
       }
     });
 
-    // Auth check and load all settings
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         alert("You must be logged in.");
