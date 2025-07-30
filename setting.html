@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Setting</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -20,40 +19,48 @@
     </div>
   </header>
 
-  <main class="px-4">
-  <div class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full space-y-4 text-sm"> <!-- text-sm makes everything small -->
-    <!-- Signup Bonus Section -->
-    <h2 class="text-lg font-semibold text-blue-700 text-center">Signup Bonus</h2>
-    <input type="number" id="signupBonusInput" min="0" placeholder="Set Signup Bonus"
-      class="border border-gray-300 rounded px-3 py-1.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-    <button id="updateBonusBtn"
-      class="bg-green-600 hover:bg-green-700 text-white w-1/2 py-2 rounded transition font-semibold text-sm">
-      Update
-    </button>
-    <p id="currentBonusDisplay" class="text-center text-xs text-gray-600 mt-1">Current Bonus: Loading...</p>
+  <!-- Main Content -->
+  <main class="px-4 flex justify-center mt-6">
+    <div class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full space-y-4 text-sm">
+      <!-- Signup Bonus Section -->
+      <h2 class="text-lg font-semibold text-blue-700 text-center">Signup Bonus</h2>
+      <input type="number" id="signupBonusInput" min="0" placeholder="Set Signup Bonus"
+        class="border border-gray-300 rounded px-3 py-1.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+      <div class="flex justify-center">
+        <button id="updateBonusBtn"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded transition font-semibold text-sm">
+          Update
+        </button>
+      </div>
+      <p id="currentBonusDisplay" class="text-center text-xs text-gray-600 mt-1">Current Bonus: Loading...</p>
 
-    <!-- Joining Fee Section -->
-    <h2 class="text-lg font-semibold text-blue-700 text-center mt-4">Joining Fee</h2>
-    <input type="number" id="joiningFeeInput" min="0" placeholder="Set Joining Fee"
-      class="border border-gray-300 rounded px-3 py-1.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-    <button id="updateFeeBtn"
-      class="bg-red-600 hover:bg-red-700 text-white w-1/2 py-2 rounded transition font-semibold text-sm">
-      Update
-    </button>
-    <p id="currentFeeDisplay" class="text-center text-xs text-gray-600 mt-1">Current Fee: Loading...</p>
+      <!-- Joining Fee Section -->
+      <h2 class="text-lg font-semibold text-blue-700 text-center mt-4">Joining Fee</h2>
+      <input type="number" id="joiningFeeInput" min="0" placeholder="Set Joining Fee"
+        class="border border-gray-300 rounded px-3 py-1.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+      <div class="flex justify-center">
+        <button id="updateFeeBtn"
+          class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded transition font-semibold text-sm">
+          Update
+        </button>
+      </div>
+      <p id="currentFeeDisplay" class="text-center text-xs text-gray-600 mt-1">Current Fee: Loading...</p>
 
-    <!-- Slot Section -->
-    <h2 class="text-lg font-semibold text-blue-700 text-center mt-4">Joining Slot</h2>
-    <input type="number" id="joiningSlotInput" min="0" placeholder="Set Total Slots"
-      class="border border-gray-300 rounded px-3 py-1.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-    <p id="slotUsedDisplay" class="text-center text-xs text-gray-600 mt-1">Used Slots: Loading...</p>
-    <button id="updateSlotBtn"
-      class="bg-yellow-600 hover:bg-yellow-700 text-white w-1/2 py-2 rounded transition font-semibold text-sm">
-      Update
-    </button>
-  </div>
+      <!-- Slot Section -->
+      <h2 class="text-lg font-semibold text-blue-700 text-center mt-4">Joining Slot</h2>
+      <input type="number" id="joiningSlotInput" min="0" placeholder="Set Total Slots"
+        class="border border-gray-300 rounded px-3 py-1.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+      <p id="slotUsedDisplay" class="text-center text-xs text-gray-600 mt-1">Used Slots: Loading...</p>
+      <div class="flex justify-center">
+        <button id="updateSlotBtn"
+          class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded transition font-semibold text-sm">
+          Update
+        </button>
+      </div>
+    </div>
   </main>
 
+  <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -93,8 +100,7 @@
       try {
         const docSnap = await getDoc(bonusDocRef);
         if (docSnap.exists()) {
-          const data = docSnap.data();
-          const currentBonus = data?.bonus ?? 0;
+          const currentBonus = docSnap.data()?.bonus ?? 0;
           currentBonusDisplay.textContent = `Current Bonus: ${currentBonus}`;
           signupBonusInput.value = currentBonus;
         } else {
@@ -110,8 +116,7 @@
       try {
         const docSnap = await getDoc(feeDocRef);
         if (docSnap.exists()) {
-          const data = docSnap.data();
-          const currentFee = data?.fee ?? 0;
+          const currentFee = docSnap.data()?.fee ?? 0;
           currentFeeDisplay.textContent = `Current Fee: ${currentFee}`;
           joiningFeeInput.value = currentFee;
         } else {
@@ -128,10 +133,8 @@
         const docSnap = await getDoc(slotDocRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          const slot = data?.slot ?? 0;
-          const slotUsed = data?.slotUsed ?? 0;
-          joiningSlotInput.value = slot;
-          slotUsedDisplay.textContent = `Used Slots: ${slotUsed}`;
+          joiningSlotInput.value = data?.slot ?? 0;
+          slotUsedDisplay.textContent = `Used Slots: ${data?.slotUsed ?? 0}`;
         } else {
           joiningSlotInput.value = 0;
           slotUsedDisplay.textContent = `Used Slots: 0`;
@@ -182,14 +185,13 @@
       }
       try {
         const docSnap = await getDoc(slotDocRef);
-        let slotUsed = 0;
-        if (docSnap.exists()) {
-          slotUsed = docSnap.data()?.slotUsed ?? 0;
-        }
+        let slotUsed = docSnap.exists() ? docSnap.data()?.slotUsed ?? 0 : 0;
+
         if (newSlot < slotUsed) {
           alert(`Cannot set total slots less than used slots (${slotUsed}).`);
           return;
         }
+
         await updateDoc(slotDocRef, { slot: newSlot });
         alert("Slots updated successfully.");
       } catch (err) {
