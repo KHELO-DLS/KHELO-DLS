@@ -132,7 +132,7 @@ async function loadJoiningFee() {
   const feeDocRef = doc(db, "settings", "joiningFee");
   const docSnap = await getDoc(feeDocRef);
   joiningFee = docSnap.exists() ? (docSnap.data()?.fee || 0) : 0;
-  joiningFeeDisplay.textContent = `Joining Fee: ৳${joiningFee}`;
+  joiningFeeDisplay.textContent = `Entry Fee: ৳${joiningFee}`;
 }
 
 // Load user info
