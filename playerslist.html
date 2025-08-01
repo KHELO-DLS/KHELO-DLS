@@ -89,7 +89,7 @@
 
           card.innerHTML = `
             <div class="flex items-center mb-3">
-              <img id="${imageId}" src="${imageUrl}" class="w-12 h-12 rounded-full object-cover border border-gray-300 mr-3" />
+              <img id="${imageId}" src="${imageUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-300 mr-3" />
               <div class="text-lg font-bold text-gray-800">${p.username || "N/A"}</div>
               <input type="file" id="${fileInputId}" class="hidden" accept="image/*" />
               <button onclick="document.getElementById('${fileInputId}').click()" class="ml-auto text-sm text-blue-600 hover:underline">Edit</button>
@@ -108,19 +108,25 @@
 
           container.appendChild(card);
 
+          // File upload logic
           const fileInput = card.querySelector(`#${fileInputId}`);
-          fileInput.addEventListener("change", async e => {
+          fileInput.addEventListener("change", async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            const storageRef = ref(storage, `players/${docId}/photo.jpg`);
-            await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(storageRef);
+            try {
+              const storageRef = ref(storage, `players/${docId}/photo.jpg`);
+              await uploadBytes(storageRef, file);
+              const downloadURL = await getDownloadURL(storageRef);
 
-            await updateDoc(doc(db, "playersform", docId), { photoUrl: downloadURL });
+              await updateDoc(doc(db, "playersform", docId), { photoUrl: downloadURL });
 
-            document.getElementById(imageId).src = downloadURL;
-            alert("Photo updated successfully!");
+              document.getElementById(imageId).src = downloadURL;
+              alert("Photo updated successfully!");
+            } catch (err) {
+              console.error("Photo update error:", err);
+              alert("Failed to update photo.");
+            }
           });
         });
 
