@@ -113,16 +113,6 @@
       return d.toISOString().split("T")[0];
     }
 
-    // New function to generate a 6-digit alphanumeric code (letters+numbers)
-    function generateCode() {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      let code = "";
-      for (let i = 0; i < 6; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return code;
-    }
-
     async function loadFixers() {
       const fixersContainer = document.getElementById("fixersContainer");
       onSnapshot(collection(db, "fixers"), async (snapshot) => {
@@ -159,7 +149,6 @@
                   </div>
                   <div class="text-center text-green-600 text-xs font-medium">Winner: ${match.winner}</div>
                   <div class="text-center text-blue-600 text-xs font-medium">Status: ${match.status}</div>
-                  <div class="text-center text-gray-500 text-xs font-mono">Code: ${match.code ?? "N/A"}</div>
                 </div>`;
             });
           });
@@ -201,7 +190,6 @@
 
         for (const [[i, j], matchday] of matchups) {
           const date = commonMatchDates[matchday];
-          const code = generateCode();  // Generate code for each match
           await addDoc(collection(db, "fixers"), {
             team1: groupTeams[i],
             team2: groupTeams[j],
@@ -211,8 +199,7 @@
             status: "Pending",
             groupName,
             winner: "None",
-            pointsUpdated: false,
-            code  // Add code here
+            pointsUpdated: false
           });
           added++;
         }
