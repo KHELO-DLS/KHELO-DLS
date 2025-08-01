@@ -87,16 +87,17 @@
           const imageId = `img-${docId}`;
           const fileInputId = `file-${docId}`;
           const photoUrlInputId = `photourl-${docId}`;
+          const updateBtnId = `update-${docId}`;
 
           card.innerHTML = `
             <div class="flex items-center mb-3">
               <img id="${imageId}" src="${imageUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-300 mr-3" />
               <div class="text-lg font-bold text-gray-800">${p.username || "N/A"}</div>
               <input type="file" id="${fileInputId}" class="hidden" accept="image/*" />
-              <button onclick="document.getElementById('${fileInputId}').click()" class="ml-auto text-sm text-blue-600 hover:underline">Edit</button>
+              <button id="${updateBtnId}" class="ml-auto text-sm text-green-600 hover:underline">Update</button>
             </div>
 
-            <input type="text" id="${photoUrlInputId}" value="${imageUrl}" readonly class="w-full text-xs text-gray-500 mb-3 border rounded px-2 py-1 bg-gray-50 cursor-not-allowed" />
+            <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 mb-3 border rounded px-2 py-1 bg-white" />
 
             <div class="flex justify-between text-sm text-gray-600 mb-2">
               <div><span class="font-semibold">Team:</span> ${p.team || "N/A"}</div>
@@ -111,8 +112,29 @@
 
           container.appendChild(card);
 
+          // Handle direct photoUrl update
+          const updateBtn = card.querySelector(`#${updateBtnId}`);
+          const photoUrlInput = card.querySelector(`#${photoUrlInputId}`);
+          const imageEl = card.querySelector(`#${imageId}`);
+
+          updateBtn.addEventListener("click", async () => {
+            const newUrl = photoUrlInput.value.trim();
+            if (!newUrl) return alert("Photo URL cannot be empty.");
+
+            try {
+              await updateDoc(doc(db, "playersform", docId), { photoUrl: newUrl });
+              imageEl.src = newUrl;
+              alert("Photo URL updated successfully!");
+            } catch (err) {
+              console.error("Photo URL update error:", err);
+              alert("Failed to update photo URL.");
+            }
+          });
+
           // File upload logic
           const fileInput = card.querySelector(`#${fileInputId}`);
+          updateBtn.addEventListener("dblclick", () => fileInput.click()); // optional: double click to open file input
+
           fileInput.addEventListener("change", async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -124,13 +146,13 @@
 
               await updateDoc(doc(db, "playersform", docId), { photoUrl: downloadURL });
 
-              document.getElementById(imageId).src = downloadURL;
-              document.getElementById(photoUrlInputId).value = downloadURL;
+              imageEl.src = downloadURL;
+              photoUrlInput.value = downloadURL;
 
-              alert("Photo updated successfully!");
+              alert("Photo uploaded and updated successfully!");
             } catch (err) {
-              console.error("Photo update error:", err);
-              alert("Failed to update photo.");
+              console.error("Photo upload error:", err);
+              alert("Failed to upload photo.");
             }
           });
         });
