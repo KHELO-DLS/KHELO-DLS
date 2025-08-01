@@ -97,10 +97,12 @@
                   </div>
                   <div class="text-center text-green-600 text-xs font-medium">Winner: ${match.winner}</div>
                   <div class="text-center text-blue-600 text-xs font-medium">Status: ${match.status}</div>
-                  <div class="grid grid-cols-3 gap-2 items-center px-2 mt-2">
+                  <div class="grid grid-cols-2 gap-2 items-center px-2 mt-2">
                     <input id="${team1InputId}" type="number" placeholder="Goal ${match.team1}" class="border p-1 text-xs rounded" />
                     <input id="${team2InputId}" type="number" placeholder="Goal ${match.team2}" class="border p-1 text-xs rounded" />
-                    <button onclick="submitGoals('${match.id}', '${team1InputId}', '${team2InputId}')" class="bg-blue-500 text-white rounded text-xs py-1">Submit</button>
+                  </div>
+                  <div class="px-2 mt-2">
+                    <button onclick="submitGoals('${match.id}', '${team1InputId}', '${team2InputId}')" class="bg-blue-500 w-full text-white rounded text-xs py-1">Submit</button>
                   </div>
                 </div>`;
             });
