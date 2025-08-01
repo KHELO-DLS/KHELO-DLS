@@ -90,6 +90,12 @@
             dateMap[date].forEach(match => {
               const team1InputId = `team1-${match.id}`;
               const team2InputId = `team2-${match.id}`;
+
+              let winnerText = "";
+              if (match.winner === "team1") winnerText = match.team1;
+              else if (match.winner === "team2") winnerText = match.team2;
+              else if (match.winner === "Draw") winnerText = "Draw";
+
               html += `
                 <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm space-y-2">
                   <div class="flex items-center justify-center justify-between text-center text-[11px]">
@@ -97,7 +103,7 @@
                     <div class="text-[13px] font-bold text-red-500">VS</div>
                     <div class="font-semibold text-gray-700">${match.team2} <span class="text-black">(${match.team2Goal ?? "-"})</span></div>
                   </div>
-                  <div class="text-center text-green-600 text-xs font-medium">Match Result: ${match.winner}</div>
+                  <div class="text-center text-green-600 text-xs font-medium">Result: ${winnerText}</div>
                   <div class="text-center text-blue-600 text-xs font-medium">Status: ${match.status}</div>
                   <div class="grid grid-cols-2 gap-2 mt-2">
                     <input id="${team1InputId}" type="number" placeholder="${match.team1}" class="border p-2 text-xs rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300" />
