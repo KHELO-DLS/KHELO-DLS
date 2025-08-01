@@ -304,7 +304,7 @@
         const usersSnapshot = await getDocs(usersCol);
         usersSnapshot.forEach(async (docSnap) => {
           const userData = docSnap.data();
-          const newBalance = userData.balance + 10;
+          const newBalance = userData.balance + 20;
           await updateDoc(doc(db, "users", docSnap.id), {
             balance: newBalance
           });
