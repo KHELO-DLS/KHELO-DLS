@@ -81,7 +81,7 @@
           card.className = "bg-white shadow-md rounded-lg p-4 border border-gray-200";
 
           card.innerHTML = `
-            <div class="text-lg font-bold text-gray-800 mb-2">${p.username || "N/A"}</div>
+            <div class="text-lg text-center font-bold text-gray-800 mb-2">${p.username || "N/A"}</div>
 
             <div class="flex justify-between text-sm text-gray-600 mb-2">
               <div><span class="font-semibold">Team:</span> ${p.team || "N/A"}</div>
@@ -89,8 +89,8 @@
             </div>
 
             <div class="flex justify-between text-sm text-gray-600">
-              <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"}</div>
-              <div><span class="font-semibold">Years Played:</span> ${p.yearsPlayed ?? "N/A"}</div>
+              <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"} Years</div>
+              <div><span class="font-semibold">Played:</span> ${p.yearsPlayed ?? "N/A"} Years</div>
             </div>
           `;
 
