@@ -86,7 +86,12 @@
           const dateMap = groupMap[group];
           const sortedDates = Object.keys(dateMap).sort();
           sortedDates.forEach((date, i) => {
-            html += `<div class="bg-gray-200 px-3 py-2 rounded-md text-sm font-medium text-gray-800">${group} | Matchday-${i + 1} | ${date}</div>`;
+            const formattedDate = new Date(date).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            });
+            html += `<div class="bg-gray-200 px-3 py-2 rounded-md text-sm font-medium text-gray-800">${group} | Matchday-${i + 1} | ${formattedDate}</div>`;
             dateMap[date].forEach(match => {
               const team1InputId = `team1-${match.id}`;
               const team2InputId = `team2-${match.id}`;
@@ -98,7 +103,7 @@
 
               html += `
                 <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm space-y-2">
-                  <div class="flex items-center justify-center justify-between text-center text-[11px]">
+                  <div class="flex items-center justify-between text-center text-[11px]">
                     <div class="font-semibold text-gray-700">${match.team1} <span class="text-black">(${match.team1Goal ?? "-"})</span></div>
                     <div class="text-[13px] font-bold text-red-500">VS</div>
                     <div class="font-semibold text-gray-700">${match.team2} <span class="text-black">(${match.team2Goal ?? "-"})</span></div>
