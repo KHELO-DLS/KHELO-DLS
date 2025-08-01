@@ -78,24 +78,24 @@
         playersSnapshot.forEach(doc => {
           const p = doc.data();
           const card = document.createElement("div");
-          card.className = "bg-white shadow-md rounded-lg overflow-hidden border border-gray-200";
+          card.className = "bg-white shadow-md rounded-lg p-4 border border-gray-200";
 
-          const imageUrl = p.photoUrl || "https://via.placeholder.com/300x200?text=No+Image";
+          const imageUrl = p.photoUrl || "https://via.placeholder.com/80?text=No+Image";
 
           card.innerHTML = `
-            <img src="${imageUrl}" alt="Player Image" class="w-full h-40 object-cover">
-            <div class="p-4">
-              <div class="text-lg font-bold text-gray-800 mb-2">${p.username || "N/A"}</div>
+            <div class="flex items-center mb-3">
+              <img src="${imageUrl}" alt="Player Image" class="w-12 h-12 rounded-full object-cover mr-3 border border-gray-300" />
+              <div class="text-lg font-bold text-gray-800">${p.username || "N/A"}</div>
+            </div>
 
-              <div class="flex justify-between text-sm text-gray-600 mb-2">
-                <div><span class="font-semibold">Team:</span> ${p.team || "N/A"}</div>
-                <div><span class="font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</div>
-              </div>
+            <div class="flex justify-between text-sm text-gray-600 mb-2">
+              <div><span class="font-semibold">Team:</span> ${p.team || "N/A"}</div>
+              <div><span class="font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</div>
+            </div>
 
-              <div class="flex justify-between text-sm text-gray-600">
-                <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"}</div>
-                <div><span class="font-semibold">Years Played:</span> ${p.yearsPlayed ?? "N/A"}</div>
-              </div>
+            <div class="flex justify-between text-sm text-gray-600">
+              <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"}</div>
+              <div><span class="font-semibold">Years Played:</span> ${p.yearsPlayed ?? "N/A"}</div>
             </div>
           `;
 
