@@ -92,9 +92,9 @@
               const team2InputId = `team2-${match.id}`;
               html += `
                 <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm space-y-2">
-                  <div class="flex items-center justify-center gap-3 text-center text-[11px]">
+                  <div class="flex items-center justify-center justify-between text-center text-[11px]">
                     <div class="font-semibold text-gray-700">${match.team1} <span class="text-black">(${match.team1Goal ?? "-"})</span></div>
-                    <div class="text-[13px] flex items-center justify-center font-bold text-red-500">VS</div>
+                    <div class="text-[13px] font-bold text-red-500">VS</div>
                     <div class="font-semibold text-gray-700">${match.team2} <span class="text-black">(${match.team2Goal ?? "-"})</span></div>
                   </div>
                   <div class="text-center text-green-600 text-xs font-medium">Winner: ${match.winner}</div>
