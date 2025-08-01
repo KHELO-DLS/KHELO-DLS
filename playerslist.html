@@ -30,7 +30,7 @@
         <table class="w-full text-xs border border-gray-300 rounded overflow-hidden min-w-[600px]">
           <thead class="bg-gray-100 sticky top-0 z-10">
             <tr>
-              <th class="p-2 border">Full Name</th>
+              <th class="p-2 border">Username</th> <!-- changed from Full Name -->
               <th class="p-2 border">Team</th>
               <th class="p-2 border">DLS Rating</th>
               <th class="p-2 border">Age</th>
@@ -53,14 +53,14 @@
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
-  apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
-  authDomain: "dls12364.firebaseapp.com",
-  projectId: "dls12364",
-  storageBucket: "dls12364.firebasestorage.app",
-  messagingSenderId: "431397971734",
-  appId: "1:431397971734:web:0cb1a8b53ee09157425237",
-  measurementId: "G-B75EB4GGRV"
-};
+      apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
+      authDomain: "dls12364.firebaseapp.com",
+      projectId: "dls12364",
+      storageBucket: "dls12364.firebasestorage.app",
+      messagingSenderId: "431397971734",
+      appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+      measurementId: "G-B75EB4GGRV"
+    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -89,7 +89,7 @@
           const p = doc.data();
           html += `
             <tr class="border-t hover:bg-gray-50">
-              <td class="p-2 border">${p.fullName || "N/A"}</td>
+              <td class="p-2 border">${p.username || "N/A"}</td> <!-- show username instead of fullName -->
               <td class="p-2 border">${p.team || "N/A"}</td>
               <td class="p-2 border">${p.dlsRating ?? "N/A"}</td>
               <td class="p-2 border">${p.age ?? "N/A"}</td>
