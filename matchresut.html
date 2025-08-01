@@ -24,6 +24,7 @@
     <div class="bg-white shadow rounded p-4">
       <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
         <div class="text-xl font-semibold text-green-700">Football Match Fixers</div>
+      </div>
       <!-- Fixers Display -->
       <div id="fixersContainer" class="space-y-6 max-h-[600px] overflow-y-auto">
         <p class="text-gray-500 text-center">Loading fixers...</p>
@@ -87,10 +88,10 @@
             dateMap[date].forEach(match => {
               html += `
                 <div class="border p-2 rounded shadow-sm text-xs space-y-1 bg-white mb-1">
-                  <div class="flex justify-between items-center px-2">
-                    <div class="text-sm font-semibold text-gray-600">${match.team1} <span class="text-black">(${match.team1Goal ?? "-"})</span></div>
+                  <div class="grid grid-cols-3 items-center text-center px-2">
+                    <div class="text-xs font-semibold text-gray-600">${match.team1} <span class="text-black">(${match.team1Goal ?? "-"})</span></div>
                     <div class="text-base font-bold text-red-500">VS</div>
-                    <div class="text-sm font-semibold text-gray-600">${match.team2} <span class="text-black">(${match.team2Goal ?? "-"})</span></div>
+                    <div class="text-xs font-semibold text-gray-600">${match.team2} <span class="text-black">(${match.team2Goal ?? "-"})</span></div>
                   </div>
                   <div class="text-center text-green-600 text-xs font-medium">Winner: ${match.winner}</div>
                   <div class="text-center text-blue-600 text-xs font-medium">Status: ${match.status}</div>
