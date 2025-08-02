@@ -116,30 +116,30 @@
           allTeamsHTML = `<p class="text-gray-400 text-center">No overall point table to show.</p>`;
         } else {
           allTeamsHTML = `
-            <table class="text-sm w-full table-auto border border-gray-700 text-white">
+            <table class="text-xs w-full table-auto border border-gray-700 text-white">
               <thead>
                 <tr class="bg-gray-800 text-white">
-                  <th class="px-2 py-1 border border-gray-700">#</th>
-                  <th class="px-2 py-1 border border-gray-700">Team</th>
-                  <th class="px-2 py-1 border border-gray-700 text-center">Played</th>
-                  <th class="px-2 py-1 border border-gray-700 text-center">Win</th>
-                  <th class="px-2 py-1 border border-gray-700 text-center">Loss</th>
-                  <th class="px-2 py-1 border border-gray-700 text-center">Draw</th>
-                  <th class="px-2 py-1 border border-gray-700 text-center">Goals</th>
-                  <th class="px-2 py-1 border border-gray-700 text-center">Points</th>
+                  <th class="px-1 py-1 border border-gray-700">#</th>
+                  <th class="px-1 py-1 border border-gray-700">Team</th>
+                  <th class="px-1 py-1 border border-gray-700 text-center">Played</th>
+                  <th class="px-1 py-1 border border-gray-700 text-center">Win</th>
+                  <th class="px-1 py-1 border border-gray-700 text-center">Loss</th>
+                  <th class="px-1 py-1 border border-gray-700 text-center">Draw</th>
+                  <th class="px-1 py-1 border border-gray-700 text-center">Goals</th>
+                  <th class="px-1 py-1 border border-gray-700 text-center">Points</th>
                 </tr>
               </thead>
               <tbody>
                 ${allTeams.map((team, i) => `
                   <tr>
-                    <td class="px-2 py-1 border border-gray-700 text-center">${i + 1}</td>
-                    <td class="px-2 py-1 border border-gray-700">${team.team}</td>
-                    <td class="px-2 py-1 border border-gray-700 text-center font-semibold">${team.played}</td>
-                    <td class="px-2 py-1 border border-gray-700 text-center">${team.win}</td>
-                    <td class="px-2 py-1 border border-gray-700 text-center">${team.loss}</td>
-                    <td class="px-2 py-1 border border-gray-700 text-center">${team.draw}</td>
-                    <td class="px-2 py-1 border border-gray-700 text-center font-semibold">${team.goals}</td>
-                    <td class="px-2 py-1 border border-gray-700 text-center font-bold">${team.points}</td>
+                    <td class="px-1 py-1 border border-gray-700 text-center">${i + 1}</td>
+                    <td class="px-1 py-1 border border-gray-700">${team.team}</td>
+                    <td class="px-1 py-1 border border-gray-700 text-center font-semibold">${team.played}</td>
+                    <td class="px-1 py-1 border border-gray-700 text-center">${team.win}</td>
+                    <td class="px-1 py-1 border border-gray-700 text-center">${team.loss}</td>
+                    <td class="px-1 py-1 border border-gray-700 text-center">${team.draw}</td>
+                    <td class="px-1 py-1 border border-gray-700 text-center font-semibold">${team.goals}</td>
+                    <td class="px-1 py-1 border border-gray-700 text-center font-bold">${team.points}</td>
                   </tr>
                 `).join('')}
               </tbody>
