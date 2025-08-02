@@ -183,92 +183,106 @@
       Profile
     </a>
   </nav>
-  
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+     <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
-      authDomain: "dls12364.firebaseapp.com",
-      projectId: "dls12364",
-      storageBucket: "dls12364.firebasestorage.app",
-      messagingSenderId: "431397971734",
-      appId: "1:431397971734:web:0cb1a8b53ee09157425237",
-      measurementId: "G-B75EB4GGRV"
-    };
+  // Extra import: html2canvas for card screenshot
+  import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
+    authDomain: "dls12364.firebaseapp.com",
+    projectId: "dls12364",
+    storageBucket: "dls12364.firebasestorage.app",
+    messagingSenderId: "431397971734",
+    appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+    measurementId: "G-B75EB4GGRV"
+  };
 
-    const playersList = document.getElementById("players-list");
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
+  const playersList = document.getElementById("players-list");
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const q = query(collection(db, "playersform"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+      playersList.innerHTML = "";
+
+      if (snapshot.empty) {
+        playersList.innerHTML = `<p class="text-center text-gray-400">No players have registered yet.</p>`;
         return;
       }
 
-      const q = query(collection(db, "playersform"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snapshot) => {
-        playersList.innerHTML = "";
+      let count = 1;
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const photo = data.photoUrl && data.photoUrl.trim() !== "" ? data.photoUrl : "https://via.placeholder.com/100?text=No+Image";
+        const cardId = `card-${count}`;
 
-        if (snapshot.empty) {
-          playersList.innerHTML = `<p class="text-center text-gray-400">No players have registered yet.</p>`;
-          return;
-        }
-
-        let count = 1;
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const photo = data.photoUrl && data.photoUrl.trim() !== "" ? data.photoUrl : "https://via.placeholder.com/100?text=No+Image";
-
-          const card = `
-            <div class="flex justify-center items-center">
-    <div class="card">
-      <div class="card-header">
-        DCL CHAMPIONS LEAGUE S-1
-      </div>
-      <div class="card-img">
-        <img src="${photo}" alt="Card Image">
-        <div class="card-title flex items-center justify-between px-1">
-          <div>${data.username || "No Username"}</div>
-          <div style="background-color: #ff6347;" class="px-1">${count}</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="card-info">
-          <div class="card-item">
-            <div class="card-item2">Team</div>
-            <p>${data.team || "N/A"}</p>
+        const card = `
+          <div class="flex justify-center items-center">
+            <div class="card" id="${cardId}">
+              <div class="card-header flex justify-between items-center px-2">
+                <span>DCL CHAMPIONS LEAGUE S-1</span>
+                <i class="fa-solid fa-download cursor-pointer text-gray-600 hover:text-black" onclick="downloadCard('${cardId}', '${data.username || 'player'}')"></i>
+              </div>
+              <div class="card-img">
+                <img src="${photo}" alt="Card Image">
+                <div class="card-title flex items-center justify-between px-1">
+                  <div>${data.username || "No Username"}</div>
+                  <div style="background-color: #ff6347;" class="px-1">${count}</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="card-info">
+                  <div class="card-item">
+                    <div class="card-item2">Team</div>
+                    <p>${data.team || "N/A"}</p>
+                  </div>
+                  <div class="card-item">
+                    <div class="card-item2">Rating</div>
+                    <p>${data.dlsRating ?? "N/A"}</p>
+                  </div>
+                </div>
+                <div class="card-info">
+                  <div class="card-item">
+                    <div class="card-item2">Experience</div>
+                    <p>${data.yearsPlayed ?? "N/A"} year</p>
+                  </div>
+                  <div class="card-item">
+                    <div class="card-item2">Your age</div>
+                    <p>${data.age ?? "N/A"} year</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card-item">
-            <div class="card-item2">Rating</div>
-            <p>${data.dlsRating ?? "N/A"}</p>
-          </div>
-        </div>
-        <div class="card-info">
-          <div class="card-item">
-            <div class="card-item2">Experience</div>
-            <p>${data.yearsPlayed ?? "N/A"} year</p>
-          </div>
-          <div class="card-item">
-            <div class="card-item2">Your age</div>
-            <p>${data.age ?? "N/A"} year</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-          `;
-          playersList.insertAdjacentHTML("beforeend", card);
-          count++;
-        });
+        `;
+        playersList.insertAdjacentHTML("beforeend", card);
+        count++;
       });
     });
-  </script>
+  });
 
+  // Function to download card as image
+  window.downloadCard = (id, username) => {
+    const cardElement = document.getElementById(id);
+    html2canvas(cardElement).then((canvas) => {
+      const link = document.createElement("a");
+      link.download = `${username}_card.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  };
+</script>
 </body>
 </html>
