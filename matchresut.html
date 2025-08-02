@@ -96,10 +96,7 @@
               const team1InputId = `team1-${match.id}`;
               const team2InputId = `team2-${match.id}`;
 
-              let winnerText = "";
-              if (match.winner === "team1") winnerText = match.team1;
-              else if (match.winner === "team2") winnerText = match.team2;
-              else if (match.winner === "Draw") winnerText = "Draw";
+              let winnerText = match.winner || "-";
 
               html += `
                 <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm space-y-2">
@@ -115,7 +112,7 @@
                     <input id="${team2InputId}" type="number" placeholder="${match.team2}" class="border p-2 text-xs rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300" />
                   </div>
                   <div class="mt-2 flex justify-center">
-                    <button onclick="submitGoals('${match.id}', '${team1InputId}', '${team2InputId}')" class="bg-blue-600 hover:bg-blue-700 transition text-white w-24 rounded-md text-xs py-1.5 shadow">
+                    <button onclick="submitGoals('${match.id}', '${team1InputId}', '${team2InputId}', '${match.team1}', '${match.team2}')" class="bg-blue-600 hover:bg-blue-700 transition text-white w-24 rounded-md text-xs py-1.5 shadow">
                       Submit
                     </button>
                   </div>
@@ -128,7 +125,8 @@
       });
     }
 
-    window.submitGoals = async (matchId, team1InputId, team2InputId) => {
+    // Winner field will contain actual team name or "Draw"
+    window.submitGoals = async (matchId, team1InputId, team2InputId, team1Name, team2Name) => {
       const team1Goal = parseInt(document.getElementById(team1InputId).value);
       const team2Goal = parseInt(document.getElementById(team2InputId).value);
 
@@ -137,7 +135,7 @@
         return;
       }
 
-      const winner = team1Goal > team2Goal ? "team1" : team2Goal > team1Goal ? "team2" : "Draw";
+      const winner = team1Goal > team2Goal ? team1Name : team2Goal > team1Goal ? team2Name : "Draw";
 
       try {
         await updateDoc(doc(db, "fixers", matchId), {
