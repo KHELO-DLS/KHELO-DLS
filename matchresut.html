@@ -95,8 +95,7 @@
             dateMap[date].forEach(match => {
               const team1InputId = `team1-${match.id}`;
               const team2InputId = `team2-${match.id}`;
-
-              let winnerText = match.winner || "-";
+              const winnerText = match.winner || "-";
 
               html += `
                 <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm space-y-2">
@@ -125,7 +124,7 @@
       });
     }
 
-    // Winner field will contain actual team name or "Draw"
+    // ✅ Update with real team name or "Draw"
     window.submitGoals = async (matchId, team1InputId, team2InputId, team1Name, team2Name) => {
       const team1Goal = parseInt(document.getElementById(team1InputId).value);
       const team2Goal = parseInt(document.getElementById(team2InputId).value);
@@ -135,7 +134,9 @@
         return;
       }
 
-      const winner = team1Goal > team2Goal ? team1Name : team2Goal > team1Goal ? team2Name : "Draw";
+      const winner =
+        team1Goal > team2Goal ? team1Name :
+        team2Goal > team1Goal ? team2Name : "Draw";
 
       try {
         await updateDoc(doc(db, "fixers", matchId), {
