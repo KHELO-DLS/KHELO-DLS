@@ -8,21 +8,49 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  
   <style>
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
+
+    body {
+      background-image: url('1971.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      z-index: 0;
+    }
+
+    /* Overlay black blur */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(2px);
+      z-index: -1;
+    }
   </style>
 </head>
-<body class="bg-gray-900 flex items-center justify-center min-h-screen px-5">
+<body class="flex items-center justify-center min-h-screen">
 
-  <div class="bg-gradient-to-tl from-gray-900 via-gray-900 p-4 rounded-sm shadow-lg w-full max-w-sm border border-gray-600 shadow-2xl">
-    <div class="flex flex-col items-center justify-center mb-4">
-      <h1 style="font-family: 'Audiowide', cursive;" class="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent">Khelo Dls</h1>
+  <main class="w-full max-w-sm px-3">
+    <div class="text-center mb-6 -mt-16">
+      <h1 class="text-xl font-bold text-white mb-1" style="font-family: 'Audiowide', cursive;">WELCOME TO</h1>
+      <h2 class="text-4xl font-extrabold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">DCL TOUR</h2>
+      <p class="text-md text-white font-semibold mt-1">গেইম খেলুন এবং টাকা জিতুন</p>
     </div>
+    <div class="px-4">
 
-    <h2 class="text-md font-semibold text-white mb-6">Please Login to Your Account</h2>
+    <div class="sing-form bg-gray-900 p-4 rounded-md shadow-lg border border-gray-600 shadow-2xl bg-opacity-50">
+      <div class="flex flex-col items-center justify-center"></div>
+
+    <h2 class="text-sm text-center font-semibold text-white mb-2">Please Login to Your Account</h2>
 
     <form onsubmit="login(event)">
       <div class="mb-4">
@@ -30,20 +58,20 @@
         <div class="relative">
           <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
           <input type="email" id="loginEmail" name="loginEmail" placeholder="Enter your email" required 
-            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm">
+            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black pl-10 text-sm bg-opacity-30">
         </div>
       </div>
 
-      <div class="mb-6">
+      <div class="mb-4">
         <label for="loginPassword" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
         <div class="relative">
           <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
           <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" required 
-            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm">
+            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black pl-10 text-sm bg-opacity-30">
         </div>
       </div>
 
-      <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
           <input type="checkbox" id="remember" name="remember" class="text-blue-300 focus:ring-blue-500 border-gray-600 rounded-sm">
           <label for="remember" class="text-sm text-gray-300 ml-2">Remember me</label>
@@ -52,7 +80,7 @@
       </div>
 
       <button type="submit" 
-        class="w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 font-extrabold py-2 rounded-sm">
+        class="w-full text-white bg-blue-600 font-extrabold py-2 rounded-md bg-opacity-50">
         Login
       </button>
     </form>
@@ -62,13 +90,14 @@
         <a href="signup.html" class="text-blue-300 text-lg font-medium">Sign up</a>
       </p>
     </div>
-  </div>
+    </div>
+    </div>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
@@ -81,11 +110,10 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    window.login = async function (event) {
+    window.login = async function(event) {
       event.preventDefault();
 
       const email = document.getElementById("loginEmail").value.trim();
@@ -110,27 +138,14 @@
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const uid = userCredential.user.uid;
 
-        const userDocRef = doc(db, "users", uid);
-        const userDocSnap = await getDoc(userDocRef);
+        // Query Firestore users collection for doc where uid == current uid
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("uid", "==", uid));
+        const querySnapshot = await getDocs(q);
 
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-
-          // Check if the account is verified
-          if (userData.verified !== "verified") {
-            Swal.fire({
-              toast: true,
-              position: 'top-end',
-              icon: 'warning',
-              title: 'Your account is not verified yet.',
-              showConfirmButton: false,
-              timer: 2500,
-              timerProgressBar: true,
-              background: '#1a202c',
-              color: '#fff'
-            });
-            return;
-          }
+        if (!querySnapshot.empty) {
+          const userDoc = querySnapshot.docs[0];
+          const userData = userDoc.data();
 
           Swal.fire({
             toast: true,
