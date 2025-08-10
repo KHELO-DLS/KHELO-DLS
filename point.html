@@ -35,7 +35,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
   apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
@@ -56,7 +56,6 @@
       else loadPointTables();
     });
 
-    // Function to load point tables and save to pointTables collection
     function loadPointTables() {
       const pointTablesContainer = document.getElementById("pointTablesContainer");
       const allPointsContainer = document.getElementById("allPointsContainer");
@@ -71,24 +70,19 @@
         const fixers = [];
         snapshot.forEach(doc => fixers.push(doc.data()));
 
-        const fixersByDate = {};
+        // Grouping by groupName instead of hardcoding
+        const groupsMap = {};
         fixers.forEach(fix => {
-          const key = fix.date;
-          if (!fixersByDate[key]) fixersByDate[key] = [];
-          fixersByDate[key].push(fix);
+          if (!groupsMap[fix.groupName]) groupsMap[fix.groupName] = [];
+          groupsMap[fix.groupName].push(fix);
         });
 
-        const sortedDates = Object.keys(fixersByDate).sort();
-
-        let groupIndex = 0;
         const allGroupsPoints = [];
         const globalPoints = {};
         const globalGoals = {};
 
-        sortedDates.forEach(date => {
-          // Prefix group name with 'Group-' and a letter (A, B, C, ...)
-          const groupName = `Group-${String.fromCharCode(65 + groupIndex)}`;
-          const matches = fixersByDate[date].sort((a, b) => a.team1.localeCompare(b.team1));
+        Object.keys(groupsMap).sort().forEach(groupName => {
+          const matches = groupsMap[groupName];
 
           const points = {};
           const goals = {};
@@ -147,35 +141,12 @@
             return b.goals - a.goals;
           });
 
-          // **Limit to max 4 teams per group here:**
           sortedTeams = sortedTeams.slice(0, 4);
 
           allGroupsPoints.push({ groupName, sortedTeams });
-          groupIndex++;
-
-          // Save to pointTables collection (with 'Group-' prefix)
-          const pointTableData = {
-            groupName: groupName,  // Save groupName as 'Group-A', 'Group-B', etc.
-            teams: sortedTeams.map(team => ({
-              team: team.team,
-              played: team.played,
-              win: team.win,
-              loss: team.loss,
-              draw: team.draw,
-              goals: team.goals,
-              points: team.points
-            }))
-          };
-
-          // Save the point table data to Firestore under the pointTables collection
-          setDoc(doc(db, "pointTables", groupName), pointTableData).then(() => {
-            console.log("Point table saved for group: " + groupName);
-          }).catch((error) => {
-            console.error("Error saving point table: ", error);
-          });
         });
 
-        // Group-wise tables
+        // Group tables
         let allPointsHTML = "";
         if (allGroupsPoints.length === 0) {
           allPointsHTML = `<p class="text-gray-500 text-center">No point tables to show.</p>`;
@@ -216,7 +187,7 @@
         }
         pointTablesContainer.innerHTML = allPointsHTML;
 
-        // All teams consolidated table
+        // All teams table
         const allTeams = Object.entries(globalPoints).map(([team, stat]) => ({
           team,
           ...stat,
