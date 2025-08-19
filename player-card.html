@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Player Card List</title>
+  <title>Team Ranking</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
@@ -11,110 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-   <style>
-    .card {
-      width: 330px;
-      border-radius: 10px;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      transition: transform 0.3s ease-in-out;
-    }
-
-    .card-header {
-      background-color: #1e40af;
-      padding: 5px;
-      text-align: center;
-      color: white;
-      font-size: 1.1rem;
-      font-weight: bold;
-    }
-
-    .card-img {
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 10px 25px 0px;
-      text-align: center;
-      position: relative;
-    }
-
-    .card-body {
-      padding: 5px;
-      text-align: center;
-      background-color: rgba(0, 0, 0, 0.6);
-    }
-
-    .card-footer {
-      background-color: #1e3a8a;
-      padding: 10px;
-      text-align: center;
-      color: white;
-    }
-
-    .card img {
-      width: 100%;
-      height: 300px;
-      border-radius: 5px;
-      object-fit: cover;
-    }
-
-    .card-title {
-      width: 280px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin-top: 10px;
-      color: #ffffff;
-      position: absolute;
-      bottom: 0px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: rgba(0, 0, 0, 0.5);
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-      padding: 2px, 2px;
-      text-transform: uppercase;
-    }
-
-    .card-text {
-      font-size: 1rem;
-      margin-top: 10px;
-      color: #e5e5e5;
-    }
-
-    .info {
-      font-size: 1rem;
-      color: #e5e5e5;
-      margin-top: 5px;
-    }
-
-    .card-info {
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-      justify-content: space-between;
-    }
-
-    .card-item {
-      background-color: #04585e;
-      border-radius: 15px 0px 15px;
-      margin: 5px;
-      color: #fff;
-      flex: 1;
-      font-size: 12px;
-      font-weight: 900;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
-    .card-item2 {
-      background-color: #7c3aed;
-      border-radius: 15px 0px;
-      color: #d9e3e3;
-      font-size: 11px;
-      font-weight: 900;
-      text-align: center;
-      text-transform: uppercase;
-    }
-  </style>
-  
+  <link rel="stylesheet" href="team-rank.css">
 </head>
 <body class="bg-black text-white min-h-screen">
 
@@ -139,54 +36,48 @@
 
   <!-- Players List -->
   <main class="max-w-3xl mx-auto px-4 mt-6 mb-20">
-    <div id="players-list" class="space-y-4">
+    <div id="players-list" class="space-y-6">
       <p class="text-center text-gray-400">Loading...</p>
     </div>
   </main>
 
-    <!-- Bottom Nav -->
-  <nav
-    class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-40">
+  <!-- Bottom Nav -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-40">
     <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Home
     </a>
     <a href="match.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-gamepad text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Matches
     </a>
     <a href="league.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-trophy text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       League
     </a>
     <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-ranking-star text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
-         Ranking
-      </a>
-
+      Ranking
+    </a>
     <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
       </div>
       Profile
     </a>
   </nav>
-     <script type="module">
+
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -205,14 +96,44 @@
 
     const playersList = document.getElementById("players-list");
 
+    const badgeLevels = [
+      { name: "BRONZE", min: 0 },
+      { name: "BRONZE I", min: 10 },
+      { name: "BRONZE II", min: 25 },
+      { name: "BRONZE III", min: 50 },
+      { name: "BRONZE IV", min: 75 },
+      { name: "BRONZE V", min: 100 },
+      { name: "SILVER I", min: 130 },
+      { name: "SILVER II", min: 160 },
+      { name: "SILVER III", min: 190 },
+      { name: "SILVER IV", min: 220 },
+      { name: "SILVER V", min: 260 }
+    ];
+
+    function getBadge(pts) {
+      let current = badgeLevels[0].name;
+      badgeLevels.forEach(level => {
+        if (pts >= level.min) current = level.name;
+      });
+      return current;
+    }
+
+    function getNextBadgeInfo(pts) {
+      for (let i = 0; i < badgeLevels.length; i++) {
+        if (pts < badgeLevels[i].min) {
+          return badgeLevels[i];
+        }
+      }
+      return null;
+    }
+
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = "login.html";
         return;
       }
 
-      const q = query(collection(db, "playersform"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snapshot) => {
+      onSnapshot(collection(db, "playersform"), (snapshot) => {
         playersList.innerHTML = "";
 
         if (snapshot.empty) {
@@ -220,54 +141,123 @@
           return;
         }
 
-        let count = 1;
+        let players = [];
         snapshot.forEach((doc) => {
-          const data = doc.data();
+          players.push({ id: doc.id, ...doc.data() });
+        });
+
+        players.sort((a, b) => b.pts - a.pts);
+
+        players.forEach((data, index) => {
           const photo = data.photoUrl && data.photoUrl.trim() !== "" ? data.photoUrl : "https://via.placeholder.com/100?text=No+Image";
 
+          const pts    = data.pts    || 0;
+          const goal   = data.goal   || 0;
+          const draw   = data.draw   || 0;
+          const lost   = data.lost   || 0;
+          const win    = data.win    || 0;
+          const played = data.played || 0;
+          const position = index + 1;
+          const badge = getBadge(pts);
+          const nextBadge = getNextBadgeInfo(pts);
+
+          let progress = 100;
+          let progressText = "Max Level";
+          if (nextBadge) {
+            const prevLevel = badgeLevels.find(l => l.name === badge);
+            const prevPts = prevLevel ? prevLevel.min : 0;
+            progress = ((pts - prevPts) / (nextBadge.min - prevPts)) * 100;
+            progressText = `${nextBadge.min - pts} pts to ${nextBadge.name}`;
+          }
+
           const card = `
-            <div class="flex justify-center items-center">
-    <div class="card">
-      <div class="card-header">
-        DCL CHAMPIONS LEAGUE S-2
-      </div>
-      <div class="card-img">
-        <img src="${photo}" alt="Card Image">
-        <div class="card-title flex items-center justify-between px-1">
-          <div>${data.username || "No Username"}</div>
-          <div style="background-color: #ff6347;" class="px-1">${count}</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="card-info">
-          <div class="card-item">
-            <div class="card-item2">Team</div>
-            <p>${data.team || "N/A"}</p>
+            <section class="player-card mb-6">
+              <div class="border rounded-lg p-2 py-4 flex flex-col sm:flex-row items-center gap-4 rank-badge">
+                <div class="bottom-stripe"></div>
+                <div class="flex-shrink-0 team-image-wrapper">
+                  <img src="${photo}" alt="Team Logo">
+                  <div class="team-text w-full">
+                    <div class="team-name">${data.team || "N/A"}</div>
+                    <div class="player-name">${data.username || "No Username"}</div>
+                  </div>
+                </div>
+
+                <div class="w-full center-text px-2">
+                  <section class="mb-3 middle-card">
+                    <div class="middle-card-content flex items-center justify-between gap-5">
+                      <div class="uppercase">
+                        <div class="text-xs text-gray-200 text-center">position</div>
+                        <div class="status-card flex justify-center gap-1 items-center text-sm font-bold text-gray-300">
+                          <i class="fa-solid fa-medal text-sm text-yellow-400"></i> <span class="text-xl">${position}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div class="text-xs text-gray-200 text-center">CURRENT BADGE</div>
+                        <div class="status-card">
+                          <h2 style="font-size: 16px;" class="py-0.5 font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent">${badge}</h2>
+                        </div>
+                      </div>
+
+                      <div class="flex flex-col items-center justify-center">
+                        <div class="text-xs text-gray-200 text-center">TEAM PTS</div>
+                        <div class="status-card w-14 h-7 flex items-center justify-center rounded-md text-gray-300 text-xl font-bold">
+                          ${pts}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  
+                  <div class="mt-2 mb-3 w-full">
+                    <div class="text-xs text-gray-400 mb-1">Level Rank - ${progressText}</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+                      <div class="h-2 rounded-full"
+                        style="width:${progress}%; background: linear-gradient(90deg,#f6d365,#fda085);"></div>
+                    </div>
+                  </div>
+
+                  <div class="mt-2 grid grid-cols-5 gap-3 w-full uppercase">
+                    <div class="stat-card">
+                      <div class="flex justify-center items-center text-gray-300 text-xs">Draw</div>
+                      <div class="text-lg font-bold text-yellow-400">${draw}</div>
+                    </div>
+                    <div class="stat-card">
+                      <div class="flex justify-center items-center text-gray-300 text-xs">Win</div>
+                      <div class="text-lg font-bold text-green-500">${win}</div>
+                    </div>
+                    <div class="stat-card">
+                      <div class="flex justify-center items-center text-gray-300 text-xs">Lost</div>
+                      <div class="text-lg font-bold text-red-500">${lost}</div>
+                    </div>
+                    <div class="stat-card">
+                      <div class="flex justify-center items-center text-gray-300 text-xs">Goal</div>
+                      <div class="text-lg font-bold text-blue-400">${goal}</div>
+                    </div>
+                    <div class="stat-card">
+                      <div class="flex justify-center items-center text-gray-300 text-xs">Match</div>
+                      <div class="text-lg font-bold text-purple-300">${played}</div>
+                    </div>
+                  </div>
+
+                  <div class="mt-2 w-full flex justify-center items-center gap-2">
+            <div class="text-sm text-gray-300 uppercase font-bold">Last 5 Matches</div>
+            <div class="flex gap-1">
+              <span class="px-1 h-4 text-xs rounded-sm bg-green-600 font-semibold">W</span>
+              <span class="px-1 h-4 text-xs rounded-sm bg-green-600 font-semibold">W</span>
+              <span class="px-1 h-4 text-xs rounded-sm bg-red-600 font-semibold">L</span>
+              <span class="px-1 h-4 text-xs rounded-sm bg-yellow-500 text-black font-semibold">D</span>
+              <span class="px-1 h-4 text-xs rounded-sm bg-green-600 font-semibold">W</span>
+            </div>
           </div>
-          <div class="card-item">
-            <div class="card-item2">Rating</div>
-            <p>${data.dlsRating ?? "N/A"}</p>
-          </div>
-        </div>
-        <div class="card-info">
-          <div class="card-item">
-            <div class="card-item2">Experience</div>
-            <p>${data.yearsPlayed ?? "N/A"} year</p>
-          </div>
-          <div class="card-item">
-            <div class="card-item2">Your age</div>
-            <p>${data.age ?? "N/A"} year</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+
+                </div>
+              </div>
+            </section>
           `;
           playersList.insertAdjacentHTML("beforeend", card);
-          count++;
         });
       });
     });
-     </script>
+  </script>
 </body>
 </html>
