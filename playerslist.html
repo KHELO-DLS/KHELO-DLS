@@ -24,7 +24,10 @@
   <main class="p-4 md:p-6 space-y-6 overflow-auto flex-grow">
     <!-- Players List Section -->
     <div class="bg-white shadow rounded p-4">
-      <div class="text-xl font-semibold text-blue-700 mb-4">Players List</div>
+      <div class="flex justify-center items-center mb-4 space-x-4">
+        <button id="allPlayerBtn" class="px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">All Player (0)</button>
+        <button id="tourPlayerBtn" class="px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300">Tour Player (0)</button>
+      </div>
       <div id="playersCardContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <!-- Player cards will be inserted here -->
         <div class="col-span-full text-center text-gray-500" id="loadingText">Loading players...</div>
@@ -36,7 +39,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const firebaseConfig = {
@@ -54,6 +57,8 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
+    let currentFilter = "all"; // default all player
+
     onAuthStateChanged(auth, user => {
       if (!user) {
         window.location.href = "login.html";
@@ -62,18 +67,69 @@
       }
     });
 
+    // Button actions
+    document.getElementById("allPlayerBtn").addEventListener("click", () => {
+      currentFilter = "all";
+      toggleActiveButton("allPlayerBtn");
+      loadPlayers();
+    });
+
+    document.getElementById("tourPlayerBtn").addEventListener("click", () => {
+      currentFilter = "tour";
+      toggleActiveButton("tourPlayerBtn");
+      loadPlayers();
+    });
+
+    function toggleActiveButton(activeId) {
+      const allBtn = document.getElementById("allPlayerBtn");
+      const tourBtn = document.getElementById("tourPlayerBtn");
+
+      if (activeId === "allPlayerBtn") {
+        allBtn.className = "px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700";
+        tourBtn.className = "px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300";
+      } else {
+        tourBtn.className = "px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700";
+        allBtn.className = "px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300";
+      }
+    }
+
     async function loadPlayers() {
       const container = document.getElementById("playersCardContainer");
-      const loadingText = document.getElementById("loadingText");
+      const allBtn = document.getElementById("allPlayerBtn");
+      const tourBtn = document.getElementById("tourPlayerBtn");
+
+      container.innerHTML = `<div class="col-span-full text-center text-gray-500">Loading players...</div>`;
 
       try {
-        const playersSnapshot = await getDocs(collection(db, "playersform"));
+        // Fetch all players for counting
+        const allPlayersSnapshot = await getDocs(collection(db, "playersform"));
+        const allPlayersCount = allPlayersSnapshot.size;
+
+        // Fetch tour players
+        const tourQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
+        const tourPlayersSnapshot = await getDocs(tourQuery);
+        const tourPlayersCount = tourPlayersSnapshot.size;
+
+        // Update button text dynamically
+        allBtn.textContent = `All Player (${allPlayersCount})`;
+        tourBtn.textContent = `Tour Player (${tourPlayersCount})`;
+
+        // Fetch players according to current filter
+        let q;
+        if (currentFilter === "tour") {
+          q = tourQuery;
+        } else {
+          q = collection(db, "playersform");
+        }
+
+        const playersSnapshot = await getDocs(q);
+
         if (playersSnapshot.empty) {
-          loadingText.innerText = "No players found.";
+          container.innerHTML = `<div class="col-span-full text-center text-gray-500">No players found.</div>`;
           return;
         }
 
-        loadingText.remove();
+        container.innerHTML = "";
 
         playersSnapshot.forEach(docSnap => {
           const p = docSnap.data();
@@ -92,7 +148,12 @@
           card.innerHTML = `
             <div class="flex items-center mb-3">
               <img id="${imageId}" src="${imageUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-300 mr-3" />
-              <div class="text-lg font-bold text-gray-800">${p.username || "N/A"}</div>
+              <div>
+                <div class="text-lg font-bold text-gray-800">${p.username || "N/A"}</div>
+                <div class="text-xs mt-1 inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                  ${p.type || "N/A"}
+                </div>
+              </div>
               <input type="file" id="${fileInputId}" class="hidden" accept="image/*" />
               <button id="${updateBtnId}" class="ml-auto text-sm text-green-600 hover:underline">Update</button>
             </div>
@@ -133,7 +194,7 @@
 
           // File upload logic
           const fileInput = card.querySelector(`#${fileInputId}`);
-          updateBtn.addEventListener("dblclick", () => fileInput.click()); // optional: double click to open file input
+          updateBtn.addEventListener("dblclick", () => fileInput.click()); 
 
           fileInput.addEventListener("change", async (e) => {
             const file = e.target.files[0];
