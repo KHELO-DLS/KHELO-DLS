@@ -25,14 +25,12 @@
       <a href="#">
         <i class="fa-solid fa-bell text-yellow-300 text-shadow text-xl"></i>
       </a>
-      
       <a href="https://facebook.com" target="_blank">
         <i class="fa-brands fa-facebook text-white text-shadow text-xl"></i>
       </a>
     </div>
   </header>
 
-  
   <main class="max-w-3xl mx-auto px-4 mt-6 mb-20">
 
     <div
@@ -51,7 +49,7 @@
       <div class="w-px bg-yellow-400"></div>
 
       <a
-        href="rank.html"
+        href="user-point.html"
         class="flex-1 py-1.5 text-lg font-semibold text-yellow-300 hover:text-gray-200 bg-black bg-opacity-30 hover:bg-opacity-0 transition duration-300 ease-in-out focus:outline-none text-center"
         role="button"
         aria-pressed="false"
@@ -150,23 +148,11 @@
     return `${day}-${month}-${year}`;
   }
 
-  function formatBalance(amount) {
-    return (+amount.toFixed(2)).toString();
-  }
-
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       await loadTeamPhotos();
       await loadHiddenMatchdays(user.uid);
       loadFixers();
-
-      const userRef = doc(db, "users", user.uid);
-      onSnapshot(userRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const userBalance = docSnap.data().balance || 0;
-          document.getElementById("mainBalance").textContent = formatBalance(userBalance);
-        }
-      });
     } else {
       window.location.href = "login.html";
     }
@@ -184,32 +170,22 @@
       const fixers = [];
       snapshot.forEach(docSnap => fixers.push(docSnap.data()));
 
-      const earliestByGroup = {};
-      fixers.forEach(fix => {
-        if (!earliestByGroup[fix.groupName] || new Date(fix.date) < new Date(earliestByGroup[fix.groupName])) {
-          earliestByGroup[fix.groupName] = fix.date;
-        }
-      });
-
       const matchdaysMap = {};
       fixers.forEach(fix => {
-        const baseDate = new Date(earliestByGroup[fix.groupName]);
-        const diffDays = Math.floor((new Date(fix.date) - baseDate) / (1000*60*60*24));
-        const matchdayNum = diffDays + 1;
-        if (!matchdaysMap[matchdayNum]) matchdaysMap[matchdayNum] = [];
-        matchdaysMap[matchdayNum].push(fix);
+        const md = fix.matchday || "Matchday-Unknown";
+        if (!matchdaysMap[md]) matchdaysMap[md] = [];
+        matchdaysMap[md].push(fix);
       });
 
-      const sortedMatchdays = Object.keys(matchdaysMap).map(Number).sort((a,b) => a-b);
+      const sortedMatchdays = Object.keys(matchdaysMap).sort();
       let html = "";
 
       sortedMatchdays.forEach(md => {
-        const matchdayId = `matchday-${md}`;
-        if (hiddenMatchdays[matchdayId]) return; // skip hidden matchdays
+        if (hiddenMatchdays[md]) return; // skip hidden matchdays
 
         const firstDate = matchdaysMap[md][0]?.date || "";
         html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-lg font-semibold uppercase text-yellow-300 mb-2 flex justify-center items-center">
-                  Final || ${firstDate ? formatDateAndTime(firstDate) : ""}
+                  ${md} || ${firstDate ? formatDateAndTime(firstDate) : ""}
                 </div>`;
 
         matchdaysMap[md].sort((a,b) => a.groupName.localeCompare(b.groupName) || a.team1.localeCompare(b.team1))
@@ -226,7 +202,7 @@
               DCL CHAMPIONS LEAGUE S-2
             </div>
             <div style="background: #af1f42; top: 36px;" class="flex justify-center items-center w-2/4 py-1 px-4 absolute left-1/8 rounded-b-xl uppercase text-xs font-extrabold border-b border-l border-r border-gray-400 z-10 opacity-70">
-              <div>Final</div>
+              <div>${match.groupName}</div>
             </div>
             <div style="background: #af1f42; top: 82px;" class="flex justify-between w-3/4 py-1.5 px-3 absolute left-1/8 rounded-t-xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-70">
               <div>${formatDateAndTime(match.date)}</div>
