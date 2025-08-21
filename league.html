@@ -130,10 +130,9 @@
     });
   }
 
-  // ✅ GLOBAL hiddenMatchdays load from settings doc
-  async function loadHiddenMatchdays() {
-    const settingsRef = doc(db, "settings", "matchdaySettings");
-    const snap = await getDoc(settingsRef);
+  async function loadHiddenMatchdays(uid) {
+    const userRef = doc(db, "users", uid);
+    const snap = await getDoc(userRef);
     if (snap.exists()) {
       hiddenMatchdays = snap.data().hiddenMatchdays || {};
     } else {
@@ -152,7 +151,7 @@
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       await loadTeamPhotos();
-      await loadHiddenMatchdays(); // ✅ load from global doc
+      await loadHiddenMatchdays(user.uid);
       loadFixers();
     } else {
       window.location.href = "login.html";
@@ -182,7 +181,7 @@
       let html = "";
 
       sortedMatchdays.forEach(md => {
-        if (hiddenMatchdays[md]) return; // ✅ now works globally
+        if (hiddenMatchdays[md]) return; // skip hidden matchdays
 
         const firstDate = matchdaysMap[md][0]?.date || "";
         html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-lg font-semibold uppercase text-yellow-300 mb-2 flex justify-center items-center">
