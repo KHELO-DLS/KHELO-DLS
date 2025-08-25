@@ -26,7 +26,6 @@
       <a href="#">
         <i class="fa-solid fa-bell text-yellow-300 text-shadow text-xl"></i>
       </a>
-      
       <a href="https://facebook.com" target="_blank">
         <i class="fa-brands fa-facebook text-gray-300 hover:text-yellow-400 text-shadow text-xl"></i>
       </a>
@@ -103,7 +102,6 @@
     let photoMap = {};
 
     async function loadPlayersPhotos() {
-      // Load photoUrl of each team/player from playersform collection into photoMap
       const playersSnap = await getDocs(collection(db, "playersform"));
       photoMap = {};
       playersSnap.forEach(doc => {
@@ -135,7 +133,6 @@
         const fixers = [];
         snapshot.forEach(doc => fixers.push(doc.data()));
 
-        // Group by groupName dynamically
         const groupsMap = {};
         fixers.forEach(fix => {
           if (!groupsMap[fix.groupName]) groupsMap[fix.groupName] = [];
@@ -192,7 +189,6 @@
           allGroupsPoints.push({ groupName, sortedTeams });
         });
 
-        // Render group tables with very small font size (text-xs)
         let allPointsHTML = "";
         if (allGroupsPoints.length === 0) {
           allPointsHTML = `<p class="text-gray-500 text-center">No point tables to show.</p>`;
@@ -214,14 +210,20 @@
                   </tr>
                 </thead>
                 <tbody>
-                  ${sortedTeams.map((team, i) => {
+                  ${sortedTeams.map((team, index) => {
                     const photoUrl = photoMap[team.team.trim().toLowerCase()] || "default-player.png";
+                    const qualifiedBadge = (team.played === 3 && (index === 0 || index === 1)) 
+                      ? `<span class="absolute -top-0 -right-0 bg-red-600 text-white font-semibold text-[10px] font-bold w-3 h-3 flex justify-center items-center rounded-sm">Q</span>` 
+                      : "";
                     return `
                       <tr class="even:bg-gray-900 odd:bg-gray-800 hover:bg-yellow-900 hover:text-yellow-300">
                         <td class="px-1 py-1 border border-gray-700 text-center">
                           <img src="${photoUrl}" alt="${team.team}" class="inline-block w-6 h-6 rounded-full object-cover border border-gray-500 p-[1px]" />
                         </td>
-                        <td class="px-1 py-1 border border-gray-700">${team.team}</td>
+                        <td class="px-1 py-1 border border-gray-700 relative">
+                          ${team.team}
+                          ${qualifiedBadge}
+                        </td>
                         <td class="px-1 py-1 border border-gray-700 text-center font-semibold">${team.played}</td>
                         <td class="px-1 py-1 border border-gray-700 text-center">${team.win}</td>
                         <td class="px-1 py-1 border border-gray-700 text-center">${team.loss}</td>
