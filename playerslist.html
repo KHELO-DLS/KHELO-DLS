@@ -7,6 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
@@ -41,7 +43,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const firebaseConfig = {
@@ -60,28 +62,49 @@
     const storage = getStorage(app);
 
     let currentFilter = "all"; // default all player
+    let unsubscribeAll = null;
+    let unsubscribeTour = null;
 
     onAuthStateChanged(auth, user => {
       if (!user) {
         window.location.href = "login.html";
       } else {
-        loadPlayers();
+        setupRealtimeListeners();
       }
     });
+
+    function setupRealtimeListeners() {
+      const allBtn = document.getElementById("allPlayerBtn");
+      const tourBtn = document.getElementById("tourPlayerBtn");
+
+      // All players real-time
+      const allPlayersRef = collection(db, "playersform");
+      unsubscribeAll = onSnapshot(allPlayersRef, snapshot => {
+        allBtn.textContent = `All Player (${snapshot.size})`;
+        if (currentFilter === "all") renderPlayers(snapshot);
+      });
+
+      // Tour players real-time
+      const tourQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
+      unsubscribeTour = onSnapshot(tourQuery, snapshot => {
+        tourBtn.textContent = `Tour Player (${snapshot.size})`;
+        if (currentFilter === "tour") renderPlayers(snapshot);
+      });
+    }
 
     // Button actions
     document.getElementById("allPlayerBtn").addEventListener("click", () => {
       currentFilter = "all";
       toggleActiveButton("allPlayerBtn");
       document.getElementById("completeTourBtn").classList.add("hidden");
-      loadPlayers();
+      setupRealtimeListeners();
     });
 
     document.getElementById("tourPlayerBtn").addEventListener("click", () => {
       currentFilter = "tour";
       toggleActiveButton("tourPlayerBtn");
       document.getElementById("completeTourBtn").classList.remove("hidden");
-      loadPlayers();
+      setupRealtimeListeners();
     });
 
     function toggleActiveButton(activeId) {
@@ -97,144 +120,125 @@
       }
     }
 
-    async function loadPlayers() {
+    function renderPlayers(snapshot) {
       const container = document.getElementById("playersCardContainer");
-      const allBtn = document.getElementById("allPlayerBtn");
-      const tourBtn = document.getElementById("tourPlayerBtn");
 
-      container.innerHTML = `<div class="col-span-full text-center text-gray-500">Loading players...</div>`;
+      if (snapshot.empty) {
+        container.innerHTML = `<div class="col-span-full text-center text-gray-500">No players found.</div>`;
+        return;
+      }
 
-      try {
-        // Fetch all players for counting
-        const allPlayersSnapshot = await getDocs(collection(db, "playersform"));
-        const allPlayersCount = allPlayersSnapshot.size;
+      container.innerHTML = "";
 
-        // Fetch tour players
-        const tourQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
-        const tourPlayersSnapshot = await getDocs(tourQuery);
-        const tourPlayersCount = tourPlayersSnapshot.size;
+      snapshot.forEach(docSnap => {
+        const p = docSnap.data();
+        const docId = docSnap.id;
 
-        // Update button text dynamically
-        allBtn.textContent = `All Player (${allPlayersCount})`;
-        tourBtn.textContent = `Tour Player (${tourPlayersCount})`;
+        const card = document.createElement("div");
+        card.className = "bg-white shadow-md rounded-lg p-4 border border-gray-200";
 
-        // Fetch players according to current filter
-        let q;
-        if (currentFilter === "tour") {
-          q = tourQuery;
-        } else {
-          q = collection(db, "playersform");
-        }
+        const imageUrl = p.photoUrl || "https://via.placeholder.com/80?text=No+Image";
 
-        const playersSnapshot = await getDocs(q);
+        const imageId = `img-${docId}`;
+        const fileInputId = `file-${docId}`;
+        const photoUrlInputId = `photourl-${docId}`;
+        const updateBtnId = `update-${docId}`;
 
-        if (playersSnapshot.empty) {
-          container.innerHTML = `<div class="col-span-full text-center text-gray-500">No players found.</div>`;
-          return;
-        }
-
-        container.innerHTML = "";
-
-        playersSnapshot.forEach(docSnap => {
-          const p = docSnap.data();
-          const docId = docSnap.id;
-
-          const card = document.createElement("div");
-          card.className = "bg-white shadow-md rounded-lg p-4 border border-gray-200";
-
-          const imageUrl = p.photoUrl || "https://via.placeholder.com/80?text=No+Image";
-
-          const imageId = `img-${docId}`;
-          const fileInputId = `file-${docId}`;
-          const photoUrlInputId = `photourl-${docId}`;
-          const updateBtnId = `update-${docId}`;
-
-          card.innerHTML = `
-            <div class="flex items-center mb-3">
-              <img id="${imageId}" src="${imageUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-300 mr-3" />
-              <div>
-                <div class="text-lg font-bold text-gray-800">${p.username || "N/A"}</div>
-                <div class="text-xs mt-1 inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                  ${p.type || "N/A"}
-                </div>
+        card.innerHTML = `
+          <div class="flex items-center mb-3">
+            <img id="${imageId}" src="${imageUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-300 mr-3" />
+            <div>
+              <div class="text-lg font-bold text-gray-800">${p.username || "N/A"}</div>
+              <div class="text-xs mt-1 inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                ${p.type || "N/A"}
               </div>
-              <input type="file" id="${fileInputId}" class="hidden" accept="image/*" />
-              <button id="${updateBtnId}" class="ml-auto text-sm text-green-600 hover:underline">Update</button>
             </div>
+            <input type="file" id="${fileInputId}" class="hidden" accept="image/*" />
+            <button id="${updateBtnId}" class="ml-auto text-sm text-green-600 hover:underline">Update</button>
+          </div>
 
-            <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 mb-3 border rounded px-2 py-1 bg-white" />
+          <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 mb-3 border rounded px-2 py-1 bg-white" />
 
-            <div class="flex justify-between text-sm text-gray-600 mb-2">
-              <div><span class="font-semibold">Team:</span> ${p.team || "N/A"}</div>
-              <div><span class="font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</div>
-            </div>
+          <div class="flex justify-between text-sm text-gray-600 mb-2">
+            <div><span class="font-semibold">Team:</span> ${p.team || "N/A"}</div>
+            <div><span class="font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</div>
+          </div>
 
-            <div class="flex justify-between text-sm text-gray-600">
-              <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"} Years</div>
-              <div><span class="font-semibold">Played:</span> ${p.yearsPlayed ?? "N/A"} Years</div>
-            </div>
-          `;
+          <div class="flex justify-between text-sm text-gray-600">
+            <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"} Years</div>
+            <div><span class="font-semibold">Played:</span> ${p.yearsPlayed ?? "N/A"} Years</div>
+          </div>
+        `;
 
-          container.appendChild(card);
+        container.appendChild(card);
 
-          // Handle direct photoUrl update
-          const updateBtn = card.querySelector(`#${updateBtnId}`);
-          const photoUrlInput = card.querySelector(`#${photoUrlInputId}`);
-          const imageEl = card.querySelector(`#${imageId}`);
+        // Handle direct photoUrl update
+        const updateBtn = card.querySelector(`#${updateBtnId}`);
+        const photoUrlInput = card.querySelector(`#${photoUrlInputId}`);
+        const imageEl = card.querySelector(`#${imageId}`);
 
-          updateBtn.addEventListener("click", async () => {
-            const newUrl = photoUrlInput.value.trim();
-            if (!newUrl) return alert("Photo URL cannot be empty.");
+        updateBtn.addEventListener("click", async () => {
+          const newUrl = photoUrlInput.value.trim();
+          if (!newUrl) {
+            Swal.fire("Error", "Photo URL cannot be empty.", "error");
+            return;
+          }
 
-            try {
-              await updateDoc(doc(db, "playersform", docId), { photoUrl: newUrl });
-              imageEl.src = newUrl;
-              alert("Photo URL updated successfully!");
-            } catch (err) {
-              console.error("Photo URL update error:", err);
-              alert("Failed to update photo URL.");
-            }
-          });
-
-          // File upload logic
-          const fileInput = card.querySelector(`#${fileInputId}`);
-          updateBtn.addEventListener("dblclick", () => fileInput.click()); 
-
-          fileInput.addEventListener("change", async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            try {
-              const storageRef = ref(storage, `players/${docId}/photo.jpg`);
-              await uploadBytes(storageRef, file);
-              const downloadURL = await getDownloadURL(storageRef);
-
-              await updateDoc(doc(db, "playersform", docId), { photoUrl: downloadURL });
-
-              imageEl.src = downloadURL;
-              photoUrlInput.value = downloadURL;
-
-              alert("Photo uploaded and updated successfully!");
-            } catch (err) {
-              console.error("Photo upload error:", err);
-              alert("Failed to upload photo.");
-            }
-          });
+          try {
+            await updateDoc(doc(db, "playersform", docId), { photoUrl: newUrl });
+            imageEl.src = newUrl;
+            Swal.fire("Success", "Photo URL updated successfully!", "success");
+          } catch (err) {
+            console.error("Photo URL update error:", err);
+            Swal.fire("Error", "Failed to update photo URL.", "error");
+          }
         });
 
-      } catch (error) {
-        console.error("Error loading players:", error);
-        container.innerHTML = `<div class="col-span-full text-center text-red-600">${error.message}</div>`;
-      }
+        // File upload logic
+        const fileInput = card.querySelector(`#${fileInputId}`);
+        updateBtn.addEventListener("dblclick", () => fileInput.click()); 
+
+        fileInput.addEventListener("change", async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          try {
+            const storageRef = ref(storage, `players/${docId}/photo.jpg`);
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+
+            await updateDoc(doc(db, "playersform", docId), { photoUrl: downloadURL });
+
+            imageEl.src = downloadURL;
+            photoUrlInput.value = downloadURL;
+
+            Swal.fire("Success", "Photo uploaded and updated successfully!", "success");
+          } catch (err) {
+            console.error("Photo upload error:", err);
+            Swal.fire("Error", "Failed to upload photo.", "error");
+          }
+        });
+      });
     }
 
     // Complete Tour Button Action
     document.getElementById("completeTourBtn").addEventListener("click", async () => {
-      if (!confirm("Are you sure you want to mark all Tour Players as free?")) return;
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "This will mark all Tour Players as free!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, complete it!",
+        cancelButtonText: "Cancel"
+      });
+
+      if (!result.isConfirmed) return;
 
       try {
         const tourQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
-        const tourPlayersSnapshot = await getDocs(tourQuery);
+        const tourPlayersSnapshot = await new Promise((resolve, reject) => {
+          onSnapshot(tourQuery, snapshot => resolve(snapshot), reject);
+        });
 
         const promises = [];
         tourPlayersSnapshot.forEach(docSnap => {
@@ -242,11 +246,10 @@
         });
 
         await Promise.all(promises);
-        alert("All Tour Players marked as free successfully!");
-        loadPlayers();
+        Swal.fire("Success", "All Tour Players marked as free!", "success");
       } catch (err) {
         console.error("Error completing tour:", err);
-        alert("Failed to complete tour.");
+        Swal.fire("Error", "Failed to complete tour.", "error");
       }
     });
 
