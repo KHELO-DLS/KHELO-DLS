@@ -27,6 +27,8 @@
       <div class="flex justify-center items-center mb-4 space-x-4">
         <button id="allPlayerBtn" class="px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">All Player (0)</button>
         <button id="tourPlayerBtn" class="px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300">Tour Player (0)</button>
+        <!-- Complete Button -->
+        <button id="completeTourBtn" class="hidden px-4 py-1.5 rounded bg-green-600 text-white text-sm font-medium hover:bg-green-700">Complete</button>
       </div>
       <div id="playersCardContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <!-- Player cards will be inserted here -->
@@ -71,12 +73,14 @@
     document.getElementById("allPlayerBtn").addEventListener("click", () => {
       currentFilter = "all";
       toggleActiveButton("allPlayerBtn");
+      document.getElementById("completeTourBtn").classList.add("hidden");
       loadPlayers();
     });
 
     document.getElementById("tourPlayerBtn").addEventListener("click", () => {
       currentFilter = "tour";
       toggleActiveButton("tourPlayerBtn");
+      document.getElementById("completeTourBtn").classList.remove("hidden");
       loadPlayers();
     });
 
@@ -223,6 +227,29 @@
         container.innerHTML = `<div class="col-span-full text-center text-red-600">${error.message}</div>`;
       }
     }
+
+    // Complete Tour Button Action
+    document.getElementById("completeTourBtn").addEventListener("click", async () => {
+      if (!confirm("Are you sure you want to mark all Tour Players as free?")) return;
+
+      try {
+        const tourQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
+        const tourPlayersSnapshot = await getDocs(tourQuery);
+
+        const promises = [];
+        tourPlayersSnapshot.forEach(docSnap => {
+          promises.push(updateDoc(doc(db, "playersform", docSnap.id), { type: "free" }));
+        });
+
+        await Promise.all(promises);
+        alert("All Tour Players marked as free successfully!");
+        loadPlayers();
+      } catch (err) {
+        console.error("Error completing tour:", err);
+        alert("Failed to complete tour.");
+      }
+    });
+
   </script>
 
 </body>
