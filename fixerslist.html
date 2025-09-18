@@ -73,8 +73,7 @@
       onSnapshot,
       query,
       where,
-      updateDoc,
-      getDoc
+      updateDoc
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -93,18 +92,9 @@
     let teamList = [];
     const teamUidMap = new Map();
 
-    // Load Team Limit
-    let teamLimit = 0;
-    async function loadTeamLimit() {
-      const docRef = doc(db, "settings", "teamLimit");
-      const snap = await getDoc(docRef);
-      if (snap.exists()) teamLimit = snap.data()?.limit ?? 0;
-    }
-
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
       if (!user) window.location.href = "login.html";
       else {
-        await loadTeamLimit();
         loadTeams();
         loadFixers();
       }
@@ -193,7 +183,7 @@
 
         fixersContainer.innerHTML = html;
 
-        // Edit and Delete functionality (same as before)
+        // Edit header icon
         document.querySelectorAll(".editHeaderBtn").forEach(btn => {
           btn.addEventListener("click", async (e) => {
             const { group, matchday, date } = e.target.dataset;
@@ -228,6 +218,7 @@
           });
         });
 
+        // Delete individual fixer
         document.querySelectorAll(".deleteFixerBtn").forEach(btn => {
           btn.addEventListener("click", async (e) => {
             const fixerId = e.currentTarget.dataset.id;
@@ -245,7 +236,6 @@
       });
     }
 
-    // Add Fixer Button
     document.getElementById("addFixerBtn").addEventListener("click", async () => {
       const selectedTeams = Array.from(document.getElementById("teamSelector").selectedOptions).map(opt => opt.value);
       const baseDate = document.getElementById("fixerDate").value;
@@ -253,11 +243,6 @@
 
       if (selectedTeams.length < 2 || !baseDate || isNaN(groupCount)) {
         Swal.fire({ icon: 'warning', title: 'Please fill out all fields.', position: 'top-end', toast: true, timer: 3000, showConfirmButton: false });
-        return;
-      }
-
-      if (selectedTeams.length > teamLimit) {
-        Swal.fire({ icon: 'error', title: `Team limit exceeded! Max allowed: ${teamLimit}`, position: 'top-end', toast: true, timer: 4000, showConfirmButton: false });
         return;
       }
 
