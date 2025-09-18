@@ -73,7 +73,8 @@
       onSnapshot,
       query,
       where,
-      updateDoc
+      updateDoc,
+      getDoc
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -91,14 +92,28 @@
 
     let teamList = [];
     const teamUidMap = new Map();
+    let groupLimit = 0;
+    let matchdayLimit = 3; // Default
 
-    onAuthStateChanged(auth, (user) => {
+    const groupLimitDoc = doc(db, "settings", "groupLimit");
+    const matchdayLimitDoc = doc(db, "settings", "matchdayLimit");
+
+    onAuthStateChanged(auth, async (user) => {
       if (!user) window.location.href = "login.html";
       else {
-        loadTeams();
+        await loadSettings();
+        await loadTeams();
         loadFixers();
       }
     });
+
+    async function loadSettings() {
+      const groupSnap = await getDoc(groupLimitDoc);
+      if (groupSnap.exists()) groupLimit = groupSnap.data()?.limit ?? 0;
+
+      const matchdaySnap = await getDoc(matchdayLimitDoc);
+      if (matchdaySnap.exists()) matchdayLimit = matchdaySnap.data()?.limit ?? 3;
+    }
 
     async function loadTeams() {
       const snapshot = await getDocs(query(collection(db, "playersform"), where("type", "==", "paid")));
@@ -144,7 +159,7 @@
           const dateMap = groupMap[group];
           const sortedDates = Object.keys(dateMap).sort();
           sortedDates.forEach(date => {
-            const matchdayLabel = dateMap[date][0].matchday; 
+            const matchdayLabel = dateMap[date][0].matchday;
             html += `
               <div class="bg-gray-100 px-3 py-2 rounded font-semibold text-gray-700 mb-2 flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
@@ -246,12 +261,18 @@
         return;
       }
 
-      if (selectedTeams.length !== groupCount * 4) {
-        Swal.fire({ icon: 'error', title: `Select ${groupCount * 4} teams.`, position: 'top-end', toast: true, timer: 4000, showConfirmButton: false });
+      if (groupCount > groupLimit) {
+        Swal.fire({ icon: 'error', title: `Max groups allowed: ${groupLimit}`, position: 'top-end', toast: true, timer: 3000, showConfirmButton: false });
         return;
       }
 
-      const commonMatchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
+      const requiredTeams = groupCount * 4; // Each group has 4 teams
+      if (selectedTeams.length !== requiredTeams) {
+        Swal.fire({ icon: 'error', title: `Select exactly ${requiredTeams} teams.`, position: 'top-end', toast: true, timer: 4000, showConfirmButton: false });
+        return;
+      }
+
+      const commonMatchDates = Array.from({length: matchdayLimit}, (_, i) => addDays(baseDate, i));
       let added = 0;
 
       for (let g = 0; g < groupCount; g++) {
@@ -267,6 +288,7 @@
         ];
 
         for (const [[i, j], matchday] of matchups) {
+          if (matchday >= matchdayLimit) continue; // respect matchdayLimit
           const date = commonMatchDates[matchday];
           await addDoc(collection(db, "fixers"), {
             team1: groupTeams[i],
