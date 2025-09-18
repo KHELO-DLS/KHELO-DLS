@@ -28,12 +28,6 @@
         <h2 class="text-lg font-semibold text-blue-700 text-center">Joining Fee</h2>
         <input type="number" id="joiningFeeInput" min="0" placeholder="Set Joining Fee"
           class="border border-gray-300 rounded px-3 py-1.5 w-full focus:ring-2 focus:ring-blue-500" />
-        <div class="flex justify-center mt-2">
-          <button id="updateFeeBtn"
-            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-semibold">
-            Update
-          </button>
-        </div>
         <p id="currentFeeDisplay" class="text-center text-xs text-gray-600 mt-1">Current Fee: Loading...</p>
       </div>
 
@@ -45,12 +39,6 @@
         <input type="number" id="joiningSlotInput" min="0" placeholder="Set Total Slots"
           class="border border-gray-300 rounded px-3 py-1.5 w-full focus:ring-2 focus:ring-blue-500" />
         <p id="slotUsedDisplay" class="text-center text-xs text-gray-600 mt-1">Used Slots: Loading...</p>
-        <div class="flex justify-center mt-2">
-          <button id="updateSlotBtn"
-            class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded font-semibold">
-            Update
-          </button>
-        </div>
       </div>
 
       <hr class="my-4">
@@ -60,13 +48,15 @@
         <h2 class="text-lg font-semibold text-blue-700 text-center">Group Team Limit</h2>
         <input type="number" id="groupLimitInput" min="0" placeholder="Set Group Team Limit"
           class="border border-gray-300 rounded px-3 py-1.5 w-full focus:ring-2 focus:ring-blue-500" />
-        <div class="flex justify-center mt-2">
-          <button id="updateGroupBtn"
-            class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold">
-            Update
-          </button>
-        </div>
         <p id="currentGroupDisplay" class="text-center text-xs text-gray-600 mt-1">Current Limit: Loading...</p>
+      </div>
+
+      <!-- Single Update Button -->
+      <div class="flex justify-center mt-4">
+        <button id="updateAllBtn"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold">
+          Update All
+        </button>
       </div>
 
     </div>
@@ -96,20 +86,17 @@
     const slotDocRef = doc(db, "settings", "slot");
     const groupDocRef = doc(db, "settings", "groupLimit");
 
-    // Fee Elements
+    // Elements
     const joiningFeeInput = document.getElementById("joiningFeeInput");
-    const updateFeeBtn = document.getElementById("updateFeeBtn");
     const currentFeeDisplay = document.getElementById("currentFeeDisplay");
 
-    // Slot Elements
     const joiningSlotInput = document.getElementById("joiningSlotInput");
     const slotUsedDisplay = document.getElementById("slotUsedDisplay");
-    const updateSlotBtn = document.getElementById("updateSlotBtn");
 
-    // Group Limit Elements
     const groupLimitInput = document.getElementById("groupLimitInput");
-    const updateGroupBtn = document.getElementById("updateGroupBtn");
     const currentGroupDisplay = document.getElementById("currentGroupDisplay");
+
+    const updateAllBtn = document.getElementById("updateAllBtn");
 
     // Load Fee
     async function loadJoiningFee() {
@@ -121,15 +108,6 @@
       }
     }
 
-    // Update Fee
-    updateFeeBtn.addEventListener("click", async () => {
-      const newFee = parseFloat(joiningFeeInput.value);
-      if (isNaN(newFee) || newFee < 0) return alert("Invalid Fee");
-      await updateDoc(feeDocRef, { fee: newFee });
-      currentFeeDisplay.textContent = `Current Fee: ${newFee}`;
-      alert("Joining Fee Updated");
-    });
-
     // Load Slot
     async function loadSlotInfo() {
       const docSnap = await getDoc(slotDocRef);
@@ -139,19 +117,6 @@
         slotUsedDisplay.textContent = `Used Slots: ${data?.slotUsed ?? 0}`;
       }
     }
-
-    // Update Slot
-    updateSlotBtn.addEventListener("click", async () => {
-      const newSlot = parseInt(joiningSlotInput.value);
-      if (isNaN(newSlot) || newSlot < 0) return alert("Invalid Slot Number");
-
-      const docSnap = await getDoc(slotDocRef);
-      let slotUsed = docSnap.exists() ? docSnap.data()?.slotUsed ?? 0 : 0;
-      if (newSlot < slotUsed) return alert(`Cannot set slots less than used (${slotUsed})`);
-
-      await updateDoc(slotDocRef, { slot: newSlot });
-      alert("Joining Slot Updated");
-    });
 
     // Load Group Limit
     async function loadGroupLimit() {
@@ -163,13 +128,34 @@
       }
     }
 
-    // Update Group Limit
-    updateGroupBtn.addEventListener("click", async () => {
-      const newLimit = parseInt(groupLimitInput.value);
-      if (isNaN(newLimit) || newLimit < 0) return alert("Invalid Group Limit");
-      await updateDoc(groupDocRef, { limit: newLimit });
-      currentGroupDisplay.textContent = `Current Limit: ${newLimit}`;
-      alert("Group Team Limit Updated");
+    // Update All
+    updateAllBtn.addEventListener("click", async () => {
+      try {
+        // Fee Update
+        const newFee = parseFloat(joiningFeeInput.value);
+        if (isNaN(newFee) || newFee < 0) return alert("Invalid Fee");
+        await updateDoc(feeDocRef, { fee: newFee });
+        currentFeeDisplay.textContent = `Current Fee: ${newFee}`;
+
+        // Slot Update
+        const newSlot = parseInt(joiningSlotInput.value);
+        if (isNaN(newSlot) || newSlot < 0) return alert("Invalid Slot Number");
+        const slotSnap = await getDoc(slotDocRef);
+        let slotUsed = slotSnap.exists() ? slotSnap.data()?.slotUsed ?? 0 : 0;
+        if (newSlot < slotUsed) return alert(`Cannot set slots less than used (${slotUsed})`);
+        await updateDoc(slotDocRef, { slot: newSlot });
+
+        // Group Limit Update
+        const newLimit = parseInt(groupLimitInput.value);
+        if (isNaN(newLimit) || newLimit < 0) return alert("Invalid Group Limit");
+        await updateDoc(groupDocRef, { limit: newLimit });
+        currentGroupDisplay.textContent = `Current Limit: ${newLimit}`;
+
+        alert("All Settings Updated Successfully ✅");
+      } catch (error) {
+        console.error(error);
+        alert("Error updating settings");
+      }
     });
 
     // Auth
