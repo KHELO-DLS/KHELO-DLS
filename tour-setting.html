@@ -51,6 +51,16 @@
         <p id="currentGroupDisplay" class="text-center text-xs text-gray-600 mt-1">Current Limit: Loading...</p>
       </div>
 
+      <hr class="my-4">
+
+      <!-- Matchday Limit Section -->
+      <div>
+        <h2 class="text-lg font-semibold text-blue-700 text-center">Matchday Limit</h2>
+        <input type="number" id="matchdayLimitInput" min="0" placeholder="Set Matchday Limit"
+          class="border border-gray-300 rounded px-3 py-1.5 w-full focus:ring-2 focus:ring-blue-500" />
+        <p id="currentMatchdayDisplay" class="text-center text-xs text-gray-600 mt-1">Current Limit: Loading...</p>
+      </div>
+
       <!-- Single Update Button -->
       <div class="flex justify-center mt-4">
         <button id="updateAllBtn"
@@ -85,6 +95,7 @@
     const feeDocRef = doc(db, "settings", "joiningFee");
     const slotDocRef = doc(db, "settings", "slot");
     const groupDocRef = doc(db, "settings", "groupLimit");
+    const matchdayDocRef = doc(db, "settings", "matchdayLimit");
 
     // Elements
     const joiningFeeInput = document.getElementById("joiningFeeInput");
@@ -95,6 +106,9 @@
 
     const groupLimitInput = document.getElementById("groupLimitInput");
     const currentGroupDisplay = document.getElementById("currentGroupDisplay");
+
+    const matchdayLimitInput = document.getElementById("matchdayLimitInput");
+    const currentMatchdayDisplay = document.getElementById("currentMatchdayDisplay");
 
     const updateAllBtn = document.getElementById("updateAllBtn");
 
@@ -128,6 +142,16 @@
       }
     }
 
+    // Load Matchday Limit
+    async function loadMatchdayLimit() {
+      const docSnap = await getDoc(matchdayDocRef);
+      if (docSnap.exists()) {
+        const currentLimit = docSnap.data()?.limit ?? 0;
+        currentMatchdayDisplay.textContent = `Current Limit: ${currentLimit}`;
+        matchdayLimitInput.value = currentLimit;
+      }
+    }
+
     // Update All
     updateAllBtn.addEventListener("click", async () => {
       try {
@@ -151,6 +175,12 @@
         await updateDoc(groupDocRef, { limit: newLimit });
         currentGroupDisplay.textContent = `Current Limit: ${newLimit}`;
 
+        // Matchday Limit Update
+        const newMatchday = parseInt(matchdayLimitInput.value);
+        if (isNaN(newMatchday) || newMatchday < 0) return alert("Invalid Matchday Limit");
+        await updateDoc(matchdayDocRef, { limit: newMatchday });
+        currentMatchdayDisplay.textContent = `Current Limit: ${newMatchday}`;
+
         alert("All Settings Updated Successfully ✅");
       } catch (error) {
         console.error(error);
@@ -165,6 +195,7 @@
         loadJoiningFee();
         loadSlotInfo();
         loadGroupLimit();
+        loadMatchdayLimit();
       }
     });
   </script>
