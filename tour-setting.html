@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tour Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md relative">
+    <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
+      <p onclick="window.location.href='admin.html'" class="absolute left-4 text-gray-700 cursor-pointer">
+        <i class="fas fa-arrow-left text-2xl"></i>
+      </p>
+      <h1 class="text-xl font-bold text-gray-800">Joining Settings</h1>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="px-4 flex justify-center mt-6">
+    <div class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full space-y-6 text-sm">
+
+      <!-- Joining Fee Section -->
+      <div>
+        <h2 class="text-lg font-semibold text-blue-700 text-center">Joining Fee</h2>
+        <input type="number" id="joiningFeeInput" min="0" placeholder="Set Joining Fee"
+          class="border border-gray-300 rounded px-3 py-1.5 w-full focus:ring-2 focus:ring-blue-500" />
+        <div class="flex justify-center mt-2">
+          <button id="updateFeeBtn"
+            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-semibold">
+            Update
+          </button>
+        </div>
+        <p id="currentFeeDisplay" class="text-center text-xs text-gray-600 mt-1">Current Fee: Loading...</p>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Joining Slot Section -->
+      <div>
+        <h2 class="text-lg font-semibold text-blue-700 text-center">Joining Slot</h2>
+        <input type="number" id="joiningSlotInput" min="0" placeholder="Set Total Slots"
+          class="border border-gray-300 rounded px-3 py-1.5 w-full focus:ring-2 focus:ring-blue-500" />
+        <p id="slotUsedDisplay" class="text-center text-xs text-gray-600 mt-1">Used Slots: Loading...</p>
+        <div class="flex justify-center mt-2">
+          <button id="updateSlotBtn"
+            class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded font-semibold">
+            Update
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
+      authDomain: "dls12364.firebaseapp.com",
+      projectId: "dls12364",
+      storageBucket: "dls12364.firebasestorage.app",
+      messagingSenderId: "431397971734",
+      appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+      measurementId: "G-B75EB4GGRV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const feeDocRef = doc(db, "settings", "joiningFee");
+    const slotDocRef = doc(db, "settings", "slot");
+
+    // Fee Elements
+    const joiningFeeInput = document.getElementById("joiningFeeInput");
+    const updateFeeBtn = document.getElementById("updateFeeBtn");
+    const currentFeeDisplay = document.getElementById("currentFeeDisplay");
+
+    // Slot Elements
+    const joiningSlotInput = document.getElementById("joiningSlotInput");
+    const slotUsedDisplay = document.getElementById("slotUsedDisplay");
+    const updateSlotBtn = document.getElementById("updateSlotBtn");
+
+    // Load Fee
+    async function loadJoiningFee() {
+      const docSnap = await getDoc(feeDocRef);
+      if (docSnap.exists()) {
+        const currentFee = docSnap.data()?.fee ?? 0;
+        currentFeeDisplay.textContent = `Current Fee: ${currentFee}`;
+        joiningFeeInput.value = currentFee;
+      }
+    }
+
+    // Update Fee
+    updateFeeBtn.addEventListener("click", async () => {
+      const newFee = parseFloat(joiningFeeInput.value);
+      if (isNaN(newFee) || newFee < 0) return alert("Invalid Fee");
+      await updateDoc(feeDocRef, { fee: newFee });
+      currentFeeDisplay.textContent = `Current Fee: ${newFee}`;
+      alert("Joining Fee Updated");
+    });
+
+    // Load Slot
+    async function loadSlotInfo() {
+      const docSnap = await getDoc(slotDocRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        joiningSlotInput.value = data?.slot ?? 0;
+        slotUsedDisplay.textContent = `Used Slots: ${data?.slotUsed ?? 0}`;
+      }
+    }
+
+    // Update Slot
+    updateSlotBtn.addEventListener("click", async () => {
+      const newSlot = parseInt(joiningSlotInput.value);
+      if (isNaN(newSlot) || newSlot < 0) return alert("Invalid Slot Number");
+
+      const docSnap = await getDoc(slotDocRef);
+      let slotUsed = docSnap.exists() ? docSnap.data()?.slotUsed ?? 0 : 0;
+      if (newSlot < slotUsed) return alert(`Cannot set slots less than used (${slotUsed})`);
+
+      await updateDoc(slotDocRef, { slot: newSlot });
+      alert("Joining Slot Updated");
+    });
+
+    // Auth
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "login.html";
+      else {
+        loadJoiningFee();
+        loadSlotInfo();
+      }
+    });
+  </script>
+</body>
+</html>
