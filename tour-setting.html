@@ -53,6 +53,22 @@
         </div>
       </div>
 
+      <hr class="my-4">
+
+      <!-- Group Team Limit Section -->
+      <div>
+        <h2 class="text-lg font-semibold text-blue-700 text-center">Group Team Limit</h2>
+        <input type="number" id="groupLimitInput" min="0" placeholder="Set Group Team Limit"
+          class="border border-gray-300 rounded px-3 py-1.5 w-full focus:ring-2 focus:ring-blue-500" />
+        <div class="flex justify-center mt-2">
+          <button id="updateGroupBtn"
+            class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold">
+            Update
+          </button>
+        </div>
+        <p id="currentGroupDisplay" class="text-center text-xs text-gray-600 mt-1">Current Limit: Loading...</p>
+      </div>
+
     </div>
   </main>
 
@@ -78,6 +94,7 @@
 
     const feeDocRef = doc(db, "settings", "joiningFee");
     const slotDocRef = doc(db, "settings", "slot");
+    const groupDocRef = doc(db, "settings", "groupLimit");
 
     // Fee Elements
     const joiningFeeInput = document.getElementById("joiningFeeInput");
@@ -88,6 +105,11 @@
     const joiningSlotInput = document.getElementById("joiningSlotInput");
     const slotUsedDisplay = document.getElementById("slotUsedDisplay");
     const updateSlotBtn = document.getElementById("updateSlotBtn");
+
+    // Group Limit Elements
+    const groupLimitInput = document.getElementById("groupLimitInput");
+    const updateGroupBtn = document.getElementById("updateGroupBtn");
+    const currentGroupDisplay = document.getElementById("currentGroupDisplay");
 
     // Load Fee
     async function loadJoiningFee() {
@@ -131,12 +153,32 @@
       alert("Joining Slot Updated");
     });
 
+    // Load Group Limit
+    async function loadGroupLimit() {
+      const docSnap = await getDoc(groupDocRef);
+      if (docSnap.exists()) {
+        const currentLimit = docSnap.data()?.limit ?? 0;
+        currentGroupDisplay.textContent = `Current Limit: ${currentLimit}`;
+        groupLimitInput.value = currentLimit;
+      }
+    }
+
+    // Update Group Limit
+    updateGroupBtn.addEventListener("click", async () => {
+      const newLimit = parseInt(groupLimitInput.value);
+      if (isNaN(newLimit) || newLimit < 0) return alert("Invalid Group Limit");
+      await updateDoc(groupDocRef, { limit: newLimit });
+      currentGroupDisplay.textContent = `Current Limit: ${newLimit}`;
+      alert("Group Team Limit Updated");
+    });
+
     // Auth
     onAuthStateChanged(auth, (user) => {
       if (!user) window.location.href = "login.html";
       else {
         loadJoiningFee();
         loadSlotInfo();
+        loadGroupLimit();
       }
     });
   </script>
