@@ -43,12 +43,12 @@
 
       <hr class="my-4">
 
-      <!-- Team Limit Section -->
+      <!-- Teams Per Group Section -->
       <div>
-        <h2 class="text-lg font-semibold text-blue-700 text-center">Team Limit</h2>
-        <input type="number" id="teamLimitInput" min="0" placeholder="Set Team Limit"
+        <h2 class="text-lg font-semibold text-blue-700 text-center">Teams Per Group</h2>
+        <input type="number" id="teamsPerGroupInput" min="0" placeholder="Set Teams Per Group"
           class="border border-gray-300 rounded px-3 py-1.5 w-full focus:ring-2 focus:ring-blue-500" />
-        <p id="currentTeamDisplay" class="text-center text-xs text-gray-600 mt-1">Current Limit: Loading...</p>
+        <p id="currentTeamsDisplay" class="text-center text-xs text-gray-600 mt-1">Current Limit: Loading...</p>
       </div>
 
       <hr class="my-4">
@@ -94,7 +94,7 @@
 
     const feeDocRef = doc(db, "settings", "joiningFee");
     const slotDocRef = doc(db, "settings", "slot");
-    const teamDocRef = doc(db, "settings", "teamLimit"); // changed
+    const teamsPerGroupDocRef = doc(db, "settings", "teamsPerGroup");
     const matchdayDocRef = doc(db, "settings", "matchdayLimit");
 
     // Elements
@@ -104,8 +104,8 @@
     const joiningSlotInput = document.getElementById("joiningSlotInput");
     const slotUsedDisplay = document.getElementById("slotUsedDisplay");
 
-    const teamLimitInput = document.getElementById("teamLimitInput"); // changed
-    const currentTeamDisplay = document.getElementById("currentTeamDisplay"); // changed
+    const teamsPerGroupInput = document.getElementById("teamsPerGroupInput");
+    const currentTeamsDisplay = document.getElementById("currentTeamsDisplay");
 
     const matchdayLimitInput = document.getElementById("matchdayLimitInput");
     const currentMatchdayDisplay = document.getElementById("currentMatchdayDisplay");
@@ -132,13 +132,13 @@
       }
     }
 
-    // Load Team Limit
-    async function loadTeamLimit() {
-      const docSnap = await getDoc(teamDocRef);
+    // Load Teams Per Group
+    async function loadTeamsPerGroup() {
+      const docSnap = await getDoc(teamsPerGroupDocRef);
       if (docSnap.exists()) {
         const currentLimit = docSnap.data()?.limit ?? 0;
-        currentTeamDisplay.textContent = `Current Limit: ${currentLimit}`;
-        teamLimitInput.value = currentLimit;
+        currentTeamsDisplay.textContent = `Current Limit: ${currentLimit}`;
+        teamsPerGroupInput.value = currentLimit;
       }
     }
 
@@ -169,11 +169,11 @@
         if (newSlot < slotUsed) return alert(`Cannot set slots less than used (${slotUsed})`);
         await updateDoc(slotDocRef, { slot: newSlot });
 
-        // Team Limit Update
-        const newLimit = parseInt(teamLimitInput.value);
-        if (isNaN(newLimit) || newLimit < 0) return alert("Invalid Team Limit");
-        await updateDoc(teamDocRef, { limit: newLimit });
-        currentTeamDisplay.textContent = `Current Limit: ${newLimit}`;
+        // Teams Per Group Update
+        const newTeams = parseInt(teamsPerGroupInput.value);
+        if (isNaN(newTeams) || newTeams < 0) return alert("Invalid Teams Per Group");
+        await updateDoc(teamsPerGroupDocRef, { limit: newTeams });
+        currentTeamsDisplay.textContent = `Current Limit: ${newTeams}`;
 
         // Matchday Limit Update
         const newMatchday = parseInt(matchdayLimitInput.value);
@@ -194,7 +194,7 @@
       else {
         loadJoiningFee();
         loadSlotInfo();
-        loadTeamLimit(); // changed
+        loadTeamsPerGroup();
         loadMatchdayLimit();
       }
     });
