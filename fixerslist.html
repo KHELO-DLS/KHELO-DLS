@@ -73,7 +73,6 @@
       onSnapshot,
       query,
       where,
-      updateDoc,
       getDoc
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -186,7 +185,7 @@
       });
     }
 
-    // Add Fixers with teamsPerGroup
+    // Add Fixers with teamsPerGroup and matchdayLimit
     document.getElementById("addFixerBtn").addEventListener("click", async () => {
       const selectedTeams = Array.from(document.getElementById("teamSelector").selectedOptions).map(opt => opt.value);
       const baseDate = document.getElementById("fixerDate").value;
@@ -201,13 +200,18 @@
       const teamsPerGroupSnap = await getDoc(doc(db, "settings", "teamsPerGroup"));
       const teamsPerGroup = teamsPerGroupSnap.exists() ? teamsPerGroupSnap.data().limit : 4;
 
+      // Get matchdayLimit from Firestore
+      const matchdaySnap = await getDoc(doc(db, "settings", "matchdayLimit"));
+      const matchdayLimit = matchdaySnap.exists() ? matchdaySnap.data().limit : 3;
+
       const requiredTeams = groupCount * teamsPerGroup;
       if (selectedTeams.length !== requiredTeams) {
         Swal.fire({ icon: 'error', title: `Select ${requiredTeams} teams.`, position: 'top-end', toast: true, timer: 4000, showConfirmButton: false });
         return;
       }
 
-      const commonMatchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
+      // Generate matchday dates based on matchdayLimit
+      const commonMatchDates = Array.from({ length: matchdayLimit }, (_, i) => addDays(baseDate, i));
       let added = 0;
 
       for (let g = 0; g < groupCount; g++) {
