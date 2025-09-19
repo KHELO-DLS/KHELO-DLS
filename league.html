@@ -195,7 +195,7 @@
       if (hiddenMatchdays[matchdayId]) return; // hide করলে show হবে না
 
       const firstDate = matchdaysMap[md][0]?.date || "";
-      html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-lg font-semibold uppercase text-yellow-300 mb-2 flex justify-center items-center">
+      html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-md font-semibold uppercase text-yellow-300 mb-2 flex justify-center items-center">
                 ${md} || ${firstDate ? formatDateAndTime(firstDate) : ""}
               </div>`;
 
