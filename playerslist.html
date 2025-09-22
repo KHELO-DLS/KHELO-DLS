@@ -77,16 +77,16 @@
       const allBtn = document.getElementById("allPlayerBtn");
       const tourBtn = document.getElementById("tourPlayerBtn");
 
-      // All players real-time
-      const allPlayersRef = collection(db, "playersform");
-      unsubscribeAll = onSnapshot(allPlayersRef, snapshot => {
+      // Only free players real-time
+      const freeQuery = query(collection(db, "playersform"), where("type", "==", "free"));
+      unsubscribeAll = onSnapshot(freeQuery, snapshot => {
         allBtn.textContent = `All Player (${snapshot.size})`;
         if (currentFilter === "all") renderPlayers(snapshot);
       });
 
-      // Tour players real-time
-      const tourQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
-      unsubscribeTour = onSnapshot(tourQuery, snapshot => {
+      // Only paid players real-time
+      const paidQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
+      unsubscribeTour = onSnapshot(paidQuery, snapshot => {
         tourBtn.textContent = `Tour Player (${snapshot.size})`;
         if (currentFilter === "tour") renderPlayers(snapshot);
       });
@@ -251,13 +251,13 @@
       if (!result.isConfirmed) return;
 
       try {
-        const tourQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
-        const tourPlayersSnapshot = await new Promise((resolve, reject) => {
-          onSnapshot(tourQuery, snapshot => resolve(snapshot), reject);
+        const paidQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
+        const paidPlayersSnapshot = await new Promise((resolve, reject) => {
+          onSnapshot(paidQuery, snapshot => resolve(snapshot), reject);
         });
 
         const promises = [];
-        tourPlayersSnapshot.forEach(docSnap => {
+        paidPlayersSnapshot.forEach(docSnap => {
           promises.push(updateDoc(doc(db, "playersform", docSnap.id), { type: "free" }));
         });
 
