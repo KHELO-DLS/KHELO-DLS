@@ -143,13 +143,16 @@
         const fileInputId = `file-${docId}`;
         const photoUrlInputId = `photourl-${docId}`;
         const updateBtnId = `update-${docId}`;
+        const typeBtnId = `type-${docId}`;
 
         card.innerHTML = `
           <div class="flex items-center mb-3">
             <img id="${imageId}" src="${imageUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-300 mr-3" />
             <div>
               <div class="text-lg font-bold text-gray-800">${p.username || "N/A"}</div>
-              <div class="text-xs mt-1 inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+              <div id="${typeBtnId}" class="text-xs mt-1 inline-block cursor-pointer px-2 py-0.5 rounded ${
+                p.type === "paid" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"
+              }">
                 ${p.type || "N/A"}
               </div>
             </div>
@@ -216,6 +219,19 @@
           } catch (err) {
             console.error("Photo upload error:", err);
             Swal.fire("Error", "Failed to upload photo.", "error");
+          }
+        });
+
+        // Type toggle logic (free <-> paid)
+        const typeBtn = card.querySelector(`#${typeBtnId}`);
+        typeBtn.addEventListener("click", async () => {
+          const newType = p.type === "paid" ? "free" : "paid";
+          try {
+            await updateDoc(doc(db, "playersform", docId), { type: newType });
+            Swal.fire("Success", `Player type changed to ${newType}!`, "success");
+          } catch (err) {
+            console.error("Type update error:", err);
+            Swal.fire("Error", "Failed to update player type.", "error");
           }
         });
       });
