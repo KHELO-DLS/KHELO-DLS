@@ -170,8 +170,8 @@
 
           <!-- Info List -->
           <ul class="space-y-2 text-sm text-gray-700">
-            <li class="flex items-center"><i class="fas fa-user text-blue-500 w-5 ml-2"></i>Username:<span class="ml-2 font-semibold">${p.username || "N/A"}</span></li>
-            <li class="flex items-center"><i class="fas fa-id-badge text-purple-500 w-5"></i> <span class="ml-2 font-semibold">User ID:</span> ${userIdText}</li>
+            <li class="flex items-center font-semibold"><i class="fas fa-user text-blue-500 w-5"></i>Username:<span class="ml-2">${p.username || "N/A"}</span></li>
+            <li class="flex items-center"><i class="fas fa-id-badge text-purple-500 w-5"></i> <span class="ml-2">User ID:</span> ${userIdText}</li>
             <li class="flex items-center"><i class="fas fa-star text-yellow-500 w-5"></i> <span class="ml-2 font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</li>
             <li class="flex items-center"><i class="fas fa-birthday-cake text-pink-500 w-5"></i> <span class="ml-2 font-semibold">Age:</span> ${p.age ?? "N/A"} Year</li>
             <li class="flex items-center"><i class="fas fa-futbol text-green-500 w-5"></i> <span class="ml-2 font-semibold">Played:</span> ${p.yearsPlayed ?? "N/A"} Year</li>
