@@ -43,7 +43,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const firebaseConfig = {
@@ -132,7 +132,7 @@
 
       snapshot.forEach(docSnap => {
         const p = docSnap.data();
-        const docId = docSnap.id;
+        const docId = docSnap.id; // Firestore document ID (User ID)
 
         const card = document.createElement("div");
         card.className = "bg-white shadow-md rounded-lg p-4 border border-gray-200";
@@ -161,6 +161,9 @@
           </div>
 
           <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 mb-3 border rounded px-2 py-1 bg-white" />
+
+          <!-- 🔥 User ID Display -->
+          <div class="text-xs text-gray-500 mb-2"><span class="font-semibold">User ID:</span> ${docId}</div>
 
           <div class="flex justify-between text-sm text-gray-600 mb-2">
             <div><span class="font-semibold">Username:</span> ${p.username || "N/A"}</div>
@@ -252,9 +255,7 @@
 
       try {
         const paidQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
-        const paidPlayersSnapshot = await new Promise((resolve, reject) => {
-          onSnapshot(paidQuery, snapshot => resolve(snapshot), reject);
-        });
+        const paidPlayersSnapshot = await getDocs(paidQuery);
 
         const promises = [];
         paidPlayersSnapshot.forEach(docSnap => {
