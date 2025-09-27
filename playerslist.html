@@ -170,11 +170,11 @@
 
           <!-- Info List -->
           <ul class="space-y-2 text-sm text-gray-700">
-            <li class="flex items-center font-semibold"><i class="fas fa-user text-blue-500 w-5"></i>Username:<span class="ml-2">${p.username || "N/A"}</span></li>
-            <li class="flex items-center"><i class="fas fa-id-badge text-purple-500 w-5"></i> <span class="ml-2">User ID:</span> ${userIdText}</li>
-            <li class="flex items-center"><i class="fas fa-star text-yellow-500 w-5"></i> <span class="ml-2 font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</li>
-            <li class="flex items-center"><i class="fas fa-birthday-cake text-pink-500 w-5"></i> <span class="ml-2 font-semibold">Age:</span> ${p.age ?? "N/A"} Year</li>
-            <li class="flex items-center"><i class="fas fa-futbol text-green-500 w-5"></i> <span class="ml-2 font-semibold">Played:</span> ${p.yearsPlayed ?? "N/A"} Year</li>
+            <li class="flex items-center"><i class="fas fa-user text-blue-500 w-5"></i>Username:<span class="ml-1">${p.username || "N/A"}</span></li>
+            <li class="flex items-center"><i class="fas fa-id-badge text-purple-500 w-5"></i>User ID:<span class="ml-1">${userIdText}</span></li>
+            <li class="flex items-center"><i class="fas fa-star text-yellow-500 w-5"></i>DLS Rating:<span class="ml-1">${p.dlsRating ?? "N/A"}</span></li>
+            <li class="flex items-center"><i class="fas fa-birthday-cake text-pink-500 w-5"></i>Age:<span class="ml-1">${p.age ?? "N/A"} Year</span></li>
+            <li class="flex items-center"><i class="fas fa-futbol text-green-500 w-5"></i>Played:<span class="ml-1">${p.yearsPlayed ?? "N/A"} Year</span></li>
           </ul>
         `;
 
