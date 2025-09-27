@@ -28,7 +28,7 @@
       
       <!-- Search Input -->
       <div class="mb-5">
-        <input type="text" id="searchUserId" placeholder="Search by User ID..." 
+        <input type="text" id="searchUserId" placeholder="Enter User ID and press Enter..." 
                class="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:outline-none" />
       </div>
 
@@ -128,9 +128,8 @@
       }
     }
 
-    async function renderPlayers(playersArray) {
+    async function renderPlayers(playersArray, specificUserId = null) {
       const container = document.getElementById("playersCardContainer");
-      const searchTerm = document.getElementById("searchUserId").value.trim().toLowerCase();
 
       if (!playersArray.length) {
         container.innerHTML = `<div class="col-span-full text-center text-gray-500">No players found.</div>`;
@@ -156,8 +155,8 @@
           }
         }
 
-        // Filter by search
-        if (searchTerm && !userIdText.toLowerCase().includes(searchTerm)) continue;
+        // If a specific User ID is searched, skip non-matching
+        if (specificUserId && userIdText !== specificUserId) continue;
 
         const imageUrl = p.photoUrl || "https://via.placeholder.com/80?text=No+Image";
         const imageId = `img-${docId}`;
@@ -197,7 +196,7 @@
 
         container.appendChild(card);
 
-        // Update Logic
+        // Update photo logic
         const updateBtn = card.querySelector(`#${updateBtnId}`);
         const photoUrlInput = card.querySelector(`#${photoUrlInputId}`);
         const imageEl = card.querySelector(`#${imageId}`);
@@ -246,14 +245,21 @@
       }
 
       if (container.innerHTML === "") {
-        container.innerHTML = `<div class="col-span-full text-center text-gray-500">No players match the search.</div>`;
+        container.innerHTML = `<div class="col-span-full text-center text-gray-500">No player found with this User ID.</div>`;
       }
     }
 
-    // Search input listener
-    document.getElementById("searchUserId").addEventListener("keyup", () => {
-      if (currentFilter === "all") renderPlayers(allPlayersData);
-      else renderPlayers(tourPlayersData);
+    // Search input listener: Enter key only
+    document.getElementById("searchUserId").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        const searchVal = e.target.value.trim();
+        if (!searchVal) {
+          // If empty, show all players of current filter
+          currentFilter === "all" ? renderPlayers(allPlayersData) : renderPlayers(tourPlayersData);
+        } else {
+          currentFilter === "all" ? renderPlayers(allPlayersData, searchVal) : renderPlayers(tourPlayersData, searchVal);
+        }
+      }
     });
 
     document.getElementById("completeTourBtn").addEventListener("click", async () => {
