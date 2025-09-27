@@ -43,7 +43,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, query, where, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const firebaseConfig = {
@@ -120,7 +120,7 @@
       }
     }
 
-    function renderPlayers(snapshot) {
+    async function renderPlayers(snapshot) {
       const container = document.getElementById("playersCardContainer");
 
       if (snapshot.empty) {
@@ -130,9 +130,22 @@
 
       container.innerHTML = "";
 
-      snapshot.forEach(docSnap => {
+      for (const docSnap of snapshot.docs) {
         const p = docSnap.data();
         const docId = docSnap.id;
+
+        // fetch userId from users collection
+        let userIdText = "N/A";
+        if (p.uid) {
+          try {
+            const userDoc = await getDoc(doc(db, "users", p.uid));
+            if (userDoc.exists()) {
+              userIdText = userDoc.data().userId || "N/A";
+            }
+          } catch (err) {
+            console.error("Failed to fetch userId:", err);
+          }
+        }
 
         const card = document.createElement("div");
         card.className = "bg-white shadow-md rounded-lg p-4 border border-gray-200";
@@ -167,10 +180,12 @@
             <div><span class="font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</div>
           </div>
 
-          <div class="flex justify-between text-sm text-gray-600">
+          <div class="flex justify-between text-sm text-gray-600 mb-2">
             <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"} Years</div>
             <div><span class="font-semibold">Played:</span> ${p.yearsPlayed ?? "N/A"} Years</div>
           </div>
+
+          <div class="text-sm text-gray-700"><span class="font-semibold">User ID:</span> ${userIdText}</div>
         `;
 
         container.appendChild(card);
@@ -234,7 +249,7 @@
             Swal.fire("Error", "Failed to update player type.", "error");
           }
         });
-      });
+      }
     }
 
     // Complete Tour Button Action
