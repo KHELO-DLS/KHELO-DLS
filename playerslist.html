@@ -25,14 +25,14 @@
   <!-- Main -->
   <main class="p-4 md:p-6 space-y-6 overflow-auto flex-grow">
     <!-- Players List Section -->
-    <div class="bg-white shadow rounded p-4">
-      <div class="flex justify-center items-center mb-4 space-x-4">
-        <button id="allPlayerBtn" class="px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">All Player (0)</button>
-        <button id="tourPlayerBtn" class="px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300">Tour Player (0)</button>
+    <div class="bg-white shadow rounded-xl p-4 border border-gray-200">
+      <div class="flex justify-center items-center mb-5 space-x-3">
+        <button id="allPlayerBtn" class="px-4 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">All Player (0)</button>
+        <button id="tourPlayerBtn" class="px-4 py-1.5 rounded-lg bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300 transition">Tour Player (0)</button>
         <!-- Complete Button -->
-        <button id="completeTourBtn" class="hidden px-4 py-1.5 rounded bg-green-600 text-white text-sm font-medium hover:bg-green-700">Complete</button>
+        <button id="completeTourBtn" class="hidden px-4 py-1.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition">Complete</button>
       </div>
-      <div id="playersCardContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div id="playersCardContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <!-- Player cards will be inserted here -->
         <div class="col-span-full text-center text-gray-500" id="loadingText">Loading players...</div>
       </div>
@@ -61,7 +61,7 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    let currentFilter = "all"; // default all player
+    let currentFilter = "all"; 
     let unsubscribeAll = null;
     let unsubscribeTour = null;
 
@@ -77,14 +77,12 @@
       const allBtn = document.getElementById("allPlayerBtn");
       const tourBtn = document.getElementById("tourPlayerBtn");
 
-      // Only free players real-time
       const freeQuery = query(collection(db, "playersform"), where("type", "==", "free"));
       unsubscribeAll = onSnapshot(freeQuery, snapshot => {
         allBtn.textContent = `All Player (${snapshot.size})`;
         if (currentFilter === "all") renderPlayers(snapshot);
       });
 
-      // Only paid players real-time
       const paidQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
       unsubscribeTour = onSnapshot(paidQuery, snapshot => {
         tourBtn.textContent = `Tour Player (${snapshot.size})`;
@@ -92,7 +90,6 @@
       });
     }
 
-    // Button actions
     document.getElementById("allPlayerBtn").addEventListener("click", () => {
       currentFilter = "all";
       toggleActiveButton("allPlayerBtn");
@@ -112,11 +109,11 @@
       const tourBtn = document.getElementById("tourPlayerBtn");
 
       if (activeId === "allPlayerBtn") {
-        allBtn.className = "px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700";
-        tourBtn.className = "px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300";
+        allBtn.className = "px-4 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition";
+        tourBtn.className = "px-4 py-1.5 rounded-lg bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300 transition";
       } else {
-        tourBtn.className = "px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700";
-        allBtn.className = "px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300";
+        tourBtn.className = "px-4 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition";
+        allBtn.className = "px-4 py-1.5 rounded-lg bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300 transition";
       }
     }
 
@@ -134,7 +131,6 @@
         const p = docSnap.data();
         const docId = docSnap.id;
 
-        // fetch userId from users collection
         let userIdText = "N/A";
         if (p.uid) {
           try {
@@ -148,7 +144,7 @@
         }
 
         const card = document.createElement("div");
-        card.className = "bg-white shadow-md rounded-lg p-4 border border-gray-200";
+        card.className = "bg-gradient-to-br from-white to-gray-50 shadow-lg rounded-2xl p-5 border border-gray-200 hover:shadow-xl transition";
 
         const imageUrl = p.photoUrl || "https://via.placeholder.com/80?text=No+Image";
 
@@ -159,8 +155,8 @@
         const typeBtnId = `type-${docId}`;
 
         card.innerHTML = `
-          <div class="flex items-center mb-3">
-            <img id="${imageId}" src="${imageUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-300 mr-3" />
+          <div class="flex items-center mb-4">
+            <img id="${imageId}" src="${imageUrl}" class="w-12 h-12 rounded-full object-cover border border-gray-300 shadow-sm mr-3" />
             <div>
               <div class="text-sm font-bold text-gray-800">${p.team || "N/A"}</div>
               <div id="${typeBtnId}" class="text-xs mt-1 inline-block cursor-pointer px-2 py-0.5 rounded ${
@@ -170,27 +166,23 @@
               </div>
             </div>
             <input type="file" id="${fileInputId}" class="hidden" accept="image/*" />
-            <button id="${updateBtnId}" class="ml-auto mt-2 text-sm text-green-600 hover:underline">Update</button>
+            <button id="${updateBtnId}" class="ml-auto text-xs text-blue-600 hover:underline">Update</button>
           </div>
 
-          <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 mb-3 border rounded px-2 py-1 bg-white" />
+          <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 mb-3 border rounded px-2 py-1 bg-white focus:ring focus:ring-blue-200" />
 
-          <div class="flex justify-between text-sm text-gray-600 mb-2">
+          <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-3">
             <div><span class="font-semibold">Username:</span> ${p.username || "N/A"}</div>
             <div><span class="font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</div>
+            <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"} Yrs</div>
+            <div><span class="font-semibold">Played:</span> ${p.yearsPlayed ?? "N/A"} Yrs</div>
           </div>
 
-          <div class="flex justify-between text-sm text-gray-600 mb-2">
-            <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"} Years</div>
-            <div><span class="font-semibold">Played:</span> ${p.yearsPlayed ?? "N/A"} Years</div>
-          </div>
-
-          <div class="text-sm text-gray-700"><span class="font-semibold">User ID:</span> ${userIdText}</div>
+          <div class="text-xs text-gray-700"><span class="font-semibold">User ID:</span> ${userIdText}</div>
         `;
 
         container.appendChild(card);
 
-        // Handle direct photoUrl update
         const updateBtn = card.querySelector(`#${updateBtnId}`);
         const photoUrlInput = card.querySelector(`#${photoUrlInputId}`);
         const imageEl = card.querySelector(`#${imageId}`);
@@ -212,7 +204,6 @@
           }
         });
 
-        // File upload logic
         const fileInput = card.querySelector(`#${fileInputId}`);
         updateBtn.addEventListener("dblclick", () => fileInput.click()); 
 
@@ -237,7 +228,6 @@
           }
         });
 
-        // Type toggle logic (free <-> paid)
         const typeBtn = card.querySelector(`#${typeBtnId}`);
         typeBtn.addEventListener("click", async () => {
           const newType = p.type === "paid" ? "free" : "paid";
@@ -252,7 +242,6 @@
       }
     }
 
-    // Complete Tour Button Action
     document.getElementById("completeTourBtn").addEventListener("click", async () => {
       const result = await Swal.fire({
         title: "Are you sure?",
