@@ -25,14 +25,6 @@
   <!-- Main -->
   <main class="p-4 md:p-6 space-y-6 overflow-auto flex-grow">
     <div class="bg-white shadow rounded-xl p-4 border border-gray-200">
-      
-      <!-- Search Input -->
-      <div class="flex justify-center items-center mb-5 space-x-2">
-        <input id="searchUserId" type="text" placeholder="Search by User ID" class="px-3 py-1.5 border rounded-lg w-60 text-sm focus:ring focus:ring-blue-200" />
-        <button id="searchBtn" class="px-4 py-1.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition">Search</button>
-        <button id="resetSearchBtn" class="px-4 py-1.5 rounded-lg bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300 transition">Reset</button>
-      </div>
-
       <!-- Buttons -->
       <div class="flex justify-center items-center mb-5 space-x-3">
         <button id="allPlayerBtn" class="px-4 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">All Player (0)</button>
@@ -240,7 +232,6 @@
       }
     }
 
-    // Complete Tour
     document.getElementById("completeTourBtn").addEventListener("click", async () => {
       const result = await Swal.fire({
         title: "Are you sure?",
@@ -268,37 +259,6 @@
         Swal.fire("Error", "Failed to complete tour.", "error");
       }
     });
-
-    // Search functionality
-    const searchBtn = document.getElementById("searchBtn");
-    const resetSearchBtn = document.getElementById("resetSearchBtn");
-    const searchInput = document.getElementById("searchUserId");
-
-    searchBtn.addEventListener("click", async () => {
-      const userId = searchInput.value.trim();
-      if (!userId) return Swal.fire("Error", "Please enter a User ID to search.", "error");
-
-      try {
-        const snapshot = await getDocs(collection(db, "playersform"));
-        const filtered = snapshot.docs.filter(async docSnap => {
-          const p = docSnap.data();
-          if (p.uid) {
-            const userDoc = await getDoc(doc(db, "users", p.uid));
-            return userDoc.exists() && userDoc.data().userId === userId;
-          }
-          return false;
-        });
-        renderPlayers({ docs: filtered, empty: filtered.length === 0 });
-      } catch (err) {
-        Swal.fire("Error", "Failed to search players.", "error");
-      }
-    });
-
-    resetSearchBtn.addEventListener("click", () => {
-      searchInput.value = "";
-      setupRealtimeListeners();
-    });
-
   </script>
 
 </body>
