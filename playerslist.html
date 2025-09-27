@@ -136,13 +136,13 @@
 
       const imageUrl = p.photoUrl || "https://via.placeholder.com/80?text=No+Image";
 
-      // users collection থেকে userId আনব
+      // users collection থেকে userId ফেচ করা
       let userIdText = "N/A";
       try {
         if (p.userId) {
           const userDoc = await getDoc(doc(db, "users", p.userId));
           if (userDoc.exists()) {
-            userIdText = p.userId;
+            userIdText = p.userId; // এখন সবসময় দেখাবে
           }
         }
       } catch (err) {
