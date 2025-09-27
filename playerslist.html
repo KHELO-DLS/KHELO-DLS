@@ -25,13 +25,6 @@
   <!-- Main -->
   <main class="p-4 md:p-6 space-y-6 overflow-auto flex-grow">
     <div class="bg-white shadow rounded-xl p-4 border border-gray-200">
-      
-      <!-- Search Input -->
-      <div class="mb-5">
-        <input type="text" id="searchUserId" placeholder="Enter User ID and press Enter..." 
-               class="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:outline-none" />
-      </div>
-
       <!-- Buttons -->
       <div class="flex justify-center items-center mb-5 space-x-3">
         <button id="allPlayerBtn" class="px-4 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">All Player (0)</button>
@@ -69,8 +62,6 @@
     const storage = getStorage(app);
 
     let currentFilter = "all"; 
-    let allPlayersData = [];
-    let tourPlayersData = [];
 
     onAuthStateChanged(auth, user => {
       if (!user) {
@@ -84,20 +75,16 @@
       const allBtn = document.getElementById("allPlayerBtn");
       const tourBtn = document.getElementById("tourPlayerBtn");
 
-      // Free Players
       const freeQuery = query(collection(db, "playersform"), where("type", "==", "free"));
       onSnapshot(freeQuery, snapshot => {
         allBtn.textContent = `All Player (${snapshot.size})`;
-        allPlayersData = snapshot.docs.map(d => ({ id: d.id, data: d.data() }));
-        if (currentFilter === "all") renderPlayers(allPlayersData);
+        if (currentFilter === "all") renderPlayers(snapshot);
       });
 
-      // Paid Players
       const paidQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
       onSnapshot(paidQuery, snapshot => {
         tourBtn.textContent = `Tour Player (${snapshot.size})`;
-        tourPlayersData = snapshot.docs.map(d => ({ id: d.id, data: d.data() }));
-        if (currentFilter === "tour") renderPlayers(tourPlayersData);
+        if (currentFilter === "tour") renderPlayers(snapshot);
       });
     }
 
@@ -105,14 +92,14 @@
       currentFilter = "all";
       toggleActiveButton("allPlayerBtn");
       document.getElementById("completeTourBtn").classList.add("hidden");
-      renderPlayers(allPlayersData);
+      setupRealtimeListeners();
     });
 
     document.getElementById("tourPlayerBtn").addEventListener("click", () => {
       currentFilter = "tour";
       toggleActiveButton("tourPlayerBtn");
       document.getElementById("completeTourBtn").classList.remove("hidden");
-      renderPlayers(tourPlayersData);
+      setupRealtimeListeners();
     });
 
     function toggleActiveButton(activeId) {
@@ -128,21 +115,20 @@
       }
     }
 
-    async function renderPlayers(playersArray, specificUserId = null) {
+    async function renderPlayers(snapshot) {
       const container = document.getElementById("playersCardContainer");
 
-      if (!playersArray.length) {
+      if (snapshot.empty) {
         container.innerHTML = `<div class="col-span-full text-center text-gray-500">No players found.</div>`;
         return;
       }
 
       container.innerHTML = "";
 
-      for (const item of playersArray) {
-        const p = item.data;
-        const docId = item.id;
+      for (const docSnap of snapshot.docs) {
+        const p = docSnap.data();
+        const docId = docSnap.id;
 
-        // Fetch User ID
         let userIdText = "N/A";
         if (p.uid) {
           try {
@@ -154,9 +140,6 @@
             console.error("Failed to fetch userId:", err);
           }
         }
-
-        // If a specific User ID is searched, skip non-matching
-        if (specificUserId && userIdText !== specificUserId) continue;
 
         const imageUrl = p.photoUrl || "https://via.placeholder.com/80?text=No+Image";
         const imageId = `img-${docId}`;
@@ -185,6 +168,7 @@
 
           <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 mb-3 border rounded px-2 py-1 bg-white focus:ring focus:ring-blue-200" />
 
+          <!-- Info List -->
           <ul class="space-y-2 text-sm text-gray-700">
             <li class="flex items-center"><i class="fas fa-user text-blue-500 w-5"></i>Username:<span class="ml-1">${p.username || "N/A"}</span></li>
             <li class="flex items-center"><i class="fas fa-id-badge text-purple-500 w-5"></i>User ID:<span class="ml-1">${userIdText}</span></li>
@@ -196,13 +180,16 @@
 
         container.appendChild(card);
 
-        // Update photo logic
+        // Update Logic
         const updateBtn = card.querySelector(`#${updateBtnId}`);
         const photoUrlInput = card.querySelector(`#${photoUrlInputId}`);
         const imageEl = card.querySelector(`#${imageId}`);
         updateBtn.addEventListener("click", async () => {
           const newUrl = photoUrlInput.value.trim();
-          if (!newUrl) { Swal.fire("Error", "Photo URL cannot be empty.", "error"); return; }
+          if (!newUrl) {
+            Swal.fire("Error", "Photo URL cannot be empty.", "error");
+            return;
+          }
           try {
             await updateDoc(doc(db, "playersform", docId), { photoUrl: newUrl });
             imageEl.src = newUrl;
@@ -243,24 +230,7 @@
           }
         });
       }
-
-      if (container.innerHTML === "") {
-        container.innerHTML = `<div class="col-span-full text-center text-gray-500">No player found with this User ID.</div>`;
-      }
     }
-
-    // Search input listener: Enter key only
-    document.getElementById("searchUserId").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        const searchVal = e.target.value.trim();
-        if (!searchVal) {
-          // If empty, show all players of current filter
-          currentFilter === "all" ? renderPlayers(allPlayersData) : renderPlayers(tourPlayersData);
-        } else {
-          currentFilter === "all" ? renderPlayers(allPlayersData, searchVal) : renderPlayers(tourPlayersData, searchVal);
-        }
-      }
-    });
 
     document.getElementById("completeTourBtn").addEventListener("click", async () => {
       const result = await Swal.fire({
