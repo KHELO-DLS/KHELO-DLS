@@ -77,14 +77,14 @@
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
-    apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
-    authDomain: "dls12364.firebaseapp.com",
-    projectId: "dls12364",
-    storageBucket: "dls12364.firebasestorage.app",
-    messagingSenderId: "431397971734",
-    appId: "1:431397971734:web:0cb1a8b53ee09157425237",
-    measurementId: "G-B75EB4GGRV",
-  };
+      apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
+      authDomain: "dls12364.firebaseapp.com",
+      projectId: "dls12364",
+      storageBucket: "dls12364.firebasestorage.app",
+      messagingSenderId: "431397971734",
+      appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+      measurementId: "G-B75EB4GGRV",
+    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -92,6 +92,7 @@
 
     let teamList = [];
     const teamUidMap = new Map();
+    const teamRatingMap = new Map();
 
     onAuthStateChanged(auth, (user) => {
       if (!user) window.location.href = "login.html";
@@ -105,15 +106,19 @@
       const snapshot = await getDocs(query(collection(db, "playersform"), where("type", "==", "paid")));
       const teams = new Set();
       teamUidMap.clear();
+      teamRatingMap.clear();
       snapshot.forEach(doc => {
         const data = doc.data();
         if (data.team && data.uid) {
           teams.add(data.team);
           teamUidMap.set(data.team, data.uid);
+          teamRatingMap.set(data.team, parseFloat(data.dlsRating) || 0);
         }
       });
       teamList = Array.from(teams);
-      document.getElementById("teamSelector").innerHTML = teamList.map(t => `<option value="${t}">${t}</option>`).join("");
+      document.getElementById("teamSelector").innerHTML = teamList
+        .map(t => `<option value="${t}">${t} (⭐ ${teamRatingMap.get(t)})</option>`)
+        .join("");
     }
 
     function addDays(dateStr, days) {
@@ -158,6 +163,8 @@
             dateMap[date].forEach(match => {
               const uid1 = teamUidMap.get(match.team1) ?? "UID N/A";
               const uid2 = teamUidMap.get(match.team2) ?? "UID N/A";
+              const rating1 = teamRatingMap.get(match.team1) ?? "N/A";
+              const rating2 = teamRatingMap.get(match.team2) ?? "N/A";
               html += `
                 <div class="border p-2 rounded shadow-sm text-xs space-y-1 bg-white mb-1 relative">
                   <div class="absolute top-2 right-2 cursor-pointer text-red-600 deleteFixerBtn" data-id="${match.id}">
@@ -165,12 +172,12 @@
                   </div>
                   <div class="flex justify-between items-center px-2">
                     <div class="text-sm font-semibold text-gray-600 text-center">
-                      ${match.team1} <span class="text-black">(${match.team1Goal ?? "-"})</span><br/>
+                      ${match.team1} (⭐ ${rating1}) <span class="text-black">(${match.team1Goal ?? "-"})</span><br/>
                       <span class="hidden text-gray-400 text-[10px]">UID: ${uid1}</span>
                     </div>
                     <div class="text-base font-bold text-red-500">VS</div>
                     <div class="text-sm font-semibold text-gray-600 text-center">
-                      ${match.team2} <span class="text-black">(${match.team2Goal ?? "-"})</span><br/>
+                      ${match.team2} (⭐ ${rating2}) <span class="text-black">(${match.team2Goal ?? "-"})</span><br/>
                       <span class="hidden text-gray-400 text-[10px]">UID: ${uid2}</span>
                     </div>
                   </div>
@@ -237,6 +244,16 @@
       });
     }
 
+    // Function: sort and group teams by rating
+    function groupTeamsByRating(teams, groupCount) {
+      const sorted = [...teams].sort((a, b) => (teamRatingMap.get(a) || 0) - (teamRatingMap.get(b) || 0));
+      const groups = [];
+      for (let g = 0; g < groupCount; g++) {
+        groups.push(sorted.slice(g * 4, (g + 1) * 4));
+      }
+      return groups;
+    }
+
     document.getElementById("addFixerBtn").addEventListener("click", async () => {
       const selectedTeams = Array.from(document.getElementById("teamSelector").selectedOptions).map(opt => opt.value);
       const baseDate = document.getElementById("fixerDate").value;
@@ -252,11 +269,14 @@
         return;
       }
 
+      // group teams by rating
+      const groupedTeams = groupTeamsByRating(selectedTeams, groupCount);
+
       const commonMatchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
       let added = 0;
 
       for (let g = 0; g < groupCount; g++) {
-        const groupTeams = selectedTeams.slice(g * 4, (g + 1) * 4);
+        const groupTeams = groupedTeams[g];
         const groupName = `Group-${String.fromCharCode(65 + g)}`;
         const matchups = [
           [[0, 1], 0],
