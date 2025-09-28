@@ -112,7 +112,7 @@
         if (data.team && data.uid) {
           teams.add(data.team);
           teamUidMap.set(data.team, data.uid);
-          teamRatingMap.set(data.team, data.dlsRating ?? 0);
+          teamRatingMap.set(data.team, data.dlsRating ?? "N/A");
         }
       });
       teamList = Array.from(teams);
@@ -125,15 +125,6 @@
       const d = new Date(dateStr);
       d.setDate(d.getDate() + days);
       return d.toISOString().split("T")[0];
-    }
-
-    // 🔥 New function: sort teams by DLS rating before fixture generation
-    function sortTeamsByRating(teams) {
-      return teams.sort((a, b) => {
-        const ratingA = parseFloat(teamRatingMap.get(a)) || 0;
-        const ratingB = parseFloat(teamRatingMap.get(b)) || 0;
-        return ratingB - ratingA; // high → low
-      });
     }
 
     async function loadFixers() {
@@ -272,19 +263,15 @@
       let added = 0;
 
       for (let g = 0; g < groupCount; g++) {
-        let groupTeams = selectedTeams.slice(g * 4, (g + 1) * 4);
-
-        // 🔥 sort teams inside each group by rating before scheduling
-        groupTeams = sortTeamsByRating(groupTeams);
-
+        const groupTeams = selectedTeams.slice(g * 4, (g + 1) * 4);
         const groupName = `Group-${String.fromCharCode(65 + g)}`;
         const matchups = [
-          [[0, 3], 0], // highest vs lowest
-          [[1, 2], 0], // middle vs middle
-          [[0, 1], 1],
-          [[2, 3], 1],
-          [[0, 2], 2],
-          [[1, 3], 2],
+          [[0, 1], 0],
+          [[2, 3], 0],
+          [[0, 2], 1],
+          [[1, 3], 1],
+          [[0, 3], 2],
+          [[1, 2], 2],
         ];
 
         for (const [[i, j], matchday] of matchups) {
