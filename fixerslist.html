@@ -112,7 +112,7 @@
         if (data.team && data.uid) {
           teams.add(data.team);
           teamUidMap.set(data.team, data.uid);
-          teamRatingMap.set(data.team, data.dlsRating ?? "N/A");
+          teamRatingMap.set(data.team, parseFloat(data.dlsRating) || 0);
         }
       });
       teamList = Array.from(teams);
@@ -244,6 +244,16 @@
       });
     }
 
+    // Function: sort and group teams by rating
+    function groupTeamsByRating(teams, groupCount) {
+      const sorted = [...teams].sort((a, b) => (teamRatingMap.get(a) || 0) - (teamRatingMap.get(b) || 0));
+      const groups = [];
+      for (let g = 0; g < groupCount; g++) {
+        groups.push(sorted.slice(g * 4, (g + 1) * 4));
+      }
+      return groups;
+    }
+
     document.getElementById("addFixerBtn").addEventListener("click", async () => {
       const selectedTeams = Array.from(document.getElementById("teamSelector").selectedOptions).map(opt => opt.value);
       const baseDate = document.getElementById("fixerDate").value;
@@ -259,11 +269,14 @@
         return;
       }
 
+      // group teams by rating
+      const groupedTeams = groupTeamsByRating(selectedTeams, groupCount);
+
       const commonMatchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
       let added = 0;
 
       for (let g = 0; g < groupCount; g++) {
-        const groupTeams = selectedTeams.slice(g * 4, (g + 1) * 4);
+        const groupTeams = groupedTeams[g];
         const groupName = `Group-${String.fromCharCode(65 + g)}`;
         const matchups = [
           [[0, 1], 0],
