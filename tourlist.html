@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tournament Setting - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md relative">
+    <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
+      <p onclick="window.location.href='admin.html'" class="absolute left-4 text-gray-700 cursor-pointer">
+        <i class="fas fa-arrow-left text-2xl"></i>
+      </p>
+      <h1 class="text-xl font-bold text-gray-800">Create Tournament</h1>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="flex-grow p-4 md:p-6">
+    <!-- Display Tournament List -->
+    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-4 mb-4">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">All Tournaments</h2>
+      <div id="tournamentList" class="space-y-4">
+        <p class="text-gray-500 text-sm">Loading tournaments...</p>
+      </div>
+    </div>
+    
+    <div class="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-6 mb-8">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Tournament Details</h2>
+
+      <form id="createTourForm" class="space-y-4">
+        <!-- Title -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+          <input type="text" id="title" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tournament title" required />
+        </div>
+
+        <!-- Session -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Session</label>
+          <input type="text" id="session" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Session10 / Session11" required />
+        </div>
+
+        <!-- Entry Fee -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Entry Fee</label>
+          <input type="number" id="entryFee" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter entry fee amount" required />
+        </div>
+
+        <!-- Slot -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Slot</label>
+          <input type="number" id="slot" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Total available slots" required />
+        </div>
+
+        <!-- End Time -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+          <input type="datetime-local" id="endTime" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+          Create Tournament
+        </button>
+      </form>
+    </div>
+    
+  </main>
+
+  <!-- Firebase + Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      serverTimestamp, 
+      onSnapshot, 
+      query, 
+      orderBy, 
+      doc, 
+      updateDoc 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBscFHFPGGsWYNe91JO5meCzueVcDg4gFw",
+      authDomain: "dls12364.firebaseapp.com",
+      projectId: "dls12364",
+      storageBucket: "dls12364.firebasestorage.app",
+      messagingSenderId: "431397971734",
+      appId: "1:431397971734:web:0cb1a8b53ee09157425237",
+      measurementId: "G-B75EB4GGRV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
+
+    // ============================
+    // 🔥 Tournament Create Logic
+    // ============================
+    const form = document.getElementById("createTourForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      const session = document.getElementById("session").value.trim();
+      const entryFee = parseInt(document.getElementById("entryFee").value);
+      const slot = parseInt(document.getElementById("slot").value);
+      const endTime = document.getElementById("endTime").value;
+
+      if (!title || !session || !entryFee || !slot || !endTime) {
+        Swal.fire("Error", "Please fill all fields correctly!", "error");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "toursetting"), {
+          title,
+          session,
+          entryFee,
+          slot,
+          endTime,
+          isActive: true,
+          createdAt: serverTimestamp(),
+        });
+
+        Swal.fire({
+          icon: "success",
+          title: "Created successfully!",
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 2000,
+          toast: true,
+        });
+
+        form.reset();
+
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Something went wrong. Try again!",
+          position: "top-end",
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }
+    });
+
+    // ============================
+    // 📦 Display Tournament List
+    // ============================
+    const tournamentList = document.getElementById("tournamentList");
+
+    const q = query(collection(db, "toursetting"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+      tournamentList.innerHTML = "";
+      if (snapshot.empty) {
+        tournamentList.innerHTML = `<p class="text-gray-500 text-sm">No tournaments created yet.</p>`;
+        return;
+      }
+
+      snapshot.forEach((docSnap) => {
+        const t = docSnap.data();
+        const id = docSnap.id;
+
+        const item = document.createElement("div");
+        item.className = "border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition";
+
+        item.innerHTML = `
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-800">${t.title}</h3>
+              <p class="text-sm text-gray-600">Session: ${t.session}</p>
+              <p class="text-sm text-gray-600">Entry Fee: ${t.entryFee}</p>
+              <p class="text-sm text-gray-600">Slots: ${t.slot}</p>
+              <p class="text-sm text-gray-600">End Time: ${new Date(t.endTime).toLocaleString()}</p>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+              <i class="fas fa-trophy text-yellow-500 text-2xl"></i>
+              <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" ${t.isActive ? "checked" : ""} data-id="${id}">
+                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500 relative after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+              </label>
+              <p class="text-xs text-gray-600">${t.isActive ? "Active" : "Inactive"}</p>
+            </div>
+          </div>
+        `;
+
+        const toggle = item.querySelector("input[type='checkbox']");
+        toggle.addEventListener("change", async (e) => {
+          const newStatus = e.target.checked;
+          try {
+            await updateDoc(doc(db, "toursetting", id), { isActive: newStatus });
+            Swal.fire({
+              icon: "success",
+              title: newStatus ? "Tournament Activated" : "Tournament Deactivated",
+              position: "top-end",
+              toast: true,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } catch (err) {
+            console.error(err);
+            Swal.fire("Error", "Failed to update status", "error");
+          }
+        });
+
+        tournamentList.appendChild(item);
+      });
+    });
+  </script>
+
+</body>
+</html>
