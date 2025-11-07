@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DSL TOUR</title>
+
+  <!-- Tailwind CSS (cdn) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+
+  <!-- Fonts & Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- SweetAlert & Swiper -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <style>
+    :root{
+      --accent-1: #ff6a00;
+      --accent-2: #008cff;
+      --glass: rgba(255,255,255,0.06);
+    }
+
+    html,body { height: 100%; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Audiowide', sans-serif;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(255,106,0,0.06), transparent 8%),
+                  radial-gradient(1000px 500px at 90% 90%, rgba(0,140,255,0.04), transparent 8%),
+                  linear-gradient(120deg, #031027 0%, #08102a 50%, #051227 100%);
+      color: #ffffff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .wave-line {
+      position: absolute;
+      width: 100%;
+      top: 44px;
+      left: 0;
+      opacity: 0.9;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+    }
+
+    .btn-download {
+      background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+      padding: 14px 34px;
+      border-radius: 32px;
+      font-size: 18px;
+      font-weight: 700;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .btn-download:hover{
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    }
+
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .logo {
+      font-family: 'Audiowide', sans-serif;
+      letter-spacing: 1px;
+      color: white;
+    }
+
+    @keyframes floatY {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+      100% { transform: translateY(0px); }
+    }
+    .float-anim { animation: floatY 4s ease-in-out infinite; }
+
+    @media (max-width: 640px){
+      .wave-line { top: 28px; height: 100px; }
+    }
+  </style>
+</head>
+
+<body class="relative min-h-screen flex flex-col">
+
+  <header class="w-full px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#ff7a2b] to-[#00a0ff] flex items-center justify-center shadow-lg">
+        <i class="fa-solid fa-trophy text-white text-lg"></i>
+      </div>
+      <div>
+        <div class="logo text-lg md:text-2xl">DSL TOUR</div>
+        <div class="text-xs text-white/60 -mt-0.5">বাংলাদেশের সেরা টুর্নামেন্ট অ্যাপ</div>
+      </div>
+    </div>
+
+    <nav class="hidden md:flex items-center gap-6 text-white/90">
+      <a href="#features" class="hover:underline">ফিচার</a>
+      <a href="#screens" class="hover:underline">স্ক্রীনশট</a>
+      <a href="#faq" class="hover:underline">প্রশ্ন</a>
+      <button onclick="downloadApp()" class="btn-download text-sm">অ্যাপ ডাউনলোড</button>
+    </nav>
+  </header>
+
+  <svg class="wave-line" height="160" viewBox="0 0 1920 200" fill="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#ff6a00"/>
+        <stop offset="100%" stop-color="#008cff"/>
+      </linearGradient>
+    </defs>
+    <path d="M0 120 C350 40, 650 200, 1100 80 C1400 0, 1700 220, 1920 120"
+      stroke="url(#g1)" stroke-width="6" fill="transparent"/>
+  </svg>
+
+  <main class="flex-1 container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <section class="text-center md:text-left">
+        <h1 class="text-4xl md:text-6xl font-bold leading-tight drop-shadow-lg" style="font-family:'Audiowide', sans-serif;">
+          DSL TOUR
+        </h1>
+        <p class="mt-4 text-lg md:text-xl text-white/90 max-w-xl">
+          বাংলাদেশের সেরা টুর্নামেন্ট অ্যাপ – অংশ নিন, খেলুন<br class="hidden sm:block"/>
+          এবং পুরস্কার জিতুন। সহজ রেজিস্ট্রেশন, রিয়েল-টাইম স্কোরিং, এবং আকর্ষণীয় পুরস্কার।
+        </p>
+
+        <div class="mt-8 flex flex-col sm:flex-row sm:items-center sm:gap-4 justify-center md:justify-start">
+          <button onclick="downloadApp()" class="btn-download">
+            <i class="fa-solid fa-download mr-2"></i> অ্যাপ ডাউনলোড করুন
+          </button>
+
+          <a href="#features" class="mt-3 sm:mt-0 inline-flex items-center gap-2 text-sm text-white/80 hover:text-white ml-0 sm:ml-3">
+            <i class="fa-solid fa-circle-info"></i> ফিচার দেখুন
+          </a>
+        </div>
+
+        <div class="mt-8 grid grid-cols-3 sm:grid-cols-3 gap-2 max-w-md">
+          <div class="glass p-2 rounded-lg text-center">
+            <div class="text-xl font-bold">১২,৫০০+</div>
+            <div class="text-xs text-white/70">ইনস্টল</div>
+          </div>
+          <div class="glass p-3 rounded-lg text-center">
+            <div class="text-xl font-bold">২,৩০০+</div>
+            <div class="text-xs text-white/70">ম্যাচ খেলা</div>
+          </div>
+          <div class="glass p-1 rounded-lg text-center">
+            <div class="text-xl font-bold">৳৫০,০০০+</div>
+            <div class="text-xs text-white/70">পুরস্কার বিতরণ</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="flex justify-center md:justify-end">
+        <div class="relative w-64 sm:w-72 md:w-80">
+          <div class="rounded-3xl overflow-hidden glass p-3">
+            <img src="https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=a0f68e7b0f1f0a2d7f3d8400b3b8b3b5"
+                 alt="App preview" class="w-full rounded-xl float-anim" />
+          </div>
+          <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex gap-3 w-full justify-center items-center">
+            <div class="bg-gradient-to-tr from-[#ff7a2b] to-[#00a0ff] p-1 rounded-xl shadow-lg text-xs font-semibold">Live Match</div>
+            <div class="bg-white/6 p-1 rounded-xl shadow text-xs">Secure</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section id="features" class="mt-14">
+      <h2 class="text-2xl md:text-3xl font-bold text-center">ফিচার সমূহ</h2>
+      <p class="text-center text-sm text-white/70 mt-2">আপনি যা পাবেন — সরল, শক্তিশালী ও মজাদার</p>
+
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass p-5 rounded-xl">
+          <div class="text-3xl mb-3"><i class="fa-solid fa-bolt"></i></div>
+          <h3 class="font-semibold">রিয়েল-টাইম স্কোরিং</h3>
+          <p class="text-sm text-white/70 mt-1">লাইভ আপডেট, ন্যায্য র‍্যাঙ্কিং ও দ্রুত ফলাফল।</p>
+        </div>
+
+        <div class="glass p-5 rounded-xl">
+          <div class="text-3xl mb-3"><i class="fa-solid fa-users"></i></div>
+          <h3 class="font-semibold">টুর্নামেন্ট ম্যানেজার</h3>
+          <p class="text-sm text-white/70 mt-1">ইভেন্ট তৈরি ও অংশগ্রহণ খুবই সহজ।</p>
+        </div>
+
+        <div class="glass p-5 rounded-xl">
+          <div class="text-3xl mb-3"><i class="fa-solid fa-shield-halved"></i></div>
+          <h3 class="font-semibold">সিকিউরিটি & ফেয়ার প্লে</h3>
+          <p class="text-sm text-white/70 mt-1">ডেটা এনক্রিপশন এবং নীতিভিত্তিক কার্ডিং সিস্টেম।</p>
+        </div>
+
+        <div class="glass p-5 rounded-xl">
+          <div class="text-3xl mb-3"><i class="fa-solid fa-gift"></i></div>
+          <h3 class="font-semibold">অ্যাওয়ার্ড & মিসন</h3>
+          <p class="text-sm text-white/70 mt-1">নিত্য পুরস্কার, চ্যালেঞ্জ ও সিজনাল ঘটনা।</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREENSHOTS / SWIPER -->
+    <section id="screens" class="mt-12">
+      <h2 class="text-2xl md:text-3xl font-bold text-center">স্ক্রীনশট</h2>
+      <p class="text-center text-sm text-white/70 mt-2">এটা কেমন দেখায় — সাবলীল ও মসৃণ UI</p>
+
+      <div class="mt-6 max-w-3xl mx-auto">
+        <!-- Swiper -->
+        <div class="swiper mySwiper rounded-xl overflow-hidden">
+          <div class="swiper-wrapper">
+            <!-- Slide 1 -->
+            <div class="swiper-slide flex items-center justify-center p-6">
+              <img src="https://images.unsplash.com/photo-1504805572947-34fad45aed93?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=35b7f5c9f6d2b9e02b6d7d4cc4b0a4ae" alt="screenshot 1" class="rounded-xl shadow-md max-h-72 object-cover" />
+            </div>
+            <!-- Slide 2 -->
+            <div class="swiper-slide flex items-center justify-center p-6">
+              <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=05b0b352b1b7a0b3e6cf3a6e33bb4a4d" alt="screenshot 2" class="rounded-xl shadow-md max-h-72 object-cover" />
+            </div>
+            <!-- Slide 3 -->
+            <div class="swiper-slide flex items-center justify-center p-6">
+  <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3"
+       alt="gaming screenshot"
+       class="rounded-xl shadow-md max-h-72 object-cover" />
+</div>
+
+          </div>
+
+          <!-- pagination -->
+          <div class="swiper-pagination mt-4"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="mt-12 max-w-4xl mx-auto">
+      <h2 class="text-2xl md:text-3xl font-bold text-center">প্রশ্নাবলি</h2>
+      <div class="mt-6 space-y-3">
+        <details class="glass p-4 rounded-lg">
+          <summary class="font-medium cursor-pointer">কীভাবে ডাউনলোড করব?</summary>
+          <p class="mt-2 text-sm text-white/70">ডাউনলোড বাটনে ক্লিক করলে apk ডাউনলোড হয়ে যাবে । </p>
+        </details>
+
+        <details class="glass p-4 rounded-lg">
+          <summary class="font-medium cursor-pointer">অ্যাকাউন্ট কীভাবে বানাব?</summary>
+          <p class="mt-2 text-sm text-white/70">ইমেইল বা ফোন নম্বর দিয়ে দ্রুত রেজিস্ট্রেশন করে খেলাটা শুরু করুন।</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="w-full py-6 border-t border-white/6">
+    <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-[#ff7a2b] to-[#00a0ff] flex items-center justify-center">
+          <i class="fa-solid fa-trophy text-white"></i>
+        </div>
+        <div>
+          <div class="font-semibold">DSL TOUR</div>
+          <div class="text-xs text-white/60">© <span id="year"></span> All rights reserved</div>
+        </div>
+      </div>
+
+      <div class="text-sm text-white/70">Support: <a href="https://m.me/j/AbaKcMi10_nTYK4E/" class="underline">messager group</a></div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const swiper = new Swiper('.mySwiper', {
+      loop: true,
+      centeredSlides: true,
+      spaceBetween: 20,
+      slidesPerView: 'auto',
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false
+      }
+    });
+
+    document.querySelectorAll('details summary').forEach(s => {
+      s.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          s.parentElement.open = !s.parentElement.open;
+        }
+      });
+    });
+
+    function downloadApp() {
+      const link = document.createElement('a');
+      link.href = 'DSL%20TOUR.apk';
+      link.download = 'DSL TOUR.apk';
+      link.click();
+    }
+  </script>
+
+</body>
+</html>
